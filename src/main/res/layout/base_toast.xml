@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.angcyo.uiview.widget.ToastLayout
+<com.angcyo.uiview.less.widget.group.ToastLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/base_toast_root_layout"
@@ -36,4 +36,4 @@
             tools:text="测试内容测试内容测试内容测试内容测试内容测试内容"/>
     </LinearLayout>
 
-</com.angcyo.uiview.widget.ToastLayout>
+</com.angcyo.uiview.less.widget.group.ToastLayout>
