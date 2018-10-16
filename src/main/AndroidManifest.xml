@@ -1,2 +1,73 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.angcyo.uiview.less"/>
+          package="com.angcyo.uiview.less">
+
+    <!--震动-->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!--网络-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!--网络状态-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    <!--文件存储-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+
+    <!--IMEI权限-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!--Android 8.0 安装APK权限-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+    <!--2018-03-04 来自环信-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+
+    <application
+            android:allowBackup="true"
+            android:resizeableActivity="false"
+            android:supportsPictureInPicture="false"
+            android:supportsRtl="true">
+
+        <!-- 全面屏配置 -->
+        <meta-data
+                android:name="android.max_aspect"
+                android:value="2.4"/>
+        <meta-data
+                android:name="android.vendor.full_screen"
+                android:value="true"/>
+        <meta-data
+                android:name="android.notch_support"
+                android:value="true "/>
+
+        <!--Android7.0 文件权限-->
+        <!--<provider-->
+        <!--android:name="android.support.v4.content.FileProvider"-->
+        <!--android:authorities="${PACKAGE_NAME}"-->
+        <!--android:exported="false"-->
+        <!--android:grantUriPermissions="true">-->
+        <!--<meta-data-->
+        <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+        <!--android:resource="@xml/provider_paths"/>-->
+        <!--</provider>-->
+    </application>
+
+</manifest>

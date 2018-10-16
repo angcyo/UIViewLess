@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="base_root_layout_id" type="id"/>
+    <item name="base_root_title_id" type="id"/>
+    <item name="base_root_content_id" type="id"/>
+
+    <item name="zxt_tag_vh" type="id"/>
+    <item name="zxt_tag_vdb" type="id"/>
+
+    <!--RFrameLayout-->
+    <item name="base_r_layout_left" type="id"/>
+    <item name="base_r_layout_top" type="id"/>
+    <item name="base_r_layout_is_move" type="id"/>
+
+    <!--刷新布局, 菜单视图id-->
+    <item name="base_refresh_menu" type="id"/>
+
+    <item name="tag_position" type="id"/>
+    <item name="tag" type="id"/>
+    <item name="tag_url" type="id"/>
+    <item name="tag_success_url" type="id"/>
+    <item name="tag_need_layout" type="id"/>
+    <!--StickLayout2-->
+    <item name="tag_not_handle_nested_scroll" type="id"/>
+    <!--UIGuideDialog-->
+    <item name="base_finish_view" type="id"/>
+    <item name="base_guide_layout" type="id"/>
+</resources>

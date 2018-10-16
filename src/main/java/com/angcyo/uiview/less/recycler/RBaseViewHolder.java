@@ -13,17 +13,11 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.angcyo.library.utils.L;
-import com.angcyo.uiview.utils.ScreenUtil;
-import com.angcyo.uiview.view.DelayClick;
+import android.widget.*;
+import com.angcyo.lib.L;
+import com.angcyo.uiview.less.utils.ScreenUtil;
+import com.angcyo.uiview.less.widget.*;
 import com.angcyo.uiview.view.RClickListener;
-import com.angcyo.uiview.view.UIIViewImpl;
-import com.angcyo.uiview.widget.*;
-import com.angcyo.uiview.widget.viewpager.RViewPager;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -33,6 +27,8 @@ import java.lang.reflect.Method;
  * 通用ViewHolder
  */
 public class RBaseViewHolder extends RecyclerView.ViewHolder {
+    public static int DEFAULT_CLICK_DELAY_TIME = RClickListener.Companion.getDEFAULT_DELAY_CLICK_TIME();
+    
     private SparseArray<WeakReference<View>> sparseArray;
     private int viewType = -1;
 
@@ -222,25 +218,25 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
         return v(resId);
     }
 
-    public RViewPager rpager(@IdRes int resId) {
-        return v(resId);
-    }
-
-    public RLoopRecyclerView loopV(@IdRes int resId) {
-        return (RLoopRecyclerView) v(resId);
-    }
+//    public RViewPager rpager(@IdRes int resId) {
+//        return v(resId);
+//    }
+//
+//    public RLoopRecyclerView loopV(@IdRes int resId) {
+//        return (RLoopRecyclerView) v(resId);
+//    }
 
     public RRecyclerView reV(String idName) {
         return (RRecyclerView) viewByName(idName);
     }
 
-    public ItemSubInfoLayout sub(@IdRes int id) {
-        return v(id);
-    }
-
-    public ItemInfoLayout item(@IdRes int id) {
-        return v(id);
-    }
+//    public ItemSubInfoLayout sub(@IdRes int id) {
+//        return v(id);
+//    }
+//
+//    public ItemInfoLayout item(@IdRes int id) {
+//        return v(id);
+//    }
 
     public Button button(@IdRes int id) {
         return v(id);
@@ -257,9 +253,9 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
         return (TextView) v(resId);
     }
 
-    public TimeTextView timeV(@IdRes int resId) {
-        return (TimeTextView) v(resId);
-    }
+//    public TimeTextView timeV(@IdRes int resId) {
+//        return (TimeTextView) v(resId);
+//    }
 
     public RTextView rtv(@IdRes int resId) {
         return (RTextView) v(resId);
@@ -366,7 +362,7 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void click(@IdRes int id, final View.OnClickListener listener) {
-        click(id, UIIViewImpl.DEFAULT_CLICK_DELAY_TIME, listener);
+        click(id, DEFAULT_CLICK_DELAY_TIME, listener);
     }
 
     public void longClick(@IdRes int id, final View.OnClickListener listener) {
@@ -390,11 +386,11 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void click(View view, final View.OnClickListener listener) {
-        click(view, UIIViewImpl.DEFAULT_CLICK_DELAY_TIME, listener);
+        click(view, DEFAULT_CLICK_DELAY_TIME, listener);
     }
 
     public void clickItem(final View.OnClickListener listener) {
-        click(itemView, UIIViewImpl.DEFAULT_CLICK_DELAY_TIME, listener);
+        click(itemView, DEFAULT_CLICK_DELAY_TIME, listener);
     }
 
     public void click(@IdRes int id, int delay, final View.OnClickListener listener) {
@@ -416,10 +412,6 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
                 });
             }
         }
-    }
-
-    public void delayClick(@IdRes int id, DelayClick listener) {
-        click(id, listener);
     }
 
     /**
