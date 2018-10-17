@@ -4,8 +4,9 @@ import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowManager
-import com.angcyo.uiview.less.kotlin.have
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -29,13 +30,13 @@ public fun Activity.lightStatusBar(light: Boolean) {
                 return
             }
             this.window
-                    .decorView.systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                .decorView.systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         } else {
             if (!systemUiVisibility.have(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)) {
                 return
             }
             this.window
-                    .decorView.systemUiVisibility = systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                .decorView.systemUiVisibility = systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
         }
     }
 }
@@ -50,4 +51,8 @@ public fun Activity.enableLayoutFullScreen() {
         window.statusBarColor = Color.TRANSPARENT
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     }
+}
+
+public fun Activity.contentView(): ViewGroup {
+    return this.window.findViewById(Window.ID_ANDROID_CONTENT)
 }

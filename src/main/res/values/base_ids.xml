@@ -25,4 +25,7 @@
     <!--UIGuideDialog-->
     <item name="base_finish_view" type="id"/>
     <item name="base_guide_layout" type="id"/>
+
+    <item name="tag_base_iview" type="id"/>
+
 </resources>
