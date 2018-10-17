@@ -1,5 +1,6 @@
 package com.angcyo.uiview.less.iview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,6 +45,13 @@ public abstract class BaseIView {
      */
     protected View createRootView() {
         return new View(context);
+    }
+
+    public Activity getActivity() {
+        if (context instanceof Activity) {
+            return (Activity) context;
+        }
+        return null;
     }
 
     /**

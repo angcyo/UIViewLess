@@ -101,19 +101,23 @@ public class StateUI {
         manager.hideSoftInputFromWindow(parent.getWindowToken(), 0);
     }
 
-    private void initLayout() {
+    private boolean initLayout() {
         if (parent == null) {
-            return;
+            return false;
         }
 
         final View view = parent.findViewWithTag(R.layout.base_flow_loading_layout);
         if (view != null) {
             ((TextView) view.findViewById(R.id.base_load_tip_view)).setText(tip);
+            return true;
         }
+        return false;
     }
 
     public StateUI show() {
-        initLayout();
+        if (initLayout()) {
+            return this;
+        }
 
         hideSoftInputFromWindow();
 
