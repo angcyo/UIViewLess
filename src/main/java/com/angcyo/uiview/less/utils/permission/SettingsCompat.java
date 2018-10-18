@@ -17,7 +17,6 @@
 package com.angcyo.uiview.less.utils.permission;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +25,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -37,50 +35,35 @@ public class SettingsCompat {
 
     private static final int OP_WRITE_SETTINGS = 23;
     private static final int OP_SYSTEM_ALERT_WINDOW = 24;
-    private final static String HUAWEI_PACKAGE = "com.huawei.systemmanager";
 
-    /**
-     * 浮窗权限
-     */
     public static boolean canDrawOverlays(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.canDrawOverlays(context);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             return checkOp(context, OP_SYSTEM_ALERT_WINDOW);
         } else {
             return true;
         }
     }
 
-    /**
-     * 写入系统设置
-     */
     public static boolean canWriteSettings(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(context);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             return checkOp(context, OP_WRITE_SETTINGS);
         } else {
             return true;
         }
     }
 
-    /**
-     * 请求授权
-     */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static boolean setDrawOverlays(Context context, boolean allowed) {
         return setMode(context, OP_SYSTEM_ALERT_WINDOW, allowed);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static boolean setWriteSettings(Context context, boolean allowed) {
         return setMode(context, OP_WRITE_SETTINGS, allowed);
     }
 
-    /**
-     * 管理权限授权
-     */
     public static void manageDrawOverlays(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if (manageDrawOverlaysForRom(context)) {
@@ -127,7 +110,7 @@ public class SettingsCompat {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
     private static boolean checkOp(Context context, int op) {
         AppOpsManager manager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
         try {
@@ -140,7 +123,6 @@ public class SettingsCompat {
     }
 
     // 可设置Android 4.3/4.4的授权状态
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static boolean setMode(Context context, int op, boolean allowed) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return false;
@@ -170,6 +152,7 @@ public class SettingsCompat {
         }
     }
 
+
     // 小米
     private static boolean manageDrawOverlaysForMiui(Context context) {
         Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
@@ -191,6 +174,8 @@ public class SettingsCompat {
         }
         return false;
     }
+
+    private final static String HUAWEI_PACKAGE = "com.huawei.systemmanager";
 
     // 华为
     private static boolean manageDrawOverlaysForEmui(Context context) {
@@ -225,8 +210,8 @@ public class SettingsCompat {
     }
 
     // OPPO
-    private static boolean manageDrawOverlaysForOppo(final Context context) {
-        final Intent intent = new Intent();
+    private static boolean manageDrawOverlaysForOppo(Context context) {
+        Intent intent = new Intent();
         intent.putExtra("packageName", context.getPackageName());
         // OPPO A53|5.1.1|2.1
         intent.setAction("com.oppo.safe");
@@ -242,49 +227,14 @@ public class SettingsCompat {
         }
         intent.setAction("com.coloros.safecenter");
         intent.setClassName("com.coloros.safecenter", "com.coloros.safecenter.sysfloatwindow.FloatWindowListActivity");
-
-        if (context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
-            if (context instanceof Activity) {
-//                new RxPermissions((Activity) context)
-//                        .request("oppo.permission.OPPO_COMPONENT_SAFE")
-//                        .subscribe(new Action1<Boolean>() {
-//                            @Override
-//                            public void call(Boolean aBoolean) {
-//                                if (aBoolean) {
-//                                    startSafely(context, intent);
-//                                }
-//                            }
-//                        });
-            }
-            //startSafely(context, intent);
-            return false;
-        }
-        return false;
-        //return startSafely(context, intent);
+        return startSafely(context, intent);
     }
 
     // 魅族
-    private static boolean manageDrawOverlaysForFlyme(final Context context) {
-        final Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
+    private static boolean manageDrawOverlaysForFlyme(Context context) {
+        Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
         intent.setClassName("com.meizu.safe", "com.meizu.safe.security.AppSecActivity");
         intent.putExtra("packageName", context.getPackageName());
-
-        if (context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
-            if (context instanceof Activity) {
-//                new RxPermissions((Activity) context)
-//                        .request("com.meizu.safe.security.SHOW_APPSEC")
-//                        .subscribe(new Action1<Boolean>() {
-//                            @Override
-//                            public void call(Boolean aBoolean) {
-//                                if (aBoolean) {
-//                                    startSafely(context, intent);
-//                                }
-//                            }
-//                        });
-            }
-            //startSafely(context, intent);
-            return false;
-        }
         return startSafely(context, intent);
     }
 
