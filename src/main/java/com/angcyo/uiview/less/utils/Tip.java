@@ -39,7 +39,7 @@ public class Tip {
 
     private static void show(Context context, CharSequence tipText, int tipImageResId) {
         View layout;
-        if (toast == null) {
+        if (toast == null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
             initToast(toast);
             layout = LayoutInflater.from(context).inflate(R.layout.base_toast_tip, null);

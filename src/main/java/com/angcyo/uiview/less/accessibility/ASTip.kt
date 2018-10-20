@@ -12,7 +12,6 @@ import android.widget.Toast
 import com.angcyo.uiview.less.R
 import com.angcyo.uiview.less.RApplication
 import com.angcyo.uiview.less.utils.ScreenUtil
-import com.angcyo.uiview.less.utils.utilcode.utils.SpannableStringUtils
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -35,7 +34,8 @@ object ASTip {
                 .setTextSize((18 * ScreenUtil.density).toInt())
                 .setForegroundColor(Color.RED)
                 .append("并开启")
-                .create() /*"${RApplication.getApp().resources.getString(R.string.base_accessibility_summary)}并开启"*/)
+                .create() /*"${RApplication.getApp().resources.getString(R.string.base_accessibility_summary)}并开启"*/
+        )
     }
 
     fun show(tipText: CharSequence, tipImageResId: Int) {
@@ -52,7 +52,7 @@ object ASTip {
 
     private fun show(context: Context, tipText: CharSequence, tipImageResId: Int) {
         val layout: View
-        if (toast == null) {
+        if (toast == null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             toast = Toast.makeText(context, "", Toast.LENGTH_LONG)
             layout = LayoutInflater.from(context).inflate(R.layout.base_accessibility_toast_tip, null)
             (layout.findViewById<View>(R.id.base_toast_text_view) as TextView).text = tipText
