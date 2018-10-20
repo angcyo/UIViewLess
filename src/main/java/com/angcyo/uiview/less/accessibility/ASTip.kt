@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.angcyo.uiview.less.R
 import com.angcyo.uiview.less.RApplication
 import com.angcyo.uiview.less.utils.ScreenUtil
+import com.angcyo.uiview.less.utils.utilcode.utils.SpannableStringUtils
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.

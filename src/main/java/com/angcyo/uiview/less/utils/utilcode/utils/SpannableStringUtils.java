@@ -24,7 +24,7 @@ import static android.graphics.BlurMaskFilter.Blur;
  *     desc  : SpannableString相关工具类
  * </pre>
  */
-class SpannableStringUtils {
+public class SpannableStringUtils {
 
     private SpannableStringUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
