@@ -6,7 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.support.annotation.LayoutRes
 import android.view.*
-import com.angcyo.uiview.RApplication
+import com.angcyo.uiview.less.RApplication
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.

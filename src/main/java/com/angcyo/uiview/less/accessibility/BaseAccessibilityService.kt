@@ -12,14 +12,11 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
-import com.angcyo.github.utilcode.utils.ClipboardUtils
-import com.angcyo.library.utils.L
-import com.angcyo.library.utils.RIo
-import com.angcyo.uiview.RApplication
+import com.angcyo.http.RIo
+import com.angcyo.lib.L
 import com.angcyo.uiview.less.RApplication
-import com.angcyo.uiview.less.accessibility.AccessibilityInterceptor
+import com.angcyo.uiview.less.utils.Tip
 import com.angcyo.uiview.less.utils.utilcode.utils.ClipboardUtils
-import com.angcyo.uiview.utils.Tip
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
