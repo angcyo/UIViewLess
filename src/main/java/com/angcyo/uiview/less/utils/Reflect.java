@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.utils.utilcode.utils.SpannableStringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
