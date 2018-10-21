@@ -29,9 +29,13 @@ object ASTip {
     private var toast: Toast? = null
 
     fun show() {
+        show(RApplication.getApp().resources.getString(R.string.base_accessibility_summary))
+    }
+
+    fun show(tip: String) {
         tip(
             SpannableStringUtils.getBuilder("请找到")
-                .append(RApplication.getApp().resources.getString(R.string.base_accessibility_summary))
+                .append(tip)
                 .setTextSize((18 * ScreenUtil.density).toInt())
                 .setForegroundColor(Color.RED)
                 .append("并开启")

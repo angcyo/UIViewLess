@@ -94,8 +94,10 @@ open class BaseAccessibilityService : AccessibilityService() {
          * @return
          */
         fun isServiceEnabled(): Boolean {
-            val accessibilityManager: AccessibilityManager = RApplication.getApp().getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-            val accessibilityServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            val accessibilityManager: AccessibilityManager =
+                RApplication.getApp().getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+            val accessibilityServices =
+                accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
             return accessibilityServices.any { it.id.contains(RApplication.getApp().packageName) } || isServiceConnected
         }
 
@@ -131,7 +133,8 @@ open class BaseAccessibilityService : AccessibilityService() {
         fun findListView(rootNodeInfo: AccessibilityNodeInfo): AccessibilityNodeInfo? {
             var node: AccessibilityNodeInfo? = null
             if (rootNodeInfo.className.contains("ListView") ||
-                    rootNodeInfo.className.contains("RecyclerView")) {
+                rootNodeInfo.className.contains("RecyclerView")
+            ) {
                 node = rootNodeInfo
             } else {
                 for (i in 0 until rootNodeInfo.childCount) {
@@ -145,7 +148,10 @@ open class BaseAccessibilityService : AccessibilityService() {
         }
 
         /**通过 0_0_1_2 这种路径拿到Node*/
-        fun nodeFromPath(rootNodeInfo: AccessibilityNodeInfo, path: String /*0_0_1_2 这种路径拿到Node*/): AccessibilityNodeInfo? {
+        fun nodeFromPath(
+            rootNodeInfo: AccessibilityNodeInfo,
+            path: String /*0_0_1_2 这种路径拿到Node*/
+        ): AccessibilityNodeInfo? {
             fun getNode(nodeInfo: AccessibilityNodeInfo?, index: Int): AccessibilityNodeInfo? {
                 if (nodeInfo == null) {
                     return null
@@ -189,7 +195,12 @@ open class BaseAccessibilityService : AccessibilityService() {
             }
         }
 
-        fun debugNodeInfo(nodeInfo: AccessibilityNodeInfo, index: Int = 0 /*缩进控制*/, preIndex: String = "" /*child路径*/, logFilePath: String? = null) {
+        fun debugNodeInfo(
+            nodeInfo: AccessibilityNodeInfo,
+            index: Int = 0 /*缩进控制*/,
+            preIndex: String = "" /*child路径*/,
+            logFilePath: String? = null
+        ) {
             fun newLine(i: Int): String {
                 val sb = StringBuilder()
                 for (j in 0 until i) {
@@ -222,7 +233,12 @@ open class BaseAccessibilityService : AccessibilityService() {
 
             for (i in 0 until nodeInfo.childCount) {
                 nodeInfo.getChild(i)?.let {
-                    debugNodeInfo(it, index + 1, "${if (preIndex.isEmpty()) preIndex else "${preIndex}_"}$i", logFilePath)
+                    debugNodeInfo(
+                        it,
+                        index + 1,
+                        "${if (preIndex.isEmpty()) preIndex else "${preIndex}_"}$i",
+                        logFilePath
+                    )
                 }
             }
         }
