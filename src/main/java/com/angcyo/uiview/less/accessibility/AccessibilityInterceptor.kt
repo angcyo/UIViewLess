@@ -1,5 +1,9 @@
 package com.angcyo.uiview.less.accessibility
 
+import android.graphics.Path
+import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 
 /**
@@ -20,7 +24,127 @@ abstract class AccessibilityInterceptor {
     /**当到达目标之后的回调*/
     var onJumpToTarget: (() -> Unit)? = null
 
+    val handle = Handler(Looper.getMainLooper())
+
     open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
 
+    }
+
+    fun delay(delay: Long, action: () -> Unit) {
+        handle.postDelayed({
+            action.invoke()
+        }, delay)
+    }
+
+    open fun isWindowStateChanged(event: AccessibilityEvent): Boolean {
+        return event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+    }
+
+    /**返回 文本 node 在屏幕中的 矩形坐标*/
+    open fun findRectByText(
+        text: String,
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): Array<Rect> {
+        val rootNodeInfo = if (accService.rootInActiveWindow == null) {
+            event.source
+        } else {
+            accService.rootInActiveWindow
+        }
+
+        val nodes = rootNodeInfo.findAccessibilityNodeInfosByText(text)
+        val rectList = mutableListOf<Rect>()
+
+        nodes?.mapIndexed { _, accessibilityNodeInfo ->
+            val rect = Rect()
+            accessibilityNodeInfo.getBoundsInScreen(rect)
+            rectList.add(rect)
+        }
+        return rectList.toTypedArray()
+    }
+
+    /**
+     * id 全路径 "com.xunmeng.pinduoduo:id/ll_tab"
+     * 但是 只需要传 ll_tab 就行
+     * */
+    open fun findRectById(
+        id: String,
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): Array<Rect> {
+        val rootNodeInfo = if (accService.rootInActiveWindow == null) {
+            event.source
+        } else {
+            accService.rootInActiveWindow
+        }
+
+        val idString = if (id.contains(event.packageName)) {
+            id
+        } else {
+            "${event.packageName}:id/$id"
+        }
+
+        val nodes = rootNodeInfo.findAccessibilityNodeInfosByViewId(idString)
+        val rectList = mutableListOf<Rect>()
+
+        nodes?.mapIndexed { _, accessibilityNodeInfo ->
+            val rect = Rect()
+            accessibilityNodeInfo.getBoundsInScreen(rect)
+            rectList.add(rect)
+        }
+        return rectList.toTypedArray()
+    }
+
+    /**返回中心点坐标*/
+    open fun findPathByText(
+        text: String,
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): Array<Path> {
+        val rectList = findRectByText(text, accService, event)
+        val pathList = mutableListOf<Path>()
+
+        rectList.mapIndexed { _, rect ->
+            val path = Path().apply {
+                moveTo(rect.centerX().toFloat(), rect.centerY().toFloat())
+            }
+            pathList.add(path)
+        }
+
+        return pathList.toTypedArray()
+    }
+
+    /**返回文本在底部的path*/
+    open fun findBottomRect(
+        accService: BaseAccessibilityService,
+        rects: Array<Rect>
+    ): Rect {
+        var targetRect = Rect()
+        val point = accService.displaySize()
+        rects.map {
+            if (it.centerY() > point.y / 2) {
+                if (it.centerY() > targetRect.centerY()) {
+                    targetRect = it
+                }
+            }
+        }
+        return targetRect
+    }
+
+    /**从顶部查询*/
+    open fun findTopRect(
+        accService: BaseAccessibilityService,
+        rects: Array<Rect>
+    ): Rect {
+        val point = accService.displaySize()
+        var targetRect = Rect(0, 0, point.x, point.y)
+        rects.map {
+            if (it.centerY() < point.y / 2) {
+                if (it.centerY() < targetRect.centerY()) {
+                    targetRect = it
+                }
+            }
+        }
+        return targetRect
     }
 }
