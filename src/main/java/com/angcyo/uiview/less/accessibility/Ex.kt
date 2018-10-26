@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.Rect
+import android.os.Build
 import android.view.WindowManager
 import com.angcyo.lib.L
 
@@ -34,13 +35,17 @@ public fun AccessibilityService.recents() {
 /**锁屏*/
 public fun AccessibilityService.lockScreen() {
     //api 28
-    this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+    }
 }
 
 /**屏幕截图*/
 public fun AccessibilityService.takeScreenShot() {
     //api 28
-    this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+    }
 }
 
 /**
@@ -64,37 +69,64 @@ public fun AccessibilityService.touch(vararg path: Path) {
     touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
 }
 
-public fun AccessibilityService.touch(paths: Array<Path>, startTime: LongArray, duration: LongArray) {
+public fun AccessibilityService.touch(callback: AccessibilityService.GestureResultCallback, vararg path: Path) {
+    val pathsList = mutableListOf<Path>()
+    pathsList.addAll(path)
+
+    val paths = pathsList.toTypedArray()
+    val startTImeList = mutableListOf<Long>()
+    val durationList = mutableListOf<Long>()
+
+    val DEFAULT_START_TIME = 700L
+    val DEFAULT_DURATION = 300L
+    paths.mapIndexed { index, _ ->
+        startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
+        durationList.add(DEFAULT_DURATION)
+    }
+
+    touch(paths, startTImeList.toLongArray(), durationList.toLongArray(), callback)
+}
+
+public fun AccessibilityService.touch(
+    paths: Array<Path>,
+    startTime: LongArray,
+    duration: LongArray,
+    callback: AccessibilityService.GestureResultCallback? = null
+) {
     if (paths.isEmpty()) {
         return
     }
 
     //api 24
-    GestureDescription.Builder().apply {
-        paths.mapIndexed { index, path ->
-            this.addStroke(
-                GestureDescription.StrokeDescription(
-                    path,
-                    startTime[index],
-                    duration[index]
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        GestureDescription.Builder().apply {
+            paths.mapIndexed { index, path ->
+                this.addStroke(
+                    GestureDescription.StrokeDescription(
+                        path,
+                        startTime[index],
+                        duration[index]
+                    )
                 )
+            }
+            this@touch.dispatchGesture(
+                this.build(),
+                object : AccessibilityService.GestureResultCallback() {
+                    override fun onCompleted(gestureDescription: GestureDescription?) {
+                        super.onCompleted(gestureDescription)
+                        L.e("$gestureDescription")
+                        callback?.onCompleted(gestureDescription)
+                    }
+
+                    override fun onCancelled(gestureDescription: GestureDescription?) {
+                        super.onCancelled(gestureDescription)
+                        L.e("$gestureDescription")
+                        callback?.onCancelled(gestureDescription)
+                    }
+                },
+                null
             )
         }
-        this@touch.dispatchGesture(
-            this.build(),
-            object : AccessibilityService.GestureResultCallback() {
-                override fun onCompleted(gestureDescription: GestureDescription?) {
-                    super.onCompleted(gestureDescription)
-                    L.e("$gestureDescription")
-                }
-
-                override fun onCancelled(gestureDescription: GestureDescription?) {
-                    super.onCancelled(gestureDescription)
-                    L.e("$gestureDescription")
-                }
-            },
-            null
-        )
     }
 }
 

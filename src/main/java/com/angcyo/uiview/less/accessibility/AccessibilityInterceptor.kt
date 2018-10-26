@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -26,8 +27,14 @@ abstract class AccessibilityInterceptor {
 
     val handle = Handler(Looper.getMainLooper())
 
-    open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
+    companion object {
+        var lastAccService: BaseAccessibilityService? = null
+        var lastEvent: AccessibilityEvent? = null
+    }
 
+    open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
+        lastAccService = accService
+        lastEvent = event
     }
 
     fun delay(delay: Long, action: () -> Unit) {
@@ -36,8 +43,67 @@ abstract class AccessibilityInterceptor {
         }, delay)
     }
 
+    fun sleep(delay: Long, action: () -> Unit) {
+        Thread.sleep(delay)
+        action.invoke()
+    }
+
     open fun isWindowStateChanged(event: AccessibilityEvent): Boolean {
         return event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+    }
+
+    /**此事件, 会优先于 TYPE_WINDOW_STATE_CHANGED 调用*/
+    open fun isWindowContentChanged(event: AccessibilityEvent): Boolean {
+        return event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+    }
+
+    private fun rootNodeInfo(
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): AccessibilityNodeInfo {
+        return if (accService.rootInActiveWindow == null) {
+            event.source
+        } else {
+            accService.rootInActiveWindow
+        }
+    }
+
+    private fun idString(
+        id: String,
+        event: AccessibilityEvent
+    ): String {
+        if (event.packageName == null) {
+            return id
+        }
+
+        return if (id.contains(event.packageName)) {
+            id
+        } else {
+            "${event.packageName}:id/$id"
+        }
+    }
+
+
+    open fun findNodeByText(
+        text: String,
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): List<AccessibilityNodeInfo> {
+        val rootNodeInfo = rootNodeInfo(accService, event)
+        val nodes = rootNodeInfo.findAccessibilityNodeInfosByText(text)
+        return nodes
+    }
+
+    open fun findNodeById(
+        id: String,
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent
+    ): List<AccessibilityNodeInfo> {
+        val rootNodeInfo = rootNodeInfo(accService, event)
+
+        val idString = idString(id, event)
+        val nodes = rootNodeInfo.findAccessibilityNodeInfosByViewId(idString)
+        return nodes
     }
 
     /**返回 文本 node 在屏幕中的 矩形坐标*/
@@ -46,11 +112,7 @@ abstract class AccessibilityInterceptor {
         accService: BaseAccessibilityService,
         event: AccessibilityEvent
     ): Array<Rect> {
-        val rootNodeInfo = if (accService.rootInActiveWindow == null) {
-            event.source
-        } else {
-            accService.rootInActiveWindow
-        }
+        val rootNodeInfo = rootNodeInfo(accService, event)
 
         val nodes = rootNodeInfo.findAccessibilityNodeInfosByText(text)
         val rectList = mutableListOf<Rect>()
@@ -72,17 +134,9 @@ abstract class AccessibilityInterceptor {
         accService: BaseAccessibilityService,
         event: AccessibilityEvent
     ): Array<Rect> {
-        val rootNodeInfo = if (accService.rootInActiveWindow == null) {
-            event.source
-        } else {
-            accService.rootInActiveWindow
-        }
+        val rootNodeInfo = rootNodeInfo(accService, event)
 
-        val idString = if (id.contains(event.packageName)) {
-            id
-        } else {
-            "${event.packageName}:id/$id"
-        }
+        val idString = idString(id, event)
 
         val nodes = rootNodeInfo.findAccessibilityNodeInfosByViewId(idString)
         val rectList = mutableListOf<Rect>()

@@ -183,13 +183,13 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         fun logNodeInfo(rootNodeInfo: AccessibilityNodeInfo, logFilePath: String? = null) {
             if (logFilePath == null) {
-                Log.i(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
+                L.i(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╔═══════════════════════════\n")
             }
             debugNodeInfo(rootNodeInfo, 0, "", logFilePath)
             if (logFilePath == null) {
-                Log.i(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
+                L.i(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╚═══════════════════════════\n")
             }
@@ -278,7 +278,17 @@ open class BaseAccessibilityService : AccessibilityService() {
         }
 
         try {
-            logNodeInfo(getRootNodeInfo(event.source))
+            if (event.source == null) {
+                L.e(TAG, "event.source 事件源为空")
+
+                if (rootInActiveWindow == null) {
+                    L.e(TAG, "rootInActiveWindow 事件源为空")
+                } else {
+                    logNodeInfo(getRootNodeInfo(rootInActiveWindow))
+                }
+            } else {
+                logNodeInfo(getRootNodeInfo(event.source))
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
