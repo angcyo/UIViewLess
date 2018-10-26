@@ -280,17 +280,17 @@ open class BaseAccessibilityService : AccessibilityService() {
     /**核心方法, 收到事件*/
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            L.e("size:${windows.size} $windows $event")
+            L.e("事件通知: size:${windows.size} $windows $event")
         } else {
-            L.e("call: onAccessibilityEvent -> $event")
+            L.e("事件通知: $event")
         }
 
         try {
             if (event.source == null) {
-                L.e(TAG, "event.source 事件源为空")
+                L.e(TAG, "event.source 为空")
 
                 if (rootInActiveWindow == null) {
-                    L.e(TAG, "rootInActiveWindow 事件源为空")
+                    L.e(TAG, "rootInActiveWindow 为空")
                 } else {
                     logNodeInfo(getRootNodeInfo(rootInActiveWindow))
                 }
