@@ -64,6 +64,27 @@ public fun AccessibilityService.touch(vararg path: Path) {
     touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
 }
 
+/**
+ * @param paths 需要点击的位置
+ * @param touchInterval 每次点击 间隔时长
+ * @param touchDuration 每次点击持续时长
+ *
+ * */
+public fun AccessibilityService.touch(paths: Array<Path>, touchInterval: Long, touchDuration: Long) {
+    if (paths.isEmpty()) {
+        return
+    }
+
+    val intervalList = mutableListOf<Long>()
+    val durationList = mutableListOf<Long>()
+    paths.mapIndexed { index, path ->
+        intervalList.add(touchInterval * (index + 1) + touchDuration * index)
+        durationList.add(touchDuration)
+    }
+
+    touch(paths, intervalList.toLongArray(), durationList.toLongArray())
+}
+
 public fun AccessibilityService.touch(paths: Array<Path>, startTime: LongArray, duration: LongArray) {
     if (paths.isEmpty()) {
         return
