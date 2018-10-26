@@ -87,6 +87,30 @@ public fun AccessibilityService.touch(callback: AccessibilityService.GestureResu
     touch(paths, startTImeList.toLongArray(), durationList.toLongArray(), callback)
 }
 
+/**
+ * @param paths 需要点击的位置
+ * @param touchInterval 每次点击 间隔时长
+ * @param touchDuration 每次点击持续时长
+ *
+ * */
+public fun AccessibilityService.touch(paths: Array<Path>, touchInterval: Long, touchDuration: Long) {
+    if (paths.isEmpty()) {
+        return
+    }
+
+    val intervalList = mutableListOf<Long>()
+    val durationList = mutableListOf<Long>()
+    paths.mapIndexed { index, path ->
+        intervalList.add(touchInterval * (index + 1) + touchDuration * index)
+        durationList.add(touchDuration)
+    }
+
+    touch(paths, intervalList.toLongArray(), durationList.toLongArray())
+}
+
+/**
+ * 执行手势
+ * */
 public fun AccessibilityService.touch(
     paths: Array<Path>,
     startTime: LongArray,
