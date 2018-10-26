@@ -48,7 +48,7 @@ public fun AccessibilityService.takeScreenShot() {
     }
 }
 
-public fun AccessibilityService.move(path: Path) {
+public fun AccessibilityService.move(path: Path, callback: AccessibilityService.GestureResultCallback? = null) {
     val pathsList = mutableListOf<Path>()
     pathsList.add(path)
 
@@ -63,7 +63,7 @@ public fun AccessibilityService.move(path: Path) {
         durationList.add(DEFAULT_DURATION)
     }
 
-    touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
+    touch(paths, startTImeList.toLongArray(), durationList.toLongArray(), callback)
 }
 
 /**
