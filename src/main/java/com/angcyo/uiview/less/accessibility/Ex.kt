@@ -48,6 +48,24 @@ public fun AccessibilityService.takeScreenShot() {
     }
 }
 
+public fun AccessibilityService.move(path: Path) {
+    val pathsList = mutableListOf<Path>()
+    pathsList.add(path)
+
+    val paths = pathsList.toTypedArray()
+    val startTImeList = mutableListOf<Long>()
+    val durationList = mutableListOf<Long>()
+
+    val DEFAULT_START_TIME = 100L
+    val DEFAULT_DURATION = 2000L
+    paths.mapIndexed { index, _ ->
+        startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
+        durationList.add(DEFAULT_DURATION)
+    }
+
+    touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
+}
+
 /**
  * 通过 touch 坐标, 触发点击事件
  * */
@@ -59,8 +77,8 @@ public fun AccessibilityService.touch(vararg path: Path) {
     val startTImeList = mutableListOf<Long>()
     val durationList = mutableListOf<Long>()
 
-    val DEFAULT_START_TIME = 700L
-    val DEFAULT_DURATION = 300L
+    val DEFAULT_START_TIME = 20L
+    val DEFAULT_DURATION = 60L
     paths.mapIndexed { index, _ ->
         startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
         durationList.add(DEFAULT_DURATION)

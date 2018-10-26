@@ -121,12 +121,20 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         /**向前滚动列表*/
         fun scrollForward(nodeInfo: AccessibilityNodeInfo) {
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                nodeInfo.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN)
+            } else {
+                nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+            }
         }
 
         /**向后滚动列表*/
         fun scrollBackward(nodeInfo: AccessibilityNodeInfo) {
-            nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                nodeInfo.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP)
+            } else {
+                nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+            }
         }
 
         /**返回ListNode*/
