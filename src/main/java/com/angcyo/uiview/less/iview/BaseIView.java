@@ -209,7 +209,6 @@ public abstract class BaseIView {
                 final Runnable removeRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        onIViewHide(null);
                         onIViewUnLoad();
                         ((ViewGroup) parent).removeView(rootView);
                         if (endAction != null) {
@@ -217,6 +216,7 @@ public abstract class BaseIView {
                         }
                     }
                 };
+                onIViewHide(null);
 
                 if (animation == null) {
                     removeRunnable.run();

@@ -191,13 +191,13 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         fun logNodeInfo(rootNodeInfo: AccessibilityNodeInfo, logFilePath: String? = null) {
             if (logFilePath == null) {
-                L.i(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
+                Log.d(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╔═══════════════════════════\n")
             }
             debugNodeInfo(rootNodeInfo, 0, "", logFilePath)
             if (logFilePath == null) {
-                L.i(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
+                Log.d(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╚═══════════════════════════\n")
             }
@@ -234,7 +234,7 @@ open class BaseAccessibilityService : AccessibilityService() {
             stringBuilder.append(" $preIndex")
 
             if (logFilePath == null) {
-                Log.i(TAG, "$stringBuilder")
+                Log.d(TAG, "$stringBuilder")
             } else {
                 RIo.appendToFile(logFilePath, "$stringBuilder\n")
             }

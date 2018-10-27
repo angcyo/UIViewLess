@@ -56,8 +56,8 @@ public fun AccessibilityService.move(path: Path, callback: AccessibilityService.
     val startTImeList = mutableListOf<Long>()
     val durationList = mutableListOf<Long>()
 
-    val DEFAULT_START_TIME = 100L
-    val DEFAULT_DURATION = 2000L
+    val DEFAULT_START_TIME = 20L
+    val DEFAULT_DURATION = 500L
     paths.mapIndexed { index, _ ->
         startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
         durationList.add(DEFAULT_DURATION)
