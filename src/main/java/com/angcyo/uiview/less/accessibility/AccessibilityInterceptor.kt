@@ -57,11 +57,11 @@ abstract class AccessibilityInterceptor {
         return event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
     }
 
-    private fun rootNodeInfo(
-        accService: BaseAccessibilityService,
+    fun rootNodeInfo(
+        accService: BaseAccessibilityService?,
         event: AccessibilityEvent
     ): AccessibilityNodeInfo {
-        return if (accService.rootInActiveWindow == null) {
+        return if (accService?.rootInActiveWindow == null) {
             event.source
         } else {
             accService.rootInActiveWindow
@@ -86,7 +86,7 @@ abstract class AccessibilityInterceptor {
 
     open fun findNodeByText(
         text: String,
-        accService: BaseAccessibilityService,
+        accService: BaseAccessibilityService?,
         event: AccessibilityEvent
     ): List<AccessibilityNodeInfo> {
         val rootNodeInfo = rootNodeInfo(accService, event)
@@ -96,7 +96,7 @@ abstract class AccessibilityInterceptor {
 
     open fun findNodeById(
         id: String,
-        accService: BaseAccessibilityService,
+        accService: BaseAccessibilityService?,
         event: AccessibilityEvent
     ): List<AccessibilityNodeInfo> {
         val rootNodeInfo = rootNodeInfo(accService, event)

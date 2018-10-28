@@ -26,6 +26,12 @@ else {
             this and value == value
 }
 
+public fun Int.isIn(value1: Int, value2: Int): Boolean {
+    val min = Math.min(value1, value2)
+    val max = Math.max(value1, value2)
+    return this in min..max
+}
+
 public fun Int.remove(value: Int): Int = this and value.inv()
 public fun Int.add(value: Int): Int = this or value
 public fun Int.dpi(designDpi: Float): Int = RUtils.size(this, designDpi)

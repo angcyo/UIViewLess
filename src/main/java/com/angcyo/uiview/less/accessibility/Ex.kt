@@ -48,6 +48,25 @@ public fun AccessibilityService.takeScreenShot() {
     }
 }
 
+public fun AccessibilityService.fling(path: Path, callback: AccessibilityService.GestureResultCallback? = null) {
+    val pathsList = mutableListOf<Path>()
+    pathsList.add(path)
+
+    val paths = pathsList.toTypedArray()
+    val startTImeList = mutableListOf<Long>()
+    val durationList = mutableListOf<Long>()
+
+    val DEFAULT_START_TIME = 20L
+    val DEFAULT_DURATION = 20L
+    paths.mapIndexed { index, _ ->
+        startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
+        durationList.add(DEFAULT_DURATION)
+    }
+
+    touch(paths, startTImeList.toLongArray(), durationList.toLongArray(), callback)
+}
+
+
 public fun AccessibilityService.move(path: Path, callback: AccessibilityService.GestureResultCallback? = null) {
     val pathsList = mutableListOf<Path>()
     pathsList.add(path)
