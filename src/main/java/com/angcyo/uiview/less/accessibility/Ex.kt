@@ -2,6 +2,7 @@ package com.angcyo.uiview.less.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Path
 import android.graphics.Point
@@ -13,6 +14,12 @@ import com.angcyo.lib.L
 /**
  * Created by angcyo on 2018/10/24 21:06
  */
+
+public fun Context.kill(packageName: String) {
+    val am: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    am.killBackgroundProcesses(packageName)
+}
+
 
 /**
  * 相当于按返回键

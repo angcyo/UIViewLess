@@ -60,7 +60,7 @@ abstract class AccessibilityInterceptor {
     fun rootNodeInfo(
         accService: BaseAccessibilityService?,
         event: AccessibilityEvent
-    ): AccessibilityNodeInfo {
+    ): AccessibilityNodeInfo? {
         return if (accService?.rootInActiveWindow == null) {
             event.source
         } else {
@@ -90,7 +90,10 @@ abstract class AccessibilityInterceptor {
         event: AccessibilityEvent
     ): List<AccessibilityNodeInfo> {
         val rootNodeInfo = rootNodeInfo(accService, event)
-        val nodes = rootNodeInfo.findAccessibilityNodeInfosByText(text)
+        val nodes = mutableListOf<AccessibilityNodeInfo>()
+        rootNodeInfo?.findAccessibilityNodeInfosByText(text)?.let {
+            nodes.addAll(it)
+        }
         return nodes
     }
 
@@ -102,7 +105,10 @@ abstract class AccessibilityInterceptor {
         val rootNodeInfo = rootNodeInfo(accService, event)
 
         val idString = idString(id, event)
-        val nodes = rootNodeInfo.findAccessibilityNodeInfosByViewId(idString)
+        val nodes = mutableListOf<AccessibilityNodeInfo>()
+        rootNodeInfo?.findAccessibilityNodeInfosByViewId(idString)?.let {
+            nodes.addAll(it)
+        }
         return nodes
     }
 
@@ -114,7 +120,7 @@ abstract class AccessibilityInterceptor {
     ): Array<Rect> {
         val rootNodeInfo = rootNodeInfo(accService, event)
 
-        val nodes = rootNodeInfo.findAccessibilityNodeInfosByText(text)
+        val nodes = rootNodeInfo?.findAccessibilityNodeInfosByText(text)
         val rectList = mutableListOf<Rect>()
 
         nodes?.mapIndexed { _, accessibilityNodeInfo ->
@@ -138,7 +144,7 @@ abstract class AccessibilityInterceptor {
 
         val idString = idString(id, event)
 
-        val nodes = rootNodeInfo.findAccessibilityNodeInfosByViewId(idString)
+        val nodes = rootNodeInfo?.findAccessibilityNodeInfosByViewId(idString)
         val rectList = mutableListOf<Rect>()
 
         nodes?.mapIndexed { _, accessibilityNodeInfo ->

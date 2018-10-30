@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.angcyo.uiview.less">
 
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+
     <!--震动-->
     <uses-permission android:name="android.permission.VIBRATE"/>
 
