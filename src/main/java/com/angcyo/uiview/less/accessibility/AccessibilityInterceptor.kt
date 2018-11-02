@@ -25,7 +25,7 @@ abstract class AccessibilityInterceptor {
     /**当到达目标之后的回调*/
     var onJumpToTarget: (() -> Unit)? = null
 
-    val handle = Handler(Looper.getMainLooper())
+    val handler = Handler(Looper.getMainLooper())
 
     companion object {
         var lastAccService: BaseAccessibilityService? = null
@@ -34,11 +34,11 @@ abstract class AccessibilityInterceptor {
 
     open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
         lastAccService = accService
-        lastEvent = event
+        lastEvent = AccessibilityEvent.obtain(event)
     }
 
     fun delay(delay: Long, action: () -> Unit) {
-        handle.postDelayed({
+        handler.postDelayed({
             action.invoke()
         }, delay)
     }
