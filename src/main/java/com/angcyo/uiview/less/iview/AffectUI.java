@@ -198,6 +198,7 @@ public class AffectUI {
 
             if (view != null && view.getParent() != null) {
                 have = true;
+                break;
             }
         }
         return have;
