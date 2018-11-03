@@ -32,9 +32,19 @@ abstract class AccessibilityInterceptor {
         var lastEvent: AccessibilityEvent? = null
     }
 
+    /**过滤包名后的事件*/
     open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
         lastAccService = accService
         lastEvent = AccessibilityEvent.obtain(event)
+    }
+
+    /**切换到了非过滤包名的程序*/
+    open fun onLeavePackageName(
+        accService: BaseAccessibilityService,
+        event: AccessibilityEvent,
+        toPackageName: String
+    ) {
+
     }
 
     fun delay(delay: Long, action: () -> Unit) {

@@ -240,6 +240,18 @@ public abstract class BaseIView {
         remove(animation, null);
     }
 
+    public void post(Runnable action) {
+        if (rootView != null) {
+            rootView.post(action);
+        }
+    }
+
+    public void postDelay(long delay, Runnable action) {
+        if (rootView != null) {
+            rootView.postDelayed(action, delay);
+        }
+    }
+
     public static abstract class AnimationEnd implements Animation.AnimationListener {
         @Override
         public void onAnimationStart(Animation animation) {

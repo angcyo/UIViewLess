@@ -310,6 +310,8 @@ open class BaseAccessibilityService : AccessibilityService() {
                         interceptor.onAccessibilityEvent(this, event)
                     } else if (interceptor.filterPackageName.contains(event.packageName)) {
                         interceptor.onAccessibilityEvent(this, event)
+                    } else {
+                        interceptor.onLeavePackageName(this, event, "${event.packageName}")
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

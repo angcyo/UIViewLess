@@ -18,6 +18,13 @@ import com.angcyo.lib.L
 public fun Context.kill(packageName: String) {
     val am: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     am.killBackgroundProcesses(packageName)
+
+//    val infos = am.runningAppProcesses
+//    for (info in infos) {
+//        if (info.processName == packageName) {
+//            android.os.Process.killProcess(info.pid)
+//        }
+//    }
 }
 
 
@@ -83,7 +90,7 @@ public fun AccessibilityService.move(path: Path, callback: AccessibilityService.
     val durationList = mutableListOf<Long>()
 
     val DEFAULT_START_TIME = 20L
-    val DEFAULT_DURATION = 500L
+    val DEFAULT_DURATION = 300L
     paths.mapIndexed { index, _ ->
         startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
         durationList.add(DEFAULT_DURATION)
