@@ -4,14 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
+import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
@@ -30,7 +23,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 import android.widget.TextView;
-
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.kotlin.ExKt;
 import com.angcyo.uiview.less.kotlin.ViewGroupExKt;
@@ -809,12 +801,24 @@ public class RefreshLayout extends ViewGroup {
         }
     }
 
-    private void scrollToTop(boolean anim) {
+    private void scrollToTop(final boolean anim) {
         if (mTopView != null) {
-            if (anim) {
-                startScroll(-mTopView.getMeasuredHeight());
+            int height = mTopView.getMeasuredHeight();
+            if (height == 0) {
+                this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        RefreshLayout.this.removeOnLayoutChangeListener(this);
+                        scrollToTop(anim);
+                    }
+                });
             } else {
-                scrollTo(0, -mTopView.getMeasuredHeight());
+                if (anim) {
+                    startScroll(-height);
+                } else {
+                    scrollTo(0, -height);
+                }
             }
         }
     }

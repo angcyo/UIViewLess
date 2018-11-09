@@ -17,6 +17,7 @@ import android.widget.*;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 import com.angcyo.uiview.less.widget.*;
+import com.angcyo.uiview.less.widget.Button;
 import com.angcyo.uiview.view.RClickListener;
 
 import java.lang.ref.WeakReference;
