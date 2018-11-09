@@ -47,7 +47,7 @@ abstract class AccessibilityInterceptor {
 
     }
 
-    fun delay(delay: Long, action: () -> Unit) {
+    open fun delay(delay: Long, action: () -> Unit) {
         handler.postDelayed({
             action.invoke()
         }, delay)
