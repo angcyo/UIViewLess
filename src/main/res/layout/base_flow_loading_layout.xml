@@ -29,7 +29,7 @@
         android:paddingTop="@dimen/base_ldpi"
         android:textColor="@color/base_white"
         android:textSize="@dimen/default_text_size9"
-        tolls:text="请稍等..."/>
+        android:text="请稍等..."/>
 
     <com.angcyo.uiview.less.widget.QQFlowProgressView
         android:layout_width="40dp"

@@ -27,5 +27,6 @@
     <item name="base_guide_layout" type="id"/>
 
     <item name="tag_base_iview" type="id"/>
+    <item name="tag_state_ui" type="id"/>
 
 </resources>
