@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.angcyo.lib.L
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -44,7 +45,7 @@ abstract class AccessibilityInterceptor {
         event: AccessibilityEvent,
         toPackageName: String
     ) {
-
+        L.i("离开 $filterPackageName -> $toPackageName")
     }
 
     open fun delay(delay: Long, action: () -> Unit) {
@@ -107,6 +108,11 @@ abstract class AccessibilityInterceptor {
         return nodes
     }
 
+    /**
+     * id/button1
+     *
+     * -> button1
+     * */
     open fun findNodeById(
         id: String,
         accService: BaseAccessibilityService?,
