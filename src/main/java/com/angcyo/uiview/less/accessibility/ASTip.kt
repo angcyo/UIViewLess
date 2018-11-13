@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.angcyo.uiview.less.R
 import com.angcyo.uiview.less.RApplication
+import com.angcyo.uiview.less.skin.SkinHelper
 import com.angcyo.uiview.less.utils.ScreenUtil
 import com.angcyo.uiview.less.utils.utilcode.utils.SpannableStringUtils
 
@@ -37,7 +38,7 @@ object ASTip {
             SpannableStringUtils.getBuilder("请找到")
                 .append(tip)
                 .setTextSize((18 * ScreenUtil.density).toInt())
-                .setForegroundColor(Color.RED)
+                .setForegroundColor(SkinHelper.getSkin().themeColor)
                 .append("并开启")
                 .create() /*"${RApplication.getApp().resources.getString(R.string.base_accessibility_summary)}并开启"*/
         )

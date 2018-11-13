@@ -283,9 +283,9 @@ open class BaseAccessibilityService : AccessibilityService() {
     /**核心方法, 收到事件*/
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            L.e("事件通知: size:${windows.size} $windows $event")
+            L.d("事件通知: size:${windows.size} $windows $event")
         } else {
-            L.e("事件通知: $event")
+            L.d("事件通知: $event")
         }
 
         try {
@@ -350,6 +350,13 @@ open class BaseAccessibilityService : AccessibilityService() {
     /**打开了新窗口*/
     open fun onWindowStateChanged(event: AccessibilityEvent) {
         lastPackageName = "${event.packageName}"
+
+        if (event.packageName?.contains("inputmethod") == true || event.className?.contains("SoftInputWindow") == true) {
+            //搜狗输入法 com.sohu.inputmethod.sogou android.inputmethodservice.SoftInputWindow
+        } else {
+        }
+
+        L.i("\n切换到: \n${event.packageName}\n${event.className} ${event.action}")
     }
 
     /**窗口中, 有内容发生了变化*/
