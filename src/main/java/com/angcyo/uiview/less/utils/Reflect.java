@@ -9,10 +9,7 @@ import com.angcyo.uiview.less.utils.utilcode.utils.SpannableStringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by angcyo on 2016-11-26.
@@ -489,5 +486,23 @@ public class Reflect {
      */
     public static void fill(Object from, Object to) {
         RBaseViewHolder.fill(from, to);
+    }
+
+    public static Map<String, String> toMap(Object obj) {
+        Field[] objFields = obj.getClass().getDeclaredFields();
+        Map<String, String> map = new HashMap<>();
+        for (Field f : objFields) {
+            try {
+                String name = f.getName();
+                f.setAccessible(true);
+                Object o = f.get(obj);
+                if (o instanceof String || o instanceof Number) {
+                    map.put(name, String.valueOf(o));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return map;
     }
 }

@@ -2644,6 +2644,18 @@ public class RUtils {
         return NetworkUtil.getNetType(RApplication.getApp()) == ConnectivityManager.TYPE_MOBILE;
     }
 
+    public static int toInt(CharSequence sequence) {
+        if (TextUtils.isEmpty(sequence)) {
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(String.valueOf(sequence));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     interface OnPutValue {
         void onValue(String key, String value);
 
