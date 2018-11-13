@@ -59,6 +59,9 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         private val accessibilityInterceptorList = CopyOnWriteArrayList<AccessibilityInterceptor>()
 
+        /**最后一次窗口变化的程序包名*/
+        var lastPackageName = ""
+
         /**添加拦截器*/
         fun addInterceptor(interceptor: AccessibilityInterceptor) {
             if (!accessibilityInterceptorList.contains(interceptor)) {
@@ -346,7 +349,7 @@ open class BaseAccessibilityService : AccessibilityService() {
 
     /**打开了新窗口*/
     open fun onWindowStateChanged(event: AccessibilityEvent) {
-
+        lastPackageName = "${event.packageName}"
     }
 
     /**窗口中, 有内容发生了变化*/
