@@ -2,13 +2,17 @@ package com.angcyo.uiview.less.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.Rect
 import android.os.Build
+import android.view.View
+import android.view.Window
 import android.view.WindowManager
+import android.view.accessibility.AccessibilityNodeInfo
 import com.angcyo.lib.L
 
 /**
@@ -25,6 +29,14 @@ public fun Context.kill(packageName: String) {
 //            android.os.Process.killProcess(info.pid)
 //        }
 //    }
+}
+
+public fun AccessibilityNodeInfo.setNodeText(text: String) {
+    BaseAccessibilityService.setNodeText(this, text)
+}
+
+public fun AccessibilityNodeInfo.click() {
+    BaseAccessibilityService.clickNode(this)
 }
 
 
@@ -118,6 +130,12 @@ public fun AccessibilityService.touch(vararg path: Path) {
     }
 
     touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
+}
+
+public fun AccessibilityService.touch(point: Point) {
+    touch(Path().apply {
+        moveTo(point.x.toFloat(), point.y.toFloat())
+    })
 }
 
 public fun AccessibilityService.touch(callback: AccessibilityService.GestureResultCallback, vararg path: Path) {
@@ -221,11 +239,29 @@ public fun Context.displayRealSize(): Point {
     return point
 }
 
+/**没有包含导航栏*/
 public fun Context.displayRealRect(): Rect {
     val wm: WindowManager = this.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     val rect = Rect()
     wm.defaultDisplay.getRectSize(rect)
     return rect
+}
+
+/**导航栏的高度,如果隐藏了返回0*/
+public fun Activity.navigatorBarHeight(): Int {
+    val decorRect = Rect()
+    val contentRect = Rect()
+    window.decorView.getGlobalVisibleRect(decorRect) //包含导航栏的高度
+
+    //当 android:windowSoftInputMode="adjustResize" 时,bottom值=屏幕高度-导航栏高度-减去键盘的高度
+    //当设置 window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN 之后, top的值为0, 否则为状态栏高度.
+    //同时, 键盘的高度不能拿到了.
+    window.findViewById<View>(Window.ID_ANDROID_CONTENT).getGlobalVisibleRect(contentRect) //不包含导航栏的高度
+    if (decorRect.bottom == contentRect.bottom) {
+        //没有导航栏 或者 隐藏了导航栏
+        return 0
+    }
+    return displayRealSize().y - displaySize().y
 }
 
 public fun Rect.toPath(): Path {

@@ -57,6 +57,8 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         val TAG = "NodeInfo"
 
+        var logNodeInfo = false
+
         private val accessibilityInterceptorList = CopyOnWriteArrayList<AccessibilityInterceptor>()
 
         /**最后一次窗口变化的程序包名*/
@@ -194,13 +196,13 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         fun logNodeInfo(rootNodeInfo: AccessibilityNodeInfo, logFilePath: String? = null) {
             if (logFilePath == null) {
-                Log.d(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
+                Log.v(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╔═══════════════════════════\n")
             }
             debugNodeInfo(rootNodeInfo, 0, "", logFilePath)
             if (logFilePath == null) {
-                Log.d(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
+                Log.v(TAG, "╚═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
                 RIo.appendToFile(logFilePath, "╚═══════════════════════════\n")
             }
@@ -237,7 +239,7 @@ open class BaseAccessibilityService : AccessibilityService() {
             stringBuilder.append(" $preIndex")
 
             if (logFilePath == null) {
-                Log.d(TAG, "$stringBuilder")
+                Log.v(TAG, "$stringBuilder")
             } else {
                 RIo.appendToFile(logFilePath, "$stringBuilder\n")
             }
@@ -282,26 +284,40 @@ open class BaseAccessibilityService : AccessibilityService() {
 
     /**核心方法, 收到事件*/
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            L.d("事件通知: size:${windows.size} $windows $event")
-        } else {
-            L.d("事件通知: $event")
+        var ignoreLog = false
+
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            if ("com.android.systemui" == event.packageName) {
+                ignoreLog = true
+            }
         }
 
-        try {
-            if (event.source == null) {
-                L.e(TAG, "event.source 为空")
-
-                if (rootInActiveWindow == null) {
-                    L.e(TAG, "rootInActiveWindow 为空")
-                } else {
-                    logNodeInfo(getRootNodeInfo(rootInActiveWindow))
-                }
+        if (!ignoreLog && logNodeInfo) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                L.d("事件通知: size:${windows.size} $windows $event")
             } else {
-                logNodeInfo(getRootNodeInfo(event.source))
+                L.d("事件通知: $event")
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+
+            try {
+                if (event.source == null) {
+                    L.e(TAG, "event.source 为空")
+
+                    if (rootInActiveWindow == null) {
+                        L.e(TAG, "rootInActiveWindow 为空")
+                    } else {
+                        if (logNodeInfo) {
+                            logNodeInfo(getRootNodeInfo(rootInActiveWindow))
+                        }
+                    }
+                } else {
+                    if (logNodeInfo) {
+                        logNodeInfo(getRootNodeInfo(event.source))
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         for (i in accessibilityInterceptorList.size - 1 downTo 0) {

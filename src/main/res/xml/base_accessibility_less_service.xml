@@ -7,4 +7,5 @@
         android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeWindowsChanged"
         android:accessibilityFlags="flagDefault"
         android:accessibilityFeedbackType="feedbackAllMask"
+        android:canRetrieveWindowContent="true"
 />

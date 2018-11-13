@@ -45,7 +45,7 @@ abstract class AccessibilityInterceptor {
         event: AccessibilityEvent,
         toPackageName: String
     ) {
-        L.i("离开 $filterPackageName -> $toPackageName")
+        //L.i("离开 $filterPackageName -> $toPackageName")
     }
 
     open fun delay(delay: Long, action: () -> Unit) {

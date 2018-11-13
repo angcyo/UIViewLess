@@ -161,7 +161,7 @@ public class Screenshot {
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader reader) {
-                Log.i(TAG, "onImageAvailable");
+                //Log.v(TAG, "onImageAvailable");
             }
         }, null);
 
@@ -267,6 +267,9 @@ public class Screenshot {
     }
 
     public interface OnCaptureListener {
+        /**
+         * 主线程回调
+         */
         void onCapture(@NonNull Bitmap bitmap, @Nullable String filePath);
     }
 }
