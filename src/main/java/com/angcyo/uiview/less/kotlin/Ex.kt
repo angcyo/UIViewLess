@@ -1,15 +1,19 @@
 package com.angcyo.uiview.less.kotlin
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextUtils
+import android.util.Base64
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import com.angcyo.uiview.less.skin.SkinHelper
 import com.angcyo.uiview.less.utils.RUtils
 import com.angcyo.uiview.less.utils.Reflect
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.net.URLEncoder
 import java.util.regex.Pattern
 
 /**
@@ -242,6 +246,10 @@ public fun String.toFloatNumber(): Float {
     return this.toFloatOrNull() ?: 0f
 }
 
+public fun String.urlEncode(): String {
+    return URLEncoder.encode(this, "UTF-8")
+}
+
 /**
  * 获取Int对应颜色的透明颜色
  * @param alpha [0..255] 值越小,越透明
@@ -264,4 +272,29 @@ public fun MotionEvent.isClickEvent(context: Context, downX: Float, downY: Float
     val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
     return this.actionMasked == MotionEvent.ACTION_UP &&
             (Math.abs(this.x - downX) <= touchSlop && Math.abs(this.y - downY) <= touchSlop)
+}
+
+public fun Bitmap.toBytes(format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 80): ByteArray? {
+    var out: ByteArrayOutputStream? = null
+    var bytes: ByteArray? = null
+    try {
+        out = ByteArrayOutputStream()
+        this.compress(format, quality, out)
+        out.flush()
+
+        bytes = out.toByteArray()
+
+        out.close()
+    } finally {
+        out?.close()
+    }
+    return bytes
+}
+
+public fun Bitmap.toBase64(format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 80): String {
+    var result = ""
+    toBytes(format, quality)?.let {
+        result = Base64.encodeToString(it, Base64.DEFAULT)
+    }
+    return result
 }
