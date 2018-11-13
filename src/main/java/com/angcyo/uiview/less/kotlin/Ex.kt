@@ -2,6 +2,7 @@ package com.angcyo.uiview.less.kotlin
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Rect
 import android.text.TextUtils
@@ -274,7 +275,7 @@ public fun MotionEvent.isClickEvent(context: Context, downX: Float, downY: Float
             (Math.abs(this.x - downX) <= touchSlop && Math.abs(this.y - downY) <= touchSlop)
 }
 
-public fun Bitmap.toBytes(format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 80): ByteArray? {
+public fun Bitmap.toBytes(format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): ByteArray? {
     var out: ByteArrayOutputStream? = null
     var bytes: ByteArray? = null
     try {
@@ -291,10 +292,14 @@ public fun Bitmap.toBytes(format: Bitmap.CompressFormat = Bitmap.CompressFormat.
     return bytes
 }
 
-public fun Bitmap.toBase64(format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality: Int = 80): String {
+public fun Bitmap.toBase64(format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): String {
     var result = ""
     toBytes(format, quality)?.let {
-        result = Base64.encodeToString(it, Base64.DEFAULT)
+        result = Base64.encodeToString(it, Base64.NO_WRAP /*去掉/n符*/)
     }
     return result
+}
+
+public fun ByteArray.toBitmap(): Bitmap {
+    return BitmapFactory.decodeByteArray(this, 0, this.size)
 }
