@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  */
 public class RBaseViewHolder extends RecyclerView.ViewHolder {
     public static int DEFAULT_CLICK_DELAY_TIME = RClickListener.Companion.getDEFAULT_DELAY_CLICK_TIME();
-    
+
     private SparseArray<WeakReference<View>> sparseArray;
     private int viewType = -1;
 
@@ -171,12 +171,26 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
 
     public RBaseViewHolder enable(@IdRes int resId, boolean enable) {
         View view = v(resId);
-        if (view != null) {
+        enable(view, enable);
+        return this;
+    }
+
+    private void enable(View view, boolean enable) {
+        if (view == null) {
+            return;
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                enable(((ViewGroup) view).getChildAt(i), enable);
+            }
+        } else {
             if (view.isEnabled() != enable) {
                 view.setEnabled(enable);
             }
+            if (view instanceof EditText) {
+                view.clearFocus();
+            }
         }
-        return this;
     }
 
     public void invisible(@IdRes int resId) {
