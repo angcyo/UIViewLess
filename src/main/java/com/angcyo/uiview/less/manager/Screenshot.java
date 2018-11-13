@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.math.MathUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -25,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 
 /**
- * android 5.0 以上
+ * Screenshot.java
  * Description :
  * <p>
  * Created by MixtureDD on 2017/6/21 19:16.
@@ -60,6 +61,12 @@ public class Screenshot {
 
     private long captureDelay = 60;
 
+    private Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
+    private int compressQuality = 80;
+
+    /**
+     * 1: 创建对象, 设置回调监听
+     */
     public static Screenshot capture(@NonNull Context context, @NonNull OnCaptureListener listener) {
         return new Screenshot(context.getApplicationContext()).setCaptureListener(listener);
     }
@@ -81,6 +88,16 @@ public class Screenshot {
 
     public Screenshot setCaptureDelay(long captureDelay) {
         this.captureDelay = captureDelay;
+        return this;
+    }
+
+    public Screenshot setCompressFormat(Bitmap.CompressFormat compressFormat) {
+        this.compressFormat = compressFormat;
+        return this;
+    }
+
+    public Screenshot setCompressQuality(int compressQuality) {
+        this.compressQuality = MathUtils.clamp(compressQuality, 0, 100);
         return this;
     }
 
@@ -107,14 +124,15 @@ public class Screenshot {
 
 
     /**
-     * 捕捉屏幕
+     * 2:触发截屏权限, 捕捉屏幕
      */
     public void startCapture(@NonNull Activity activity, int requestCode) {
         activity.startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), requestCode);
     }
 
     /**
-     * 权限允许之后, 才能截图
+     * 3:开始处理, 权限允许之后, 才能截图
+     * end.
      */
     public void onActivityResult(int resultCode, Intent data) {
         if (mMediaProjection != null) {
@@ -161,11 +179,6 @@ public class Screenshot {
     }
 
     private void startCapture() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-hhmmss");
-        String strDate = "Screenshot_" + dateFormat.format(new java.util.Date());
-        String pathImage = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Screenshots/";
-        nameImage = pathImage + strDate + ".png";
-        Log.i(TAG, "image name is : " + nameImage);
         Image image = mImageReader.acquireLatestImage();
         if (image == null) {
             return;
@@ -183,11 +196,18 @@ public class Screenshot {
         image.close();
         //Toast.makeText(application, "正在保存截图", Toast.LENGTH_SHORT).show();
         if (bitmap != null && saveToFile) {
-            Log.e(TAG, "bitmap  create success ");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-hhmmss");
+            String strDate = "Screenshot_" + dateFormat.format(new java.util.Date());
+            String pathImage = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Screenshots/";
+            nameImage = pathImage + strDate + ".png";
+            Log.i(TAG, "image name is : " + nameImage);
+
+            Log.i(TAG, "bitmap  create success ");
             try {
                 File fileFolder = new File(pathImage);
-                if (!fileFolder.exists())
+                if (!fileFolder.exists()) {
                     fileFolder.mkdirs();
+                }
                 File file = new File(nameImage);
                 if (!file.exists()) {
                     Log.e(TAG, "file create success ");
@@ -195,7 +215,7 @@ public class Screenshot {
                 }
                 FileOutputStream out = new FileOutputStream(file);
                 if (out != null) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    bitmap.compress(compressFormat, compressQuality, out);
                     out.flush();
                     out.close();
                     Intent media = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
