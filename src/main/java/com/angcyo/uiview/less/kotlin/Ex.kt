@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URLEncoder
 import java.util.regex.Pattern
+import kotlin.random.Random
 
 /**
  * Created by angcyo on ：2017/07/07 16:41
@@ -40,6 +41,9 @@ public fun Int.isIn(value1: Int, value2: Int): Boolean {
 public fun Int.remove(value: Int): Int = this and value.inv()
 public fun Int.add(value: Int): Int = this or value
 public fun Int.dpi(designDpi: Float): Int = RUtils.size(this, designDpi)
+
+public inline fun <T> T.nextInt(until: Int) = Random.nextInt(until)
+public inline fun <T> T.nextInt(from: Int /*包含*/, to: Int /*不包含*/) = Random.nextInt(from, to)
 
 /**文本的高度*/
 public fun Paint.textHeight(): Float = descent() - ascent()
@@ -148,6 +152,8 @@ public fun Rect.scaleTo(inRect: Rect /*用来接收最后结果的矩形*/, scal
 }
 
 public inline fun <T> T.nowTime() = System.currentTimeMillis()
+
+public inline fun Long.spiltTime() = RUtils.splitTime(this)
 
 public fun <K, V> Map<K, V>.each(item: (key: K, value: V) -> Unit) {
     for (entry in this.entries) {

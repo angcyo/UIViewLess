@@ -279,7 +279,7 @@ open class BaseAccessibilityService : AccessibilityService() {
             if (accessibilityInterceptorList.size > i) {
                 val interceptor = accessibilityInterceptorList[i]
                 try {
-                    interceptor.onDestory()
+                    interceptor.onDestroy()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -332,6 +332,8 @@ open class BaseAccessibilityService : AccessibilityService() {
             }
         }
 
+        checkLastPackageName(event)
+
         for (i in accessibilityInterceptorList.size - 1 downTo 0) {
             //反向调用, 防止调用者在内部执行了Remove操作, 导致后续的拦截器无法执行
             if (accessibilityInterceptorList.size > i) {
@@ -375,8 +377,19 @@ open class BaseAccessibilityService : AccessibilityService() {
         }
     }
 
-    /**打开了新窗口*/
-    open fun onWindowStateChanged(event: AccessibilityEvent) {
+    open fun checkLastPackageName(event: AccessibilityEvent) {
+//        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+//            if (event.packageName == "com.android.systemui") {
+//                event.className.startsWith("android.widget")
+//                return
+//            }
+//        } else if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+//            return
+//        }
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            return
+        }
+
         lastPackageName = "${event.packageName}"
 
         if (event.packageName?.contains("inputmethod") == true || event.className?.contains("SoftInputWindow") == true) {
@@ -384,7 +397,12 @@ open class BaseAccessibilityService : AccessibilityService() {
         } else {
         }
 
-        L.i("\n切换到: \n${event.packageName}\n${event.className} ${event.action}")
+        L.i("\n切换到:${AccessibilityEvent.eventTypeToString(event.eventType)} \n${event.packageName}\n${event.className} ${event.action}")
+    }
+
+    /**打开了新窗口*/
+    open fun onWindowStateChanged(event: AccessibilityEvent) {
+
     }
 
     /**窗口中, 有内容发生了变化*/

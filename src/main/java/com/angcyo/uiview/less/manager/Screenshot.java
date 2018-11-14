@@ -1,6 +1,7 @@
 package com.angcyo.uiview.less.manager;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,8 +13,10 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.math.MathUtils;
@@ -26,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+
+import static android.content.Context.KEYGUARD_SERVICE;
 
 /**
  * Screenshot.java
@@ -61,10 +66,17 @@ public class Screenshot {
      */
     private boolean alwaysCapture = false;
 
+    /**
+     * 自动捕捉,如果为false,
+     */
+    private boolean autoCapture = true;
+
     private long captureDelay = 60;
 
     private Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
     private int compressQuality = 80;
+
+    private final Handler handler = new Handler();
 
     /**
      * 1: 创建对象, 设置回调监听
@@ -78,6 +90,9 @@ public class Screenshot {
         return this;
     }
 
+    /**
+     * 是否循环截图
+     */
     public Screenshot setAlwaysCapture(boolean alwaysCapture) {
         this.alwaysCapture = alwaysCapture;
         return this;
@@ -103,27 +118,40 @@ public class Screenshot {
         return this;
     }
 
+    /**
+     * 关闭自动截图, 需要手动调用 {@link #startToShot()} 才会截图
+     */
+    public Screenshot setAutoCapture(boolean autoCapture) {
+        this.autoCapture = autoCapture;
+        return this;
+    }
+
     private Screenshot(Context application) {
         this.application = application;
         createVirtualEnvironment();
     }
 
-    private void startToShot() {
-        final Handler handler = new Handler();
+    /**
+     * 手动触发截图
+     */
+    public void startToShot() {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startCapture();
 
-                if (alwaysCapture && mVirtualDisplay != null) {
-                    handler.postDelayed(this, captureDelay);
+                if (autoCapture) {
+                    if (alwaysCapture && mVirtualDisplay != null) {
+                        handler.postDelayed(this, captureDelay);
+                    } else {
+                        destroy();
+                    }
                 } else {
-                    destroy();
+                    //手动模式
                 }
             }
         }, captureDelay);
     }
-
 
     /**
      * 2:触发截屏权限, 捕捉屏幕
@@ -136,7 +164,12 @@ public class Screenshot {
      * 3:开始处理, 权限允许之后, 才能截图
      * end.
      */
+
     public void onActivityResult(int resultCode, Intent data) {
+        onActivityResult(resultCode, data, null);
+    }
+
+    public void onActivityResult(int resultCode, Intent data, Runnable onSucceed) {
         if (mMediaProjection != null) {
             mMediaProjection.stop();
         }
@@ -151,7 +184,13 @@ public class Screenshot {
                 }
             }, null);
             setUpVirtualDisplay();
-            startToShot();
+            if (autoCapture) {
+                startToShot();
+            }
+
+            if (onSucceed != null) {
+                onSucceed.run();
+            }
         }
     }
 
@@ -182,6 +221,9 @@ public class Screenshot {
     }
 
     private void startCapture() {
+        if (mImageReader == null) {
+            return;
+        }
         Image image = mImageReader.acquireLatestImage();
         if (image == null) {
             return;
@@ -267,6 +309,64 @@ public class Screenshot {
         mVirtualDisplay.release();
         mVirtualDisplay = null;
         Log.i(TAG, "virtual display stopped");
+    }
+
+
+    /**
+     * 唤醒手机屏幕并解锁, 点亮屏幕,解锁手机
+     */
+    public static void wakeUpAndUnlock(@NonNull Context context) {
+        // 获取电源管理器对象
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        boolean screenOn;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            screenOn = pm.isInteractive();
+        } else {
+            screenOn = pm.isScreenOn();
+        }
+
+        if (!screenOn) {
+            // 获取PowerManager.WakeLock对象,后面的参数|表示同时传入两个值,最后的是LogCat里用的Tag
+            PowerManager.WakeLock wl = pm.newWakeLock(
+                    PowerManager.FULL_WAKE_LOCK |
+                            PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK,
+                    context.getPackageName() + ":bright");
+            wl.acquire(10000); // 点亮屏幕
+            wl.release(); // 释放
+        }
+        // 屏幕解锁
+        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
+
+        if (keyguardManager.isKeyguardLocked()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context instanceof Activity) {
+                //在未设置密码的情况下, 可以解锁
+                keyguardManager.requestDismissKeyguard((Activity) context,
+                        new KeyguardManager.KeyguardDismissCallback() {
+                            @Override
+                            public void onDismissError() {
+                                super.onDismissError();
+                                //如果设备未锁屏的情况下, 调用此方法.会回调错误
+                            }
+
+                            @Override
+                            public void onDismissSucceeded() {
+                                super.onDismissSucceeded();
+                                //输入密码解锁成功
+                            }
+
+                            @Override
+                            public void onDismissCancelled() {
+                                super.onDismissCancelled();
+                                //弹出密码输入框之后, 取消了会回调
+                            }
+                        });
+            } else {
+                KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("unLock");
+                // 屏幕锁定
+                keyguardLock.reenableKeyguard();
+                keyguardLock.disableKeyguard(); // 解锁
+            }
+        }
     }
 
     public interface OnCaptureListener {

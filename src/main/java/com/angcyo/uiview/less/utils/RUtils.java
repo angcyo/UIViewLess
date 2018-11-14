@@ -18,7 +18,6 @@ import android.media.*;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Looper;
 import android.os.Process;
 import android.provider.MediaStore;
@@ -2326,15 +2325,37 @@ public class RUtils {
         return new SimpleDateFormat(pattern, Locale.CHINA).format(new Date(time));
     }
 
+    /**
+     * 获取月份
+     */
     public static int month(long time) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(time);
 
         int year = cal.get(Calendar.YEAR);//2018
-        int month = cal.get(Calendar.MONTH) + 1;//3
-        int day = cal.get(Calendar.DAY_OF_MONTH);//2
+        int month = cal.get(Calendar.MONTH) + 1;//1-12月
+        int day = cal.get(Calendar.DAY_OF_MONTH);//1-31天
 
         return month;
+    }
+
+    /**
+     * 分割时间的所有字段
+     */
+    public static int[] splitTime(long time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+
+        int year = cal.get(Calendar.YEAR);//2018
+        int month = cal.get(Calendar.MONTH) + 1;//1-12月
+        int day = cal.get(Calendar.DAY_OF_MONTH);//1-31天
+
+        int h = cal.get(Calendar.HOUR_OF_DAY);//24小时制
+        int m = cal.get(Calendar.MINUTE);//0-59分
+        int s = cal.get(Calendar.SECOND);//0-60秒
+
+        int sss = cal.get(Calendar.MILLISECOND);//0-999毫秒
+        return new int[]{year, month, day, h, m, s, sss};
     }
 
     /**

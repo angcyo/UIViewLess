@@ -6,7 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.angcyo.lib.L
+import com.angcyo.uiview.less.kotlin.nowTime
+import java.util.*
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -28,6 +29,11 @@ abstract class AccessibilityInterceptor {
 
     val handler = Handler(Looper.getMainLooper())
 
+    /**等待延迟的任务*/
+    var delayRunnable: Runnable? = null
+
+    val filterEventList = ArrayList<FilterEven>()
+
     companion object {
         var lastAccService: BaseAccessibilityService? = null
         var lastEvent: AccessibilityEvent? = null
@@ -37,9 +43,34 @@ abstract class AccessibilityInterceptor {
     open fun onAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
         lastAccService = accService
         lastEvent = AccessibilityEvent.obtain(event)
+
+        filterEvent(accService, event)
     }
 
-    open fun onDestory() {
+    open fun filterEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
+        var filter = false
+        for (bean in filterEventList) {
+            if (bean.eventType == event.eventType && bean.className == event.className) {
+                val nowTime = nowTime()
+                if (nowTime - bean.lastHandlerTime <= bean.delayTime) {
+                    filter = true
+                } else {
+                    bean.lastHandlerTime = nowTime
+                }
+                break
+            }
+        }
+        if (!filter) {
+            onFilterAccessibilityEvent(accService, event)
+        }
+    }
+
+    /**并发事件过滤后的回调*/
+    open fun onFilterAccessibilityEvent(accService: BaseAccessibilityService, event: AccessibilityEvent) {
+
+    }
+
+    open fun onDestroy() {
 
     }
 
@@ -52,10 +83,15 @@ abstract class AccessibilityInterceptor {
         //L.i("离开 $filterPackageName -> $toPackageName")
     }
 
+    /**每次延迟, 取消之前的任务*/
     open fun delay(delay: Long, action: () -> Unit) {
-        handler.postDelayed({
+        delayRunnable?.let {
+            handler.removeCallbacks(it)
+        }
+        delayRunnable = Runnable {
             action.invoke()
-        }, delay)
+        }
+        handler.postDelayed(delayRunnable, delay)
     }
 
     fun sleep(delay: Long, action: () -> Unit) {
@@ -227,4 +263,12 @@ abstract class AccessibilityInterceptor {
         }
         return targetRect
     }
+
+    /**相同事件, 过滤短时间内的并发回调*/
+    data class FilterEven(
+        val eventType: Int,
+        val className: String,
+        val delayTime: Int /*毫秒*/,
+        var lastHandlerTime: Long = 0L /*用来标识最后处理的时间*/
+    )
 }

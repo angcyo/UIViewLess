@@ -116,6 +116,15 @@ public fun AccessibilityService.move(path: Path, callback: AccessibilityService.
  * 通过 touch 坐标, 触发点击事件
  * */
 public fun AccessibilityService.touch(vararg path: Path) {
+    touch(40, 160, *path)
+}
+
+/**双击*/
+public fun AccessibilityService.double(path: Path) {
+    touch(40, 200, path, Path(path))
+}
+
+public fun AccessibilityService.touch(startTime: Int, duration: Int, vararg path: Path) {
     val pathsList = mutableListOf<Path>()
     pathsList.addAll(path)
 
@@ -123,13 +132,12 @@ public fun AccessibilityService.touch(vararg path: Path) {
     val startTImeList = mutableListOf<Long>()
     val durationList = mutableListOf<Long>()
 
-    val DEFAULT_START_TIME = 20L
-    val DEFAULT_DURATION = 60L
     paths.mapIndexed { index, _ ->
-        startTImeList.add((index + 1) * DEFAULT_START_TIME + index * DEFAULT_DURATION)
-        durationList.add(DEFAULT_DURATION)
+        startTImeList.add(((index + 1) * startTime + index * duration).toLong())
+        durationList.add(duration.toLong())
     }
 
+    //L.i("touch: $startTImeList $durationList")
     touch(paths, startTImeList.toLongArray(), durationList.toLongArray())
 }
 
@@ -208,13 +216,13 @@ public fun AccessibilityService.touch(
                 object : AccessibilityService.GestureResultCallback() {
                     override fun onCompleted(gestureDescription: GestureDescription?) {
                         super.onCompleted(gestureDescription)
-                        L.e("$gestureDescription")
+                        L.e("$gestureDescription strokeCount:${gestureDescription?.strokeCount}")
                         callback?.onCompleted(gestureDescription)
                     }
 
                     override fun onCancelled(gestureDescription: GestureDescription?) {
                         super.onCancelled(gestureDescription)
-                        L.e("$gestureDescription")
+                        L.e("$gestureDescription strokeCount:${gestureDescription?.strokeCount}")
                         callback?.onCancelled(gestureDescription)
                     }
                 },
