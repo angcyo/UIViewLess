@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -24,8 +25,16 @@ public class BaseService extends Service {
     protected NotificationManager mNM;
     protected final IBinder mBinder = new LocalBinder();
 
+    public static final String KEY_COMMAND = "key_command";
+
     public static void start(Context context, Class<? extends BaseService> cls) {
+        start(context, cls, -1);
+    }
+
+    public static void start(Context context, Class<? extends BaseService> cls, int command) {
         Intent intent = new Intent(context, cls);
+        intent.putExtra(KEY_COMMAND, command);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -33,6 +42,7 @@ public class BaseService extends Service {
             context.startService(intent);
         }
     }
+
 
     @Nullable
     @Override
@@ -102,6 +112,10 @@ public class BaseService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            int command = intent.getIntExtra(KEY_COMMAND, -1);
+            onHandCommand(command, intent);
+        }
         return START_STICKY;
     }
 
@@ -125,6 +139,10 @@ public class BaseService extends Service {
 //
 //        // Send the notification.
 //        mNM.notify(FOREGROUND_NOTIFICATION_ID, notification);
+    }
+
+    protected void onHandCommand(int command, @NonNull Intent intent) {
+
     }
 
     public class LocalBinder extends Binder {
