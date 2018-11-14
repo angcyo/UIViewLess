@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -17,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.math.MathUtils;
 import android.util.Log;
+import com.angcyo.uiview.less.accessibility.ExKt;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -172,9 +174,10 @@ public class Screenshot {
     }
 
     private void createVirtualEnvironment() {
-        windowWidth = ScreenHelper.getScreenWidth(application);
-        windowHeight = ScreenHelper.getScreenHeight(application);
-        mScreenDensity = ScreenHelper.getScreenDensity(application);
+        Point realSize = ExKt.displayRealSize(application);
+        windowWidth = realSize.x;
+        windowHeight = realSize.y;
+        mScreenDensity = (int) ExKt.density(application);
         mMediaProjectionManager = (MediaProjectionManager) application.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
     }
 

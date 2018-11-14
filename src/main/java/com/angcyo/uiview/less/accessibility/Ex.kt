@@ -9,6 +9,7 @@ import android.graphics.Path
 import android.graphics.Point
 import android.graphics.Rect
 import android.os.Build
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -245,6 +246,13 @@ public fun Context.displayRealRect(): Rect {
     val rect = Rect()
     wm.defaultDisplay.getRectSize(rect)
     return rect
+}
+
+public fun Context.density(): Float {
+    val wm: WindowManager = this.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val dm = DisplayMetrics()
+    wm.defaultDisplay.getMetrics(dm)
+    return dm.density
 }
 
 /**导航栏的高度,如果隐藏了返回0*/
