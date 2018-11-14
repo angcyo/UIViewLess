@@ -273,6 +273,18 @@ open class BaseAccessibilityService : AccessibilityService() {
     override fun onDestroy() {
         super.onDestroy()
         L.e("call: onDestroy -> ")
+
+        for (i in accessibilityInterceptorList.size - 1 downTo 0) {
+            //反向调用, 防止调用者在内部执行了Remove操作, 导致后续的拦截器无法执行
+            if (accessibilityInterceptorList.size > i) {
+                val interceptor = accessibilityInterceptorList[i]
+                try {
+                    interceptor.onDestory()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     /**服务断开*/

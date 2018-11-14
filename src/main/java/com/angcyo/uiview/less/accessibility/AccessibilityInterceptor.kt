@@ -39,6 +39,10 @@ abstract class AccessibilityInterceptor {
         lastEvent = AccessibilityEvent.obtain(event)
     }
 
+    open fun onDestory() {
+
+    }
+
     /**切换到了非过滤包名的程序*/
     open fun onLeavePackageName(
         accService: BaseAccessibilityService,
