@@ -6,9 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.Build;
-import android.os.IBinder;
+import android.os.*;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -19,13 +17,17 @@ import android.support.v4.app.NotificationCompat;
  * @author angcyo
  * @date 2018/11/14
  */
-public class BaseService extends Service {
+public class BaseService extends Service implements Handler.Callback {
 
     protected int FOREGROUND_NOTIFICATION_ID = this.hashCode();
     protected NotificationManager mNM;
     protected final IBinder mBinder = new LocalBinder();
 
     public static final String KEY_COMMAND = "key_command";
+
+    protected HandlerThread handlerThread;
+    protected Handler handler;
+    protected Handler mainHandler;
 
     public static void start(Context context, Class<? extends BaseService> cls) {
         start(context, cls, -1);
@@ -58,6 +60,12 @@ public class BaseService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        handlerThread = new HandlerThread(this.getClass().getSimpleName());
+        handlerThread.start();
+
+        handler = new Handler(handlerThread.getLooper(), this);
+        mainHandler = new Handler(getMainLooper());
+
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         //Android 8.0 5秒内调用
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -143,6 +151,19 @@ public class BaseService extends Service {
 
     protected void onHandCommand(int command, @NonNull Intent intent) {
 
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg == null) {
+            return false;
+        } else {
+            return onHandleMessage(msg);
+        }
+    }
+
+    public boolean onHandleMessage(@NonNull Message msg) {
+        return false;
     }
 
     public class LocalBinder extends Binder {
