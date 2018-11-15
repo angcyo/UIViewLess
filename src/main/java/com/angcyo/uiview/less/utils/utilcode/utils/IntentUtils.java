@@ -108,7 +108,7 @@ public class IntentUtils {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, content);
-        return intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     /**
@@ -146,7 +146,7 @@ public class IntentUtils {
         intent.putExtra(Intent.EXTRA_TEXT, content);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("image/*");
-        return intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     /**

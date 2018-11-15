@@ -1397,17 +1397,18 @@ public class RUtils {
     /**
      * 分享文件
      */
-    public static void shareFile(Activity activity, String filePath) {
+    public static void shareFile(Context context, String filePath) {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.putExtra(Intent.EXTRA_STREAM,
                 uriFromFile(new File(filePath)));
         share.setType("*/*");//此处可发送多种文件
         share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        activity.startActivity(Intent.createChooser(share, "发送给..."));
+        context.startActivity(Intent.createChooser(share, "发送给...")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    public static void shareImage(Activity activity, String imgFilePath, String content) {
+    public static void shareImage(Context context, String imgFilePath, String content) {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.putExtra(Intent.EXTRA_TEXT, content);
         share.putExtra(Intent.EXTRA_STREAM,
@@ -1415,10 +1416,11 @@ public class RUtils {
         share.setType("image/*");
         share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        activity.startActivity(Intent.createChooser(share, "发送给..."));
+        context.startActivity(Intent.createChooser(share, "发送给...")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    public static void shareVideo(Activity activity, String videoFilePath, String content) {
+    public static void shareVideo(Context context, String videoFilePath, String content) {
         Intent share = new Intent(Intent.ACTION_SEND);
         share.putExtra(Intent.EXTRA_TEXT, content);
         share.putExtra(Intent.EXTRA_STREAM,
@@ -1426,17 +1428,24 @@ public class RUtils {
         share.setType("video/*");
         share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        activity.startActivity(Intent.createChooser(share, "发送给..."));
+        context.startActivity(Intent.createChooser(share, "发送给...")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    public static void shareText(Activity activity, final String title, final String text) {
+    public static void shareText(Context context, final String title, final String text) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "分享：" + title);
-        intent.putExtra(Intent.EXTRA_TEXT, title + " " + text);
+        if (TextUtils.isEmpty(title)) {
+            intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+        } else {
+            intent.putExtra(Intent.EXTRA_SUBJECT, "分享：" + title);
+            intent.putExtra(Intent.EXTRA_TEXT, title + " " + text);
+        }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        activity.startActivity(Intent.createChooser(intent, "选择分享"));
+        context.startActivity(Intent.createChooser(intent, "选择分享")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     /**

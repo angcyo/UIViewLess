@@ -319,6 +319,10 @@ public fun Bitmap.share(context: Context) {
     RUtils.shareBitmap(context, this)
 }
 
+public fun String.share(context: Context) {
+    RUtils.shareText(context, null, this)
+}
+
 public fun String.startApp(context: Context) {
     RUtils.startApp(context, this)
 }
