@@ -1385,10 +1385,12 @@ public class RUtils {
     public static void shareBitmap(Context context, Bitmap bitmap) {
         Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null));
         Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_SEND);//设置分享行为
         intent.setType("image/*");//设置分享内容的类型
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent = Intent.createChooser(intent, "分享图片");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 

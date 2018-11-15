@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
@@ -270,6 +271,9 @@ open class BaseAccessibilityService : AccessibilityService() {
         L.e("call: onServiceConnected -> ")
     }
 
+    /**
+     * 断开无障碍服务后.
+     * */
     override fun onDestroy() {
         super.onDestroy()
         L.e("call: onDestroy -> ")
@@ -287,10 +291,12 @@ open class BaseAccessibilityService : AccessibilityService() {
         }
     }
 
-    /**服务断开*/
+    /**服务断开 优于 onDestroy 执行*/
     override fun onUnbind(intent: Intent): Boolean {
         L.e("call: onUnbind -> $intent")
         isServiceConnected = false
+        lastPackageName = ""
+        clearInterceptor()
         return super.onUnbind(intent)
     }
 
@@ -334,26 +340,6 @@ open class BaseAccessibilityService : AccessibilityService() {
 
         checkLastPackageName(event)
 
-        for (i in accessibilityInterceptorList.size - 1 downTo 0) {
-            //反向调用, 防止调用者在内部执行了Remove操作, 导致后续的拦截器无法执行
-            if (accessibilityInterceptorList.size > i) {
-                val interceptor = accessibilityInterceptorList[i]
-                try {
-                    if (interceptor.filterPackageName.isEmpty() && interceptor.filterPackageNameList.isEmpty()) {
-                        interceptor.onAccessibilityEvent(this, event)
-                    } else if (interceptor.filterPackageName.contains(event.packageName) ||
-                        interceptor.filterPackageNameList.contains(event.packageName)
-                    ) {
-                        interceptor.onAccessibilityEvent(this, event)
-                    } else {
-                        interceptor.onLeavePackageName(this, event, "${event.packageName}")
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
                 //当被监听的程序窗口状态变化时回调, 通常打开程序时会回调
@@ -377,6 +363,28 @@ open class BaseAccessibilityService : AccessibilityService() {
                 onWindowContentChanged(event)
             }
         }
+
+        rootInActiveWindow?.packageName?.let { packageName ->
+            for (i in accessibilityInterceptorList.size - 1 downTo 0) {
+                //反向调用, 防止调用者在内部执行了Remove操作, 导致后续的拦截器无法执行
+                if (accessibilityInterceptorList.size > i) {
+                    val interceptor = accessibilityInterceptorList[i]
+                    try {
+                        if (interceptor.filterPackageName.isEmpty() && interceptor.filterPackageNameList.isEmpty()) {
+                            interceptor.onAccessibilityEvent(this, event)
+                        } else if (interceptor.filterPackageName.contains(packageName) ||
+                            interceptor.filterPackageNameList.contains(packageName)
+                        ) {
+                            interceptor.onAccessibilityEvent(this, event)
+                        } else {
+                            interceptor.onLeavePackageName(this, event, "${event.packageName}")
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
     }
 
     open fun checkLastPackageName(event: AccessibilityEvent) {
@@ -388,18 +396,36 @@ open class BaseAccessibilityService : AccessibilityService() {
 //        } else if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 //            return
 //        }
-        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+
+        //this.rootInActiveWindow.packageName event.packageName 这2个包名 不一定会是相同的
+
+//        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+//            || TextUtils.isEmpty(event.packageName)
+//            || TextUtils.isEmpty(event.className)
+//        ) {
+//            return
+//        }
+
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+            || rootInActiveWindow == null
+            || TextUtils.isEmpty(rootInActiveWindow.packageName)
+        ) {
             return
         }
 
-        lastPackageName = "${event.packageName}"
+        lastPackageName = "${rootInActiveWindow.packageName}"
 
-        if (event.packageName?.contains("inputmethod") == true || event.className?.contains("SoftInputWindow") == true) {
-            //搜狗输入法 com.sohu.inputmethod.sogou android.inputmethodservice.SoftInputWindow
-        } else {
-        }
+//        if (event.packageName?.contains("inputmethod") == true || event.className?.contains("SoftInputWindow") == true) {
+//            //搜狗输入法 com.sohu.inputmethod.sogou android.inputmethodservice.SoftInputWindow
+//        } else {
+//        }
 
-        L.i("\n切换到:${AccessibilityEvent.eventTypeToString(event.eventType)} \n${event.packageName}\n${event.className} ${event.action}")
+        L.i(
+            "\n切换到:${AccessibilityEvent.eventTypeToString(event.eventType)}" +
+                    "\n主:${rootInActiveWindow.packageName}" +
+                    "\n副:${event.packageName}" +
+                    "\n类:${event.className} ${event.action}"
+        )
     }
 
     /**打开了新窗口*/

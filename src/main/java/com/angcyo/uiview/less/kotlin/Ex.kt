@@ -324,7 +324,16 @@ public fun String.startApp(context: Context) {
 }
 
 public fun Context.runMain() {
-    startActivity(packageManager.getLaunchIntentForPackage(packageName).apply {
+    packageManager.getLaunchIntentForPackage(packageName).apply {
+        this?.let {
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this@runMain.startActivity(it)
+        }
+    }
+}
+
+public fun Context.runActivity(cls: Class<*>) {
+    startActivity(Intent(this, cls).apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     })
 }
