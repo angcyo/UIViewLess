@@ -1,6 +1,7 @@
 package com.angcyo.uiview.less.kotlin
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
@@ -320,4 +321,10 @@ public fun Bitmap.share(context: Context) {
 
 public fun String.startApp(context: Context) {
     RUtils.startApp(context, this)
+}
+
+public fun Context.runMain() {
+    startActivity(packageManager.getLaunchIntentForPackage(packageName).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    })
 }

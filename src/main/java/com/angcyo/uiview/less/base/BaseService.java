@@ -10,6 +10,7 @@ import android.os.*;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import com.angcyo.lib.L;
 
 /**
  * Email:angcyo@126.com
@@ -120,8 +121,12 @@ public class BaseService extends Service implements Handler.Callback {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        int command = -1;
         if (intent != null) {
-            int command = intent.getIntExtra(KEY_COMMAND, -1);
+            command = intent.getIntExtra(KEY_COMMAND, command);
+        }
+        L.i("onStartCommand-> " + " command:" + command + " flags:" + flags + " startId:" + startId + "\n" + intent);
+        if (intent != null) {
             onHandCommand(command, intent);
         }
         return START_STICKY;

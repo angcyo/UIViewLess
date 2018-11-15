@@ -13,11 +13,13 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 import com.angcyo.uiview.less.widget.*;
-import com.angcyo.uiview.less.widget.Button;
 import com.angcyo.uiview.view.RClickListener;
 
 import java.lang.ref.WeakReference;
@@ -301,6 +303,15 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
 
     public CompoundButton cb(@IdRes int resId) {
         return cV(resId);
+    }
+
+    public CompoundButton cb(@IdRes int resId, boolean checked, CompoundButton.OnCheckedChangeListener listener) {
+        CompoundButton compoundButton = cV(resId);
+        if (compoundButton != null) {
+            compoundButton.setOnCheckedChangeListener(listener);
+            compoundButton.setChecked(checked);
+        }
+        return compoundButton;
     }
 
     public CompoundButton cV(String idName) {
