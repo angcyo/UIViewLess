@@ -36,6 +36,14 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         return pendingIntent;
     }
 
+    public static PendingIntent getPendingIntent(@NonNull Context context, Class<?> cls,
+                                                 String action /*自定义的广播, 需要在xml里面注册*/) {
+        Intent intent = getIntent(context, cls, action);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
