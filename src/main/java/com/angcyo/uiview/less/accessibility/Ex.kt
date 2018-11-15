@@ -40,7 +40,6 @@ public fun AccessibilityNodeInfo.click() {
     BaseAccessibilityService.clickNode(this)
 }
 
-
 /**
  * 相当于按返回键
  * */
@@ -284,4 +283,10 @@ public fun Rect.toPath(): Path {
     return Path().apply {
         moveTo(this@toPath.centerX().toFloat(), this@toPath.centerY().toFloat())
     }
+}
+
+public fun AccessibilityNodeInfo.toRect(): Rect {
+    val rect = Rect()
+    getBoundsInScreen(rect)
+    return rect
 }

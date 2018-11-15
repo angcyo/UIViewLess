@@ -339,9 +339,11 @@ open class BaseAccessibilityService : AccessibilityService() {
             if (accessibilityInterceptorList.size > i) {
                 val interceptor = accessibilityInterceptorList[i]
                 try {
-                    if (interceptor.filterPackageName.isEmpty()) {
+                    if (interceptor.filterPackageName.isEmpty() && interceptor.filterPackageNameList.isEmpty()) {
                         interceptor.onAccessibilityEvent(this, event)
-                    } else if (interceptor.filterPackageName.contains(event.packageName)) {
+                    } else if (interceptor.filterPackageName.contains(event.packageName) ||
+                        interceptor.filterPackageNameList.contains(event.packageName)
+                    ) {
                         interceptor.onAccessibilityEvent(this, event)
                     } else {
                         interceptor.onLeavePackageName(this, event, "${event.packageName}")

@@ -313,3 +313,11 @@ public fun Bitmap.toBase64(format: Bitmap.CompressFormat = Bitmap.CompressFormat
 public fun ByteArray.toBitmap(): Bitmap {
     return BitmapFactory.decodeByteArray(this, 0, this.size)
 }
+
+public fun Bitmap.share(context: Context) {
+    RUtils.shareBitmap(context, this)
+}
+
+public fun String.startApp(context: Context) {
+    RUtils.startApp(context, this)
+}

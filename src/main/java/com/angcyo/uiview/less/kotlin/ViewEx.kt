@@ -2,6 +2,7 @@ package com.angcyo.uiview.less.kotlin
 
 
 import android.animation.ValueAnimator
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
@@ -23,6 +24,7 @@ import com.angcyo.uiview.less.RApplication
 import com.angcyo.uiview.less.draw.RDrawNoRead
 import com.angcyo.uiview.less.recycler.RBaseViewHolder
 import com.angcyo.uiview.less.recycler.RRecyclerView
+import com.angcyo.uiview.less.utils.RUtils
 import com.angcyo.uiview.less.utils.ScreenUtil
 import com.angcyo.uiview.less.utils.ScreenUtil.density
 import com.angcyo.uiview.less.widget.RExTextView
@@ -152,7 +154,7 @@ public fun TextView.textHeight(): Float = paint.descent() - paint.ascent()
 
 /**文本宽度*/
 public fun View.textWidth(paint: Paint?, text: String?): Float = paint?.measureText(text ?: "")
-        ?: 0F
+    ?: 0F
 
 public fun TextView.textWidth(text: String?): Float = paint.measureText(text ?: "")
 public fun TextView.drawPadding(padding: Int) {
@@ -231,13 +233,27 @@ public fun View.calcWidthHeightRatio(widthHeightRatio: String?): IntArray? {
 }
 
 /**用屏幕宽高, 计算View的宽高*/
-public fun View.calcLayoutWidthHeight(rLayoutWidth: String?, rLayoutHeight: String?, rLayoutWidthExclude: Int = 0, rLayoutHeightExclude: Int = 0): IntArray {
-    return calcLayoutWidthHeight(rLayoutWidth, rLayoutHeight, measuredWidth, measuredHeight, rLayoutWidthExclude, rLayoutHeightExclude)
+public fun View.calcLayoutWidthHeight(
+    rLayoutWidth: String?,
+    rLayoutHeight: String?,
+    rLayoutWidthExclude: Int = 0,
+    rLayoutHeightExclude: Int = 0
+): IntArray {
+    return calcLayoutWidthHeight(
+        rLayoutWidth,
+        rLayoutHeight,
+        measuredWidth,
+        measuredHeight,
+        rLayoutWidthExclude,
+        rLayoutHeightExclude
+    )
 }
 
-public fun View.calcLayoutWidthHeight(rLayoutWidth: String?, rLayoutHeight: String?,
-                                      parentWidth: Int, parentHeight: Int,
-                                      rLayoutWidthExclude: Int = 0, rLayoutHeightExclude: Int = 0): IntArray {
+public fun View.calcLayoutWidthHeight(
+    rLayoutWidth: String?, rLayoutHeight: String?,
+    parentWidth: Int, parentHeight: Int,
+    rLayoutWidthExclude: Int = 0, rLayoutHeightExclude: Int = 0
+): IntArray {
     val size = intArrayOf(-1, -1)
     if (TextUtils.isEmpty(rLayoutWidth) && TextUtils.isEmpty(rLayoutHeight)) {
         return size
@@ -481,11 +497,11 @@ public fun View.onDoubleTap(listener: () -> Unit) {
 /**自己监听控件的单击事件, 防止系统的不回调*/
 public fun View.onSingleTapConfirmed(listener: () -> Boolean) {
     val gestureDetectorCompat = GestureDetectorCompat(context,
-            object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                    return listener.invoke()
-                }
-            })
+        object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+                return listener.invoke()
+            }
+        })
     setOnTouchListener { _, event ->
         gestureDetectorCompat.onTouchEvent(event)
         false
@@ -503,10 +519,12 @@ public val View.valueAnimator: ValueAnimator by lazy {
 }
 
 /**显示未读小红点*/
-public fun View.showNoRead(show: Boolean = true,
-                           radius: Float = 3 * density(),
-                           paddTop: Float = 2 * density(),
-                           paddRight: Float = 2 * density()) {
+public fun View.showNoRead(
+    show: Boolean = true,
+    radius: Float = 3 * density(),
+    paddTop: Float = 2 * density(),
+    paddRight: Float = 2 * density()
+) {
     var drawNoRead: RDrawNoRead? = null
     if (this is RImageView) {
         drawNoRead = this.drawNoRead
@@ -545,8 +563,8 @@ public fun View.hideFromBottom(anim: Boolean = true) {
         //是显示状态
         if (anim) {
             this.animate().setDuration(300)
-                    .translationY((this.measuredHeight).toFloat())
-                    .start()
+                .translationY((this.measuredHeight).toFloat())
+                .start()
         } else {
             ViewCompat.setTranslationY(this, (this.measuredHeight).toFloat())
         }
@@ -558,8 +576,8 @@ public fun View.showFromBottom(anim: Boolean = true) {
         //是隐藏状态
         if (anim) {
             this.animate().setDuration(300)
-                    .translationY(0f)
-                    .start()
+                .translationY(0f)
+                .start()
         } else {
             ViewCompat.setTranslationY(this, 0f)
         }
@@ -571,8 +589,8 @@ public fun View.hideFromTop(anim: Boolean = true) {
         //是显示状态
         if (anim) {
             this.animate().setDuration(300)
-                    .translationY((-this.measuredHeight).toFloat())
-                    .start()
+                .translationY((-this.measuredHeight).toFloat())
+                .start()
         } else {
             ViewCompat.setTranslationY(this, (-this.measuredHeight).toFloat())
         }
@@ -584,8 +602,8 @@ public fun View.showFromTop(anim: Boolean = true) {
         //是隐藏状态
         if (anim) {
             this.animate().setDuration(300)
-                    .translationY(0f)
-                    .start()
+                .translationY(0f)
+                .start()
         } else {
             ViewCompat.setTranslationY(this, 0f)
         }
@@ -603,4 +621,8 @@ public fun View.layoutCenterY(): Int {
 
 public fun View.onInitView(init: (RBaseViewHolder) -> Unit) {
     init.invoke(RBaseViewHolder(this))
+}
+
+public fun View.toBitmap(): Bitmap {
+    return RUtils.saveView(this)
 }

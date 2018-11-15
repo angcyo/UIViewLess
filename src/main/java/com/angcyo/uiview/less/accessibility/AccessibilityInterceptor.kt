@@ -7,7 +7,6 @@ import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.angcyo.uiview.less.kotlin.nowTime
-import java.util.*
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -21,8 +20,12 @@ import java.util.*
  * Version: 1.0.0
  */
 abstract class AccessibilityInterceptor {
-    /**需要收到那个程序的事件*/
+    /**需要收到那个程序的事件, 匹配方式为 `包含`*/
+    @Deprecated("请使用 filterPackageNameList")
     var filterPackageName = ""
+
+    /**匹配方式为 `全等`*/
+    val filterPackageNameList = ArrayList<String>()
 
     /**当到达目标之后的回调*/
     var onJumpToTarget: (() -> Unit)? = null
@@ -180,9 +183,7 @@ abstract class AccessibilityInterceptor {
         val rectList = mutableListOf<Rect>()
 
         nodes?.mapIndexed { _, accessibilityNodeInfo ->
-            val rect = Rect()
-            accessibilityNodeInfo.getBoundsInScreen(rect)
-            rectList.add(rect)
+            rectList.add(accessibilityNodeInfo.toRect())
         }
         return rectList.toTypedArray()
     }
