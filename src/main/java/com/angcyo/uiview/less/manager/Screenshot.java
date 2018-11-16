@@ -13,15 +13,13 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.PowerManager;
+import android.os.*;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.math.MathUtils;
 import android.util.Log;
 import com.angcyo.uiview.less.accessibility.ExKt;
+import com.angcyo.uiview.less.utils.Reflect;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -316,6 +314,10 @@ public class Screenshot {
      * 唤醒手机屏幕并解锁, 点亮屏幕,解锁手机
      */
     public static void wakeUpAndUnlock(@NonNull Context context) {
+        wakeUpAndUnlock(context, true);
+    }
+
+    public static void wakeUpAndUnlock(@NonNull Context context, boolean wakeLock /*亮屏(并解锁) or 灭屏*/) {
         // 获取电源管理器对象
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         boolean screenOn;
@@ -325,46 +327,59 @@ public class Screenshot {
             screenOn = pm.isScreenOn();
         }
 
-        if (!screenOn) {
-            // 获取PowerManager.WakeLock对象,后面的参数|表示同时传入两个值,最后的是LogCat里用的Tag
-            PowerManager.WakeLock wl = pm.newWakeLock(
-                    PowerManager.FULL_WAKE_LOCK |
-                            PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK,
-                    context.getPackageName() + ":bright");
-            wl.acquire(10000); // 点亮屏幕
-            wl.release(); // 释放
-        }
-        // 屏幕解锁
-        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
+        if (wakeLock) {
+            if (!screenOn) {
+                // 获取PowerManager.WakeLock对象,后面的参数|表示同时传入两个值,最后的是LogCat里用的Tag
+                PowerManager.WakeLock wl = pm.newWakeLock(
+                        /*PowerManager.FULL_WAKE_LOCK |*/
+                        PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                                PowerManager.SCREEN_DIM_WAKE_LOCK /*PowerManager.SCREEN_BRIGHT_WAKE_LOCK*/,
+                        context.getPackageName() + ":bright");
+                wl.acquire(10000); // 点亮屏幕
+                wl.release(); // 释放
+            }
+            // 屏幕解锁
+            KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
 
-        if (keyguardManager.isKeyguardLocked()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context instanceof Activity) {
-                //在未设置密码的情况下, 可以解锁
-                keyguardManager.requestDismissKeyguard((Activity) context,
-                        new KeyguardManager.KeyguardDismissCallback() {
-                            @Override
-                            public void onDismissError() {
-                                super.onDismissError();
-                                //如果设备未锁屏的情况下, 调用此方法.会回调错误
-                            }
+            if (keyguardManager.isKeyguardLocked()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context instanceof Activity) {
+                    //在未设置密码的情况下, 可以解锁
+                    keyguardManager.requestDismissKeyguard((Activity) context,
+                            new KeyguardManager.KeyguardDismissCallback() {
+                                @Override
+                                public void onDismissError() {
+                                    super.onDismissError();
+                                    //如果设备未锁屏的情况下, 调用此方法.会回调错误
+                                }
 
-                            @Override
-                            public void onDismissSucceeded() {
-                                super.onDismissSucceeded();
-                                //输入密码解锁成功
-                            }
+                                @Override
+                                public void onDismissSucceeded() {
+                                    super.onDismissSucceeded();
+                                    //输入密码解锁成功
+                                }
 
-                            @Override
-                            public void onDismissCancelled() {
-                                super.onDismissCancelled();
-                                //弹出密码输入框之后, 取消了会回调
-                            }
-                        });
-            } else {
-                KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("unLock");
-                // 屏幕锁定
-                keyguardLock.reenableKeyguard();
-                keyguardLock.disableKeyguard(); // 解锁
+                                @Override
+                                public void onDismissCancelled() {
+                                    super.onDismissCancelled();
+                                    //弹出密码输入框之后, 取消了会回调
+                                }
+                            });
+                } else {
+                    KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("unLock");
+                    // 屏幕锁定
+                    keyguardLock.reenableKeyguard();
+                    keyguardLock.disableKeyguard(); // 解锁
+                }
+            }
+        } else {
+            if (screenOn) {
+//                PowerManager.WakeLock wl = pm.newWakeLock(
+//                        PowerManager.PARTIAL_WAKE_LOCK,
+//                        context.getPackageName() + ":bright");
+//                wl.acquire();
+//                wl.release();
+                //android.permission.DEVICE_POWER
+                Reflect.invokeMethod(pm, "goToSleep", SystemClock.uptimeMillis(), 0, 0);
             }
         }
     }

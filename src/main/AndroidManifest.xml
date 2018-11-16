@@ -6,6 +6,9 @@
     <!--startForegroundService API 28后需要-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
+    <!--灭屏操作权限-->
+    <!--<uses-permission android:name="android.permission.DEVICE_POWER"/>-->
+
     <!--键盘解锁权限-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 
