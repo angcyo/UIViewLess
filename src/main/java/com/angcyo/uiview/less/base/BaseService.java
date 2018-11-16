@@ -118,6 +118,7 @@ public class BaseService extends Service implements Handler.Callback {
     public void onDestroy() {
         super.onDestroy();
         mNM.cancel(FOREGROUND_NOTIFICATION_ID);
+        handlerThread.quitSafely();
     }
 
     @Override

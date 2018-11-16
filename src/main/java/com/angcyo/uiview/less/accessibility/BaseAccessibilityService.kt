@@ -338,7 +338,11 @@ open class BaseAccessibilityService : AccessibilityService() {
             }
         }
 
-        checkLastPackageName(event)
+        try {
+            checkLastPackageName(event)
+        } catch (e: Exception) {
+            L.e("异常:${e.message}\n$rootInActiveWindow\n$event")
+        }
 
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
@@ -406,10 +410,15 @@ open class BaseAccessibilityService : AccessibilityService() {
 //            return
 //        }
 
-        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-            || rootInActiveWindow == null
-            || TextUtils.isEmpty(rootInActiveWindow.packageName)
-        ) {
+        if (rootInActiveWindow == null) {
+            return
+        }
+
+        if (TextUtils.isEmpty(rootInActiveWindow.packageName)) {
+            return
+        }
+
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             return
         }
 
