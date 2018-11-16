@@ -27,29 +27,30 @@ public class Root {
 
     public static String device_info(Context activity) {
         StringBuilder builder = new StringBuilder();
-        builder.append(AppUtils.getAppVersionName(RApplication.getApp()));
-        builder.append(" by ");
-        builder.append(ResUtil.getThemeString(RApplication.getApp(), "build_time"));
-        builder.append(" on ");
-        builder.append(ResUtil.getThemeString(RApplication.getApp(), "os_name"));
-        builder.append(" ");
+        builder.append(AppUtils.getAppVersionName(RApplication.getApp())).append(" by ");
+        builder.append(ResUtil.getThemeString(RApplication.getApp(), "build_time")).append(" on ");
+        builder.append(ResUtil.getThemeString(RApplication.getApp(), "os_name")).append("\n");
+
         builder.append(ScreenUtil.screenWidth).append("×").append(ScreenUtil.screenHeight);
         builder.append(" ");
         if (activity instanceof Activity) {
             builder.append(((Activity) activity).getWindow().getDecorView().getMeasuredHeight());
             builder.append(" ");
         }
-        builder.append(ScreenUtil.densityDpi);
-        builder.append(" ");
-        builder.append(ScreenUtil.density);
-        builder.append(" \n");
+        builder.append(ScreenUtil.densityDpi).append(" ");
+        builder.append(ScreenUtil.density).append(" ");
+
+        builder.append(Build.VERSION.RELEASE).append("/");
+        builder.append(Build.VERSION.SDK_INT).append(" ");
+
+        builder.append(RUtils.getStatusBarHeight(activity)).append("/");
+        builder.append(RUtils.getNavBarHeight(activity)).append("");
+
+        builder.append("\n");
         builder.append("v:").append(Build.MANUFACTURER).append(" ");
         builder.append("m:").append(Build.MODEL).append(" ");
         builder.append("d:").append(Build.DEVICE).append(" ");
         builder.append("h:").append(Build.HARDWARE).append(" ");
-
-        builder.append(Build.VERSION.RELEASE).append(" ");
-        builder.append(Build.VERSION.SDK_INT).append(" ");
 
         return builder.toString();
     }

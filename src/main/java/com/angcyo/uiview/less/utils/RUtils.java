@@ -2701,6 +2701,30 @@ public class RUtils {
         }
     }
 
+    /**
+     * 导航栏高度
+     */
+    public static int getNavBarHeight(Context context) {
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
+    /**
+     * 状态栏高度
+     */
+    public static int getStatusBarHeight(Context context) {
+        int result = -1;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     interface OnPutValue {
         void onValue(String key, String value);
 
