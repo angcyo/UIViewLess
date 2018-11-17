@@ -8,11 +8,13 @@ import android.graphics.Paint;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.skin.SkinHelper;
+
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -81,7 +83,7 @@ public abstract class BaseDraw {
     }
 
     protected void postInvalidateOnAnimation() {
-        mView.postInvalidateOnAnimation();
+        ViewCompat.postInvalidateOnAnimation(mView);
     }
 
     protected void scrollTo(int x, int y) {
@@ -158,4 +160,39 @@ public abstract class BaseDraw {
     }
 
     protected abstract void initAttribute(AttributeSet attr);
+
+    public int measureDrawWidth() {
+        return mView.getMeasuredWidth();
+    }
+
+    public int measureDrawHeight() {
+        return (int) (mBasePaint.descent() - mBasePaint.ascent());
+    }
+
+    public int[] measureDraw(int widthMeasureSpec, int heightMeasureSpec) {
+        //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+
+        if (widthMode == View.MeasureSpec.AT_MOST) {
+            //wrap_content
+            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawWidth(), View.MeasureSpec.EXACTLY);
+        }
+
+        if (heightMode == View.MeasureSpec.AT_MOST) {
+            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawHeight(), View.MeasureSpec.EXACTLY);
+        }
+
+        return new int[]{widthMeasureSpec, heightMeasureSpec};
+    }
+
+    public int drawCenterX() {
+        return getPaddingLeft() + getViewDrawWidth() / 2;
+    }
+
+    public int drawCenterY() {
+        return getPaddingTop() + getViewDrawHeight() / 2;
+    }
 }
