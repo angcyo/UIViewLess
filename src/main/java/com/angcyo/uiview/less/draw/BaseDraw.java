@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -194,5 +196,24 @@ public abstract class BaseDraw {
 
     public int drawCenterY() {
         return getPaddingTop() + getViewDrawHeight() / 2;
+    }
+
+    /**
+     * 可以容纳绘制的最大正方形, 不考虑画笔大小
+     */
+    public Rect maxDrawSquare() {
+        int size = Math.min(getViewDrawWidth(), getViewDrawHeight());
+        Rect rect = new Rect();
+        rect.set(getPaddingLeft(), getPaddingTop(),
+                getPaddingLeft() + size, getPaddingTop() + size);
+        return rect;
+    }
+
+    public RectF maxDrawSquareF() {
+        int size = Math.min(getViewDrawWidth(), getViewDrawHeight());
+        RectF rectF = new RectF();
+        rectF.set(getPaddingLeft(), getPaddingTop(),
+                getPaddingLeft() + size, getPaddingTop() + size);
+        return rectF;
     }
 }
