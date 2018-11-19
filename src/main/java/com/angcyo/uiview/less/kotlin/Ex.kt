@@ -160,6 +160,8 @@ public inline fun <T> T.nowTime() = System.currentTimeMillis()
 
 public inline fun Long.spiltTime() = RUtils.splitTime(this)
 
+public inline fun String.parseTime(pattern: String = "yyyy-MM-dd") = RUtils.parseTime(this, pattern)
+
 public fun <K, V> Map<K, V>.each(item: (key: K, value: V) -> Unit) {
     for (entry in this.entries) {
         item.invoke(entry.key, entry.value)

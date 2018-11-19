@@ -47,6 +47,7 @@ import java.lang.reflect.Field;
 import java.net.NetworkInterface;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -2375,6 +2376,16 @@ public class RUtils {
         return month;
     }
 
+    public static long parseTime(String time, String pattern) {
+        SimpleDateFormat df = new SimpleDateFormat(pattern);
+        try {
+            return df.parse(time).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     /**
      * 分割时间的所有字段
      */
@@ -2391,7 +2402,24 @@ public class RUtils {
         int s = cal.get(Calendar.SECOND);//0-60秒
 
         int sss = cal.get(Calendar.MILLISECOND);//0-999毫秒
-        return new int[]{year, month, day, h, m, s, sss};
+
+        //Gets what the first day of the week is; e.g., SUNDAY in the U.S., MONDAY in France.
+        int dayOfWeek = cal.getFirstDayOfWeek();
+        int weekDay = cal.get(Calendar.DAY_OF_WEEK);//1-7 周几
+
+        int week = weekDay;
+        if (dayOfWeek == Calendar.SUNDAY) {
+            week = weekDay - 1;
+            if (week <= 0) {
+                week = 7;
+            }
+        }
+        //SUNDAY 1
+        //MONDAY = 2
+        //TUESDAY = 3
+        //SATURDAY = 7 星期六
+        return new int[]{year /*0*/, month /*1*/, day /*2*/,
+                h /*3*/, m /*4*/, s /*5*/, sss /*6*/, week /*7*/};
     }
 
     /**
