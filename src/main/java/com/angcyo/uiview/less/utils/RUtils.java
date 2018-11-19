@@ -31,8 +31,10 @@ import android.util.DisplayMetrics;
 import android.util.LruCache;
 import android.view.View;
 import android.view.WindowManager;
+import com.angcyo.http.Rx;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.RApplication;
+import com.angcyo.uiview.less.RCrashHandler;
 import com.angcyo.uiview.less.utils.permission.SettingsCompat;
 import com.angcyo.uiview.less.utils.rsa.Base64Utils;
 import com.angcyo.uiview.less.utils.utilcode.utils.ClipboardUtils;
@@ -49,6 +51,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static com.angcyo.uiview.less.RCrashHandler.FILE_NAME_SUFFIX;
 
 /**
  * Created by angcyo on 15-12-16 016 15:41 下午.
@@ -1546,6 +1550,20 @@ public class RUtils {
         return screenInches;
     }
 
+
+    public static void saveToSDCard(String data) {
+        String fileName = getDataTime("yyyy-MM-dd_HH-mm-ss-SSS") + FILE_NAME_SUFFIX;
+        saveToSDCard("log", fileName, data);
+    }
+
+    /**
+     * 使用默认的文件名, 保存数据到指定的文件夹
+     */
+    public static void saveToSDCardFolder(String folderName, String data) {
+        String fileName = getDataTime("yyyy-MM-dd_HH-mm-ss-SSS") + FILE_NAME_SUFFIX;
+        saveToSDCard(folderName, fileName, data);
+    }
+
     /**
      * 写入数据到 SD卡  Root.APP_FOLDER/log 目录下
      *
@@ -1557,68 +1575,62 @@ public class RUtils {
     }
 
     public static void saveToSDCard(final String folderName, final String fileName, final String data) {
-//        Rx.back(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    String saveFolder = Environment.getExternalStorageDirectory().getAbsoluteFile() +
-//                            File.separator + Root.APP_FOLDER + File.separator + folderName;
-//                    File folder = new File(saveFolder);
-//                    if (!folder.exists()) {
-//                        if (!folder.mkdirs()) {
-//                            return;
-//                        }
-//                    }
-//                    String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
-//                    File file = new File(saveFolder, fileName);
-//                    boolean append = true;
-//                    if (file.length() > 1024 * 1024 * 1 /*大于10MB重写*/) {
-//                        append = false;
-//                    }
-//                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
-//                    pw.println(dataTime);
-//                    pw.println(data);
-//                    //换行
-//                    pw.println();
-//                    pw.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        Rx.back(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String saveFolder = Root.getAppExternalFolder(folderName);
+                    File folder = new File(saveFolder);
+                    if (!folder.exists()) {
+                        return;
+                    }
+                    String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
+                    File file = new File(saveFolder, fileName);
+                    boolean append = true;
+                    if (file.length() > 1024 * 1024 * 1 /*大于10MB重写*/) {
+                        append = false;
+                    }
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
+                    pw.println(dataTime);
+                    pw.println(data);
+                    //换行
+                    pw.println();
+                    pw.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void saveToSDCard(final String folderName, final String fileName, final Throwable data) {
-//        Rx.back(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    String saveFolder = Environment.getExternalStorageDirectory().getAbsoluteFile() +
-//                            File.separator + Root.APP_FOLDER + File.separator + folderName;
-//                    File folder = new File(saveFolder);
-//                    if (!folder.exists()) {
-//                        if (!folder.mkdirs()) {
-//                            return;
-//                        }
-//                    }
-//                    String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
-//                    File file = new File(saveFolder, fileName);
-//                    boolean append = true;
-//                    if (file.length() > 1024 * 1024 * 10 /*大于10MB重写*/) {
-//                        append = false;
-//                    }
-//                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
-//                    pw.println(dataTime);
-//                    data.printStackTrace(pw);
-//                    //换行
-//                    pw.println();
-//                    pw.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        });
+        Rx.back(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String saveFolder = Root.getAppExternalFolder(folderName);
+                    File folder = new File(saveFolder);
+                    if (!folder.exists()) {
+                        return;
+                    }
+                    String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
+                    File file = new File(saveFolder, fileName);
+                    boolean append = true;
+                    if (file.length() > 1024 * 1024 * 10 /*大于10MB重写*/) {
+                        append = false;
+                    }
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
+                    pw.println(dataTime);
+                    data.printStackTrace(pw);
+                    //换行
+                    pw.println();
+                    pw.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     /**
@@ -1957,7 +1969,7 @@ public class RUtils {
     /**
      * 复制文本
      */
-    public static void copyText(Context context, CharSequence charSequence) {
+    public static void copyText(CharSequence charSequence) {
         ClipboardUtils.copyText(charSequence);
     }
 

@@ -327,6 +327,10 @@ public fun String.startApp(context: Context) {
     RUtils.startApp(context, this)
 }
 
+public fun String.copy() {
+    RUtils.copyText(this)
+}
+
 public fun Context.runMain() {
     packageManager.getLaunchIntentForPackage(packageName).apply {
         this?.let {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.kotlin.ExKt;
+import com.angcyo.uiview.less.utils.RUtils;
 
 /**
  * Email:angcyo@126.com
@@ -49,6 +50,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         if (intent != null) {
             String action = intent.getAction();
             L.i("收到广播:" + action);
+            //将受到的广播写入文件, 用于记录
+            RUtils.saveToSDCardFolder("broadcast", action);
             if (Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(action)) {
                 //重新计算闹铃时间，并调第一步的方法设置闹铃时间及闹铃间隔时间
             } else if (ACTION_ALARM.equalsIgnoreCase(action)) {

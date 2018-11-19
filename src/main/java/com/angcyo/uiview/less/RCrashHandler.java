@@ -14,9 +14,7 @@ import android.os.*;
 import android.os.Process;
 import android.text.format.Formatter;
 import android.util.Log;
-import android.view.View;
 import com.angcyo.lib.L;
-import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.utils.RUtils;
 import com.angcyo.uiview.less.utils.Root;
 import com.orhanobut.hawk.Hawk;
@@ -49,7 +47,7 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
     public static final String KEY_CRASH_MESSAGE = "crash_message";
     private static final String DEFAULT_LOG_DIR = "crash";
     // log文件的后缀名
-    private static final String FILE_NAME_SUFFIX = ".log";
+    public static final String FILE_NAME_SUFFIX = ".log";
     //qq一键加群
     public static String QQ_GROUP_KEY = "TO1ybOZnKQHSLcUlwsVfOt6KQMGLmuAW";
     //qq帐号咨询, 需要开通咨询服务
@@ -317,8 +315,7 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     public static String getDataTime(String format) {
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        return df.format(new Date());
+        return RUtils.getDataTime(format);
     }
 
     public static String getSaveFolder(String folderName, String fileName) {
@@ -620,13 +617,10 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     private void saveToSDCard(Throwable ex) throws Exception {
-        String saveFolder = Environment.getExternalStorageDirectory().getAbsoluteFile() +
-                File.separator + Root.APP_FOLDER + File.separator + DEFAULT_LOG_DIR;
+        String saveFolder = Root.getAppExternalFolder(DEFAULT_LOG_DIR);
         File folder = new File(saveFolder);
         if (!folder.exists()) {
-            if (!folder.mkdirs()) {
-                return;
-            }
+            return;
         }
         String dataTime = getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
         File file = new File(saveFolder, dataTime + FILE_NAME_SUFFIX);
