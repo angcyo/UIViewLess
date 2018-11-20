@@ -20,6 +20,7 @@ public class RLogFile {
      * 默认在 sd卡/包名/log/ 文件夹下
      */
     public static String DEFAULT_LOG_FILE_NAME = "runtime.log";
+    public static long MIN_SIZE = 500 * 1024 * 1024;//500mb
 
     public static void log(String data) {
         clearOldLog();
@@ -35,7 +36,7 @@ public class RLogFile {
             long externalMemorySize = RCrashHandler.getAvailableExternalMemorySize();
             //SD卡总大小
             //long totalExternalMemorySize = RCrashHandler.getTotalExternalMemorySize();
-            if (externalMemorySize <= 500 * 1024 * 1024) {
+            if (externalMemorySize <= MIN_SIZE) {
                 //不足500MB
 
                 String saveFolder = Root.getAppExternalFolder(RUtils.DEFAULT_LOG_FOLDER_NAME);
