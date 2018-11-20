@@ -23,12 +23,16 @@ public class RLogFile {
     public static long MIN_SIZE = 500 * 1024 * 1024;//500mb
 
     public static void log(String data) {
-        clearOldLog();
-        RUtils.saveToSDCard(DEFAULT_LOG_FILE_NAME, data);
+        log(RUtils.DEFAULT_LOG_FOLDER_NAME, data);
+    }
+
+    public static void log(String folderName, String data) {
+        clearOldLog(folderName);
+        RUtils.saveToSDCard(folderName, DEFAULT_LOG_FILE_NAME, data);
     }
 
     /*如果磁盘空间不足, 清理之前的路径*/
-    private static void clearOldLog() {
+    private static void clearOldLog(String folderName) {
         try {
             //52768120832 39702720512  52.77吉字节 39.70吉字节
 
@@ -39,7 +43,7 @@ public class RLogFile {
             if (externalMemorySize <= MIN_SIZE) {
                 //不足500MB
 
-                String saveFolder = Root.getAppExternalFolder(RUtils.DEFAULT_LOG_FOLDER_NAME);
+                String saveFolder = Root.getAppExternalFolder(folderName);
                 File folder = new File(saveFolder);
 
                 File[] files = folder.listFiles();
@@ -50,7 +54,7 @@ public class RLogFile {
                     for (File f : fileList) {
                         try {
                             f.delete();
-                            clearOldLog();
+                            clearOldLog(folderName);
                             break;
                         } catch (Exception e) {
                             e.printStackTrace();
