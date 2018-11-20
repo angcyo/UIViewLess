@@ -1575,25 +1575,23 @@ public class RUtils {
         saveToSDCard("log", fileName, data);
     }
 
-    public static void saveToSDCard(final String folderName, final String fileName, final String data) {
+    public static void saveToSDCard(final String folderName, final String fileName, final Object data) {
         Rx.back(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String saveFolder = Root.getAppExternalFolder(folderName);
-                    File folder = new File(saveFolder);
-                    if (!folder.exists()) {
+                    File file = scanLastFile(folderName, fileName);
+                    if (file == null) {
                         return;
                     }
                     String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
-                    File file = new File(saveFolder, fileName);
-                    boolean append = true;
-                    if (file.length() > 1024 * 1024 * 1 /*大于10MB重写*/) {
-                        append = false;
-                    }
-                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
                     pw.println(dataTime);
-                    pw.println(data);
+                    if (data instanceof Throwable) {
+                        ((Throwable) data).printStackTrace(pw);
+                    } else {
+                        pw.println(data);
+                    }
                     //换行
                     pw.println();
                     pw.close();
@@ -1604,34 +1602,47 @@ public class RUtils {
         });
     }
 
-    public static void saveToSDCard(final String folderName, final String fileName, final Throwable data) {
-        Rx.back(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String saveFolder = Root.getAppExternalFolder(folderName);
-                    File folder = new File(saveFolder);
-                    if (!folder.exists()) {
-                        return;
-                    }
-                    String dataTime = RCrashHandler.getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
-                    File file = new File(saveFolder, fileName);
-                    boolean append = true;
-                    if (file.length() > 1024 * 1024 * 10 /*大于10MB重写*/) {
-                        append = false;
-                    }
-                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
-                    pw.println(dataTime);
-                    data.printStackTrace(pw);
-                    //换行
-                    pw.println();
-                    pw.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    /*当日志文件大于阈值值, 自动重命名保存*/
+    private static File scanLastFile(final String folderName, String fileName) {
+        String saveFolder = Root.getAppExternalFolder(folderName);
+        File folder = new File(saveFolder);
+        if (!folder.exists()) {
+            return null;
+        }
 
+        long maxFileSize = 1024 * 1024 * 10;
+
+        File file = new File(saveFolder, fileName);
+        if (file.length() >= maxFileSize /*大于10MB重命名*/) {
+
+            String newFileName;
+            String extName;
+
+            int index = fileName.lastIndexOf('.');
+            if (index == -1) {
+                extName = "";
+            } else {
+                extName = fileName.substring(index);
+                if (index <= 0) {
+                    fileName = "unknown";
+                } else {
+                    fileName = fileName.substring(0, index);
+                }
             }
-        });
+
+            String[] list = folder.list();
+            int size = list.length;
+
+            for (int i = size; i < Integer.MAX_VALUE; i++) {
+                newFileName = fileName + String.format("_%05d", i) + extName;
+                file = new File(saveFolder, newFileName);
+                if (file.length() >= maxFileSize /*大于10MB重命名*/) {
+                    continue;
+                }
+                break;
+            }
+        }
+        return file;
     }
 
     /**

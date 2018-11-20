@@ -51,7 +51,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             String action = intent.getAction();
             L.i("收到广播:" + action);
             //将受到的广播写入文件, 用于记录
-            RUtils.saveToSDCardFolder("broadcast", action);
+            RUtils.saveToSDCard("broadcast.log", action);
             if (Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(action)) {
                 //重新计算闹铃时间，并调第一步的方法设置闹铃时间及闹铃间隔时间
             } else if (ACTION_ALARM.equalsIgnoreCase(action)) {
