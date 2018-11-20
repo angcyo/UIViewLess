@@ -4,6 +4,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.kotlin.ExKt;
@@ -45,11 +47,36 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         return pendingIntent;
     }
 
+    public static IntentFilter getIntentFilter() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AlarmBroadcastReceiver.ACTION_ALARM);
+        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_INSTALL);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+
+        filter.addAction(Intent.ACTION_CAMERA_BUTTON);
+        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        filter.addAction(Intent.ACTION_BATTERY_OKAY);
+        filter.addAction(Intent.ACTION_BATTERY_LOW);
+
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        return filter;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
             String action = intent.getAction();
-            L.i("收到广播:" + action);
+            L.v("收到广播:" + action);
             //将受到的广播写入文件, 用于记录
             RUtils.saveToSDCard("broadcast.log", action);
             if (Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(action)) {

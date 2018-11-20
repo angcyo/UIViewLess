@@ -47,7 +47,6 @@ public class BaseService extends Service implements Handler.Callback {
         }
     }
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -171,6 +170,30 @@ public class BaseService extends Service implements Handler.Callback {
 
     public boolean onHandleMessage(@NonNull Message msg) {
         return false;
+    }
+
+    public void postDelayThread(long delay /*毫秒*/, Runnable run) {
+        if (handler != null) {
+            handler.postDelayed(run, delay);
+        }
+    }
+
+    public void removeDelayThread(Runnable run) {
+        if (handler != null) {
+            handler.removeCallbacks(run);
+        }
+    }
+
+    public void postDelayMain(long delay /*毫秒*/, Runnable run) {
+        if (mainHandler != null) {
+            mainHandler.postDelayed(run, delay);
+        }
+    }
+
+    public void removeDelayMain(Runnable run) {
+        if (mainHandler != null) {
+            mainHandler.removeCallbacks(run);
+        }
     }
 
     public class LocalBinder extends Binder {
