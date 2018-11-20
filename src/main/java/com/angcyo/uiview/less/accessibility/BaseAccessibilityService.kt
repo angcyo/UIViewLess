@@ -195,7 +195,11 @@ open class BaseAccessibilityService : AccessibilityService() {
             return getRootNodeInfo(node.parent)
         }
 
-        fun logNodeInfo(rootNodeInfo: AccessibilityNodeInfo, logFilePath: String? = null) {
+        fun logNodeInfo(rootNodeInfo: AccessibilityNodeInfo?, logFilePath: String? = null) {
+            if (rootNodeInfo == null) {
+                return
+            }
+
             if (logFilePath == null) {
                 Log.v(TAG, "╔═══════════════════════════════════════════════════════════════════════════════════════")
             } else {
