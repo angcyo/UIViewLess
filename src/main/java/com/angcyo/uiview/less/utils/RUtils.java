@@ -64,6 +64,7 @@ public class RUtils {
      * 人民币符号
      */
     public static final String RMB = "￥";
+    public static final String DEFAULT_LOG_FOLDER_NAME = "log";
 
     public static final HashMap<String, String> mFileTypes = new HashMap<String, String>();
     private static final String[][] MIME_MapTable = {
@@ -1554,7 +1555,7 @@ public class RUtils {
 
     public static void saveToSDCard(String data) {
         String fileName = getDataTime("yyyy-MM-dd_HH-mm-ss-SSS") + FILE_NAME_SUFFIX;
-        saveToSDCard("log", fileName, data);
+        saveToSDCard(DEFAULT_LOG_FOLDER_NAME, fileName, data);
     }
 
     /**
@@ -1572,7 +1573,7 @@ public class RUtils {
      * @param data     需要写入的数据
      */
     public static void saveToSDCard(String fileName, String data) {
-        saveToSDCard("log", fileName, data);
+        saveToSDCard(DEFAULT_LOG_FOLDER_NAME, fileName, data);
     }
 
     public static void saveToSDCard(final String folderName, final String fileName, final Object data) {

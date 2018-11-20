@@ -378,8 +378,16 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
         if (externalMemoryAvailable()) {
             File path = Environment.getExternalStorageDirectory();
             StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long availableBlocks = stat.getAvailableBlocks();
+
+            long blockSize;
+            long availableBlocks;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                blockSize = stat.getBlockSizeLong();
+                availableBlocks = stat.getAvailableBlocksLong();
+            } else {
+                blockSize = stat.getBlockSize();
+                availableBlocks = stat.getAvailableBlocks();
+            }
             return availableBlocks * blockSize;
         } else {
             return -1;
@@ -395,8 +403,16 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
         if (externalMemoryAvailable()) {
             File path = Environment.getExternalStorageDirectory();
             StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long totalBlocks = stat.getBlockCount();
+            long blockSize;
+            long totalBlocks;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                blockSize = stat.getBlockSizeLong();
+                totalBlocks = stat.getBlockCountLong();
+            } else {
+                blockSize = stat.getBlockSize();
+                totalBlocks = stat.getBlockCount();
+            }
             return totalBlocks * blockSize;
         } else {
             return -1;
