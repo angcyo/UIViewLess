@@ -167,7 +167,7 @@ public class Screenshot {
         onActivityResult(resultCode, data, null);
     }
 
-    public void onActivityResult(int resultCode, Intent data, Runnable onSucceed) {
+    public MediaProjection onActivityResult(int resultCode, Intent data, Runnable onSucceed) {
         if (mMediaProjection != null) {
             mMediaProjection.stop();
         }
@@ -190,6 +190,8 @@ public class Screenshot {
                 onSucceed.run();
             }
         }
+
+        return mMediaProjection;
     }
 
     private void setUpVirtualDisplay() {
