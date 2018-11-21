@@ -156,12 +156,6 @@ public fun Rect.scaleTo(inRect: Rect /*用来接收最后结果的矩形*/, scal
     inRect.inset(-dw, -dh)
 }
 
-public inline fun <T> T.nowTime() = System.currentTimeMillis()
-
-public inline fun Long.spiltTime() = RUtils.splitTime(this)
-
-public inline fun String.parseTime(pattern: String = "yyyy-MM-dd") = RUtils.parseTime(this, pattern)
-
 public inline fun <T> T.isMainThread() = RUtils.isMainThread()
 
 public fun <K, V> Map<K, V>.each(item: (key: K, value: V) -> Unit) {

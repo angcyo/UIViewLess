@@ -33,6 +33,7 @@ import com.angcyo.lib.L;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.kotlin.ExKt;
+import com.angcyo.uiview.less.kotlin.ViewExKt;
 import com.angcyo.uiview.less.resources.RAnimListener;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.utils.RUtils;
@@ -554,12 +555,12 @@ public class ExEditText extends AppCompatEditText {
         return clearDrawable;
     }
 
-    private void addFilter(InputFilter filter) {
-        final InputFilter[] filters = getFilters();
-        final InputFilter[] newFilters = new InputFilter[filters.length + 1];
-        System.arraycopy(filters, 0, newFilters, 0, filters.length);
-        newFilters[filters.length] = filter;
-        setFilters(newFilters);
+    public void addFilter(InputFilter filter) {
+        ViewExKt.addFilter(this, filter);
+    }
+
+    public void setFilter(InputFilter filter) {
+        ViewExKt.setFilter(this, filter);
     }
 
     @Override

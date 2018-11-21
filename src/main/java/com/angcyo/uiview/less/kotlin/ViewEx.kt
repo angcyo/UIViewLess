@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.ViewCompat
+import android.text.InputFilter
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.GestureDetector
@@ -625,4 +626,18 @@ public fun View.onInitView(init: (RBaseViewHolder) -> Unit) {
 
 public fun View.toBitmap(): Bitmap {
     return RUtils.saveView(this)
+}
+
+public fun EditText.addFilter(filter: InputFilter) {
+    val oldFilters = filters
+    val newFilters = arrayOfNulls<InputFilter>(oldFilters.size + 1)
+    System.arraycopy(oldFilters, 0, newFilters, 0, oldFilters.size)
+    newFilters[oldFilters.size] = filter
+    filters = newFilters
+}
+
+public fun EditText.setFilter(filter: InputFilter) {
+    val newFilters = arrayOfNulls<InputFilter>(1)
+    newFilters[0] = filter
+    filters = newFilters
 }

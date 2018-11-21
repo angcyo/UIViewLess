@@ -139,6 +139,12 @@ public class CharInputFilter implements InputFilter {
                                int dstart, //原始字符串开始的位置,
                                int dend //原始字符串结束的位置, 这种情况会在你已经选中了很多个字符, 然后用输入法输入字符的情况下.
     ) {
+
+        if (start == 0 && end == 0 && (dstart != dend)) {
+            //删除字符
+            return null;
+        }
+
         //此次操作后, 原来的字符数量
         int length = dest.length() - (dend - dstart);
         if (maxInputLength > 0) {
@@ -178,10 +184,10 @@ public class CharInputFilter implements InputFilter {
                     append = (!oldString.contains("x") &&
                             !oldString.contains("X") &&
                             !oldString.contains("×") &&
-                            (c == 'x' || c == 'X' || c=='×')
+                            (c == 'x' || c == 'X' || c == '×')
                     )
                             || append;
-                    if(append){
+                    if (append) {
                         c = 'X';
                     }
                 }
@@ -203,8 +209,14 @@ public class CharInputFilter implements InputFilter {
             int newLength = length + modification.length();
             if (newLength > maxInputLength) {
                 //越界
-                modification.delete(maxInputLength - length, modification.length());
+                modification.delete(Math.max(0, maxInputLength - length), modification.length());
             }
+        }
+
+        if (TextUtils.equals(source, modification)) {
+            //如果输入的字符, 和过滤后的字符无变化, 交给系统处理.
+            // 否则在输入法联想输入的时候会出现错乱输入的BUG
+            return null;
         }
 
         //返回修改后, 允许输入的字符串. 返回null, 由系统处理.
