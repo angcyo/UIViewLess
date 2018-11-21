@@ -27,8 +27,16 @@ public class RLogFile {
     }
 
     public static void log(String folderName, String data) {
+        log(folderName, DEFAULT_LOG_FILE_NAME, data);
+    }
+
+    public static void log(String folderName, String fileName, String data) {
         clearOldLog(folderName);
-        RUtils.saveToSDCard(folderName, DEFAULT_LOG_FILE_NAME, data);
+        RUtils.saveToSDCard(folderName, fileName, data);
+    }
+
+    public static void logFile(String fileName, String data) {
+        log(RUtils.DEFAULT_LOG_FOLDER_NAME, fileName, data);
     }
 
     /*如果磁盘空间不足, 清理之前的路径*/
