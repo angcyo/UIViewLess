@@ -49,4 +49,8 @@ public class BaseAppCompatActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void moveTaskToBack() {
+        moveTaskToBack(true);
+    }
 }
