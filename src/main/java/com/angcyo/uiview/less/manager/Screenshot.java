@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.math.MathUtils;
 import android.util.Log;
+import com.angcyo.lib.L;
 import com.angcyo.uiview.less.accessibility.ExKt;
 import com.angcyo.uiview.less.utils.Reflect;
 
@@ -316,10 +317,12 @@ public class Screenshot {
      * 唤醒手机屏幕并解锁, 点亮屏幕,解锁手机
      */
     public static void wakeUpAndUnlock(@NonNull Context context) {
-        wakeUpAndUnlock(context, true);
+        wakeUpAndUnlock(context, true, null);
     }
 
-    public static void wakeUpAndUnlock(@NonNull Context context, boolean wakeLock /*亮屏(并解锁) or 灭屏*/) {
+    public static void wakeUpAndUnlock(@NonNull Context context,
+                                       boolean wakeLock /*亮屏(并解锁) or 灭屏*/,
+                                       final Runnable succeededAction) {
         // 获取电源管理器对象
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         boolean screenOn;
@@ -339,6 +342,11 @@ public class Screenshot {
                         context.getPackageName() + ":bright");
                 wl.acquire(10000); // 点亮屏幕
                 wl.release(); // 释放
+            } else {
+                //屏幕已经是亮的
+                if (succeededAction != null) {
+                    succeededAction.run();
+                }
             }
             // 屏幕解锁
             KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
@@ -352,18 +360,24 @@ public class Screenshot {
                                 public void onDismissError() {
                                     super.onDismissError();
                                     //如果设备未锁屏的情况下, 调用此方法.会回调错误
+                                    L.i("onDismissError");
                                 }
 
                                 @Override
                                 public void onDismissSucceeded() {
                                     super.onDismissSucceeded();
                                     //输入密码解锁成功
+                                    L.i("onDismissSucceeded");
+                                    if (succeededAction != null) {
+                                        succeededAction.run();
+                                    }
                                 }
 
                                 @Override
                                 public void onDismissCancelled() {
                                     super.onDismissCancelled();
                                     //弹出密码输入框之后, 取消了会回调
+                                    L.i("onDismissCancelled");
                                 }
                             });
                 } else {
@@ -371,6 +385,12 @@ public class Screenshot {
                     // 屏幕锁定
                     keyguardLock.reenableKeyguard();
                     keyguardLock.disableKeyguard(); // 解锁
+
+                    L.i("reenableKeyguard -> disableKeyguard");
+
+                    if (succeededAction != null) {
+                        succeededAction.run();
+                    }
                 }
             }
         } else {
