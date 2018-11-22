@@ -414,6 +414,10 @@ open class BaseAccessibilityService : AccessibilityService() {
 //            return
 //        }
 
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            return
+        }
+
         if (rootInActiveWindow == null) {
             return
         }
