@@ -312,6 +312,21 @@ public class Screenshot {
         Log.i(TAG, "virtual display stopped");
     }
 
+    /**
+     * 返回屏幕是否亮屏状态
+     */
+    public static boolean isScreenOn(@NonNull Context context) {
+        // 获取电源管理器对象
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        boolean screenOn;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            screenOn = pm.isInteractive();
+        } else {
+            screenOn = pm.isScreenOn();
+        }
+
+        return screenOn;
+    }
 
     /**
      * 唤醒手机屏幕并解锁, 点亮屏幕,解锁手机
