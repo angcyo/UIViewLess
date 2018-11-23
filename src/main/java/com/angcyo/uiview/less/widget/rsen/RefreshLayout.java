@@ -259,8 +259,8 @@ public class RefreshLayout extends ViewGroup {
         }
         if (mBottomView != null) {
             //自动居中布局
-            mBottomView.layout((r - l) / 2 - mBottomView.getMeasuredWidth() / 2, b,
-                    (r - l) / 2 + mBottomView.getMeasuredWidth() / 2, b + mBottomView.getMeasuredHeight());
+            mBottomView.layout((r - l) / 2 - mBottomView.getMeasuredWidth() / 2, getMeasuredHeight(),
+                    (r - l) / 2 + mBottomView.getMeasuredWidth() / 2, getMeasuredHeight() + mBottomView.getMeasuredHeight());
         }
 
         layoutMenuView(lastTranslationTo);
