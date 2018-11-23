@@ -1603,6 +1603,33 @@ public class RUtils {
         });
     }
 
+    /**
+     * 分割文件名, [文件名(无扩展), 文件扩展名]
+     */
+    public static String[] splitFileName(String fileName) {
+        String newFileName;
+        String extName;
+
+        if (TextUtils.isEmpty(fileName)) {
+            extName = "";
+            newFileName = "";
+        } else {
+            int index = fileName.lastIndexOf('.');
+            if (index == -1) {
+                extName = "";
+                newFileName = fileName;
+            } else {
+                extName = fileName.substring(index);
+                if (index <= 0) {
+                    newFileName = "";
+                } else {
+                    newFileName = fileName.substring(0, index);
+                }
+            }
+        }
+        return new String[]{newFileName, extName};
+    }
+
     /*当日志文件大于阈值值, 自动重命名保存*/
     private static File scanLastFile(final String folderName, String fileName) {
         String saveFolder = Root.getAppExternalFolder(folderName);
@@ -1616,20 +1643,16 @@ public class RUtils {
         File file = new File(saveFolder, fileName);
         if (file.length() >= maxFileSize /*大于10MB重命名*/) {
 
-            String newFileName;
-            String extName;
+            String[] splitFileName = splitFileName(fileName);
 
-            int index = fileName.lastIndexOf('.');
-            if (index == -1) {
-                extName = "";
-            } else {
-                extName = fileName.substring(index);
-                if (index <= 0) {
-                    fileName = "unknown";
-                } else {
-                    fileName = fileName.substring(0, index);
-                }
+            String newFileName = splitFileName[0];
+            String extName = splitFileName[1];
+
+            if (TextUtils.isEmpty(newFileName)) {
+                newFileName = "unknown";
             }
+
+            fileName = newFileName;
 
             String[] list = folder.list();
             int size = list.length;

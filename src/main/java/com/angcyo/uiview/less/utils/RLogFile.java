@@ -31,7 +31,7 @@ public class RLogFile {
     }
 
     public static void log(String folderName, String fileName, String data) {
-        clearOldLog(folderName);
+        clearOldLog(folderName, fileName);
         RUtils.saveToSDCard(folderName, fileName, data);
     }
 
@@ -40,7 +40,7 @@ public class RLogFile {
     }
 
     /*如果磁盘空间不足, 清理之前的路径*/
-    private static void clearOldLog(String folderName) {
+    private static void clearOldLog(String folderName, String fileName) {
         try {
             //52768120832 39702720512  52.77吉字节 39.70吉字节
 
@@ -61,9 +61,14 @@ public class RLogFile {
 
                     for (File f : fileList) {
                         try {
-                            f.delete();
-                            clearOldLog(folderName);
-                            break;
+
+                            String[] splitFileName = RUtils.splitFileName(fileName);
+                            String newFileName = splitFileName[0];
+                            if (f.getName().startsWith(newFileName)) {
+                                f.delete();
+                                clearOldLog(folderName, fileName);
+                                break;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
