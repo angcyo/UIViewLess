@@ -1,5 +1,6 @@
 package com.angcyo.uiview.less.base;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +11,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.tbruyelle.rxpermissions.Permission;
+import com.tbruyelle.rxpermissions.RxPermissions;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Email:angcyo@126.com
@@ -20,6 +26,8 @@ import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 public class BaseAppCompatActivity extends AppCompatActivity {
 
     protected RBaseViewHolder viewHolder;
+
+    protected RxPermissions mRxPermissions;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,5 +60,114 @@ public class BaseAppCompatActivity extends AppCompatActivity {
 
     public void moveTaskToBack() {
         moveTaskToBack(true);
+    }
+
+    protected void checkPermissions() {
+        checkPermissionsResult(needPermissions(), new Action1<String>() {
+            @Override
+            public void call(String string) {
+//                onPermissionDenied(string);
+                if (string.contains("0")) {
+                    //有权限被拒绝
+                    onPermissionDenied(string);
+                } else {
+                    //所有权限通过
+                    onLoadViewAfterPermission(getIntent());
+                }
+            }
+        });
+    }
+
+    public void checkPermissionsResult(String[] permissions, final Action1<String> onResult) {
+        if (mRxPermissions == null) {
+            mRxPermissions = new RxPermissions(this);
+        }
+        mRxPermissions.requestEach(permissions)
+                .map(new Func1<Permission, String>() {
+                    @Override
+                    public String call(Permission permission) {
+                        if (permission.granted) {
+                            return permission.name + "1";
+                        }
+                        return permission.name + "0";
+                    }
+                })
+                .scan(new Func2<String, String, String>() {
+                    @Override
+                    public String call(String s, String s2) {
+                        return s + ":" + s2;
+                    }
+                })
+                .last()
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        L.e("\n" + this.getClass().getSimpleName() + " 权限状态-->\n"
+                                + s.replaceAll("1", " 允许").replaceAll("0", " 拒绝").replaceAll(":", "\n"));
+                        onResult.call(s);
+                    }
+                });
+//                .subscribe(new Action1<Permission>() {
+//                    @Override
+//                    public void call(Permission permission) {
+//                        if (permission.granted) {
+//                            T.show(UILayoutActivity.this, "权限允许");
+//                        } else {
+//                            notifyAppDetailView();
+//                            T.show(UILayoutActivity.this, "权限被拒绝");
+//                        }
+//                    }
+//                });
+    }
+
+    public void checkPermissions(String[] permissions, final Action1<Boolean> onResult) {
+        if (this.isDestroyed()) {
+            return;
+        }
+
+        checkPermissionsResult(permissions, new Action1<String>() {
+            @Override
+            public void call(String s) {
+                if (s.contains("0")) {
+                    //有权限被拒绝
+                    onResult.call(false);
+                } else {
+                    //所欲权限通过
+                    onResult.call(true);
+                }
+            }
+        });
+    }
+
+    /**
+     * 权限通过后回调
+     */
+    protected void onLoadViewAfterPermission(Intent intent) {
+
+    }
+
+    /**
+     * 权限拒绝后回调
+     */
+    protected void onPermissionDenied(String permission) {
+//        startIView(new PermissionDeniedUIView(
+//                        permission.replaceAll("1", "").replaceAll("0", "")),
+//                false);
+////        finishSelf();
+//        //notifyAppDetailView();
+////        T_.show("必要的权限被拒绝!");
+    }
+
+    protected String[] needPermissions() {
+        return new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                Manifest.permission.READ_PHONE_STATE,
+//                Manifest.permission.ACCESS_WIFI_STATE
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.RECORD_AUDIO,
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.READ_CONTACTS
+        };
     }
 }
