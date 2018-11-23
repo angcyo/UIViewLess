@@ -22,6 +22,7 @@ import android.os.Looper;
 import android.os.Process;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
@@ -29,8 +30,12 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.util.LruCache;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import com.angcyo.http.Rx;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.RApplication;
@@ -1389,13 +1394,21 @@ public class RUtils {
      * 分享图片对象
      */
     public static void shareBitmap(Context context, Bitmap bitmap) {
+
+    }
+
+    public static void shareBitmap(Context context, Bitmap bitmap, boolean shareQQ) {
         Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null));
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_SEND);//设置分享行为
         intent.setType("image/*");//设置分享内容的类型
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent = Intent.createChooser(intent, "分享图片");
+        if (shareQQ) {
+            configQQIntent(intent);
+        } else {
+            intent = Intent.createChooser(intent, "分享图片");
+        }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -1439,6 +1452,10 @@ public class RUtils {
     }
 
     public static void shareText(Context context, final String title, final String text) {
+        shareText(context, title, text, false);
+    }
+
+    public static void shareText(Context context, final String title, final String text, boolean shareQQ /*强制使用QQ分享*/) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         if (TextUtils.isEmpty(title)) {
@@ -1450,9 +1467,27 @@ public class RUtils {
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        context.startActivity(Intent.createChooser(intent, "选择分享")
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+        //List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
+
+        if (shareQQ) {
+            configQQIntent(intent);
+            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else {
+            context.startActivity(Intent.createChooser(intent, "选择分享")
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
     }
+
+    private static void configQQIntent(Intent intent) {
+//        intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI");//微信朋友
+//        intent.setClassName("com.tencent.mobileqq", "cooperation.qqfav.widget.QfavJumpActivity");//保存到QQ收藏
+//        intent.setClassName("com.tencent.mobileqq", "cooperation.qlink.QlinkShareJumpActivity");//QQ面对面快传
+//        intent.setClassName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.qfileJumpActivity");//传给我的电脑
+        intent.setClassName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity");//QQ好友或QQ群
+//        intent.setClassName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI");//微信朋友圈，仅支持分享图片
+    }
+
 
     /**
      * 摄像头是否可用
@@ -1667,6 +1702,33 @@ public class RUtils {
             }
         }
         return file;
+    }
+
+    /**
+     * 将文本转成图片
+     */
+    public static Bitmap textToBitmap(@NonNull Context context, @NonNull String text) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int padding = (int) (metrics.density * 4);
+
+        FrameLayout frameLayout = new FrameLayout(context);
+        frameLayout.setBackgroundColor(Color.WHITE);
+
+        TextView textView = new TextView(context);
+        textView.setText(text);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 8);
+        frameLayout.setPadding(padding, padding, padding, padding);
+        frameLayout.addView(textView, new ViewGroup.LayoutParams(-2, -2));
+
+        frameLayout.measure(View.MeasureSpec.makeMeasureSpec(metrics.widthPixels, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(metrics.heightPixels, View.MeasureSpec.AT_MOST));
+        frameLayout.layout(0, 0, frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        frameLayout.draw(canvas);
+
+        return bitmap;
     }
 
     /**
