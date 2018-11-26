@@ -360,7 +360,8 @@ public class Screenshot {
             } else {
                 //屏幕已经是亮的
                 if (succeededAction != null) {
-                    succeededAction.run();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(succeededAction);
                 }
             }
             // 屏幕解锁
@@ -384,7 +385,8 @@ public class Screenshot {
                                     //输入密码解锁成功
                                     L.i("onDismissSucceeded");
                                     if (succeededAction != null) {
-                                        succeededAction.run();
+                                        Handler handler = new Handler(Looper.getMainLooper());
+                                        handler.post(succeededAction);
                                     }
                                 }
 
@@ -404,7 +406,8 @@ public class Screenshot {
                     L.i("reenableKeyguard -> disableKeyguard");
 
                     if (succeededAction != null) {
-                        succeededAction.run();
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(succeededAction);
                     }
                 }
             }
