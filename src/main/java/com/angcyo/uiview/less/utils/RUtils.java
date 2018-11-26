@@ -1689,7 +1689,7 @@ public class RUtils {
 
             fileName = newFileName;
 
-            String[] list = folder.list();
+            String[] list = folder.list();//如果列表文件很多, 比如20W+, 会OOM
             int size = list.length;
 
             for (int i = size; i < Integer.MAX_VALUE; i++) {
