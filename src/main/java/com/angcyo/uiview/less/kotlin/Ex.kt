@@ -314,12 +314,12 @@ public fun ByteArray.toBitmap(): Bitmap {
     return BitmapFactory.decodeByteArray(this, 0, this.size)
 }
 
-public fun Bitmap.share(context: Context, shareQQ: Boolean = false) {
-    RUtils.shareBitmap(context, this, shareQQ)
+public fun Bitmap.share(context: Context, shareQQ: Boolean = false, chooser: Boolean = true) {
+    RUtils.shareBitmap(context, this, shareQQ, chooser)
 }
 
-public fun String.share(context: Context, shareQQ: Boolean = false) {
-    RUtils.shareText(context, null, this, shareQQ)
+public fun String.share(context: Context, shareQQ: Boolean = false, chooser: Boolean = true) {
+    RUtils.shareText(context, null, this, shareQQ, chooser)
 }
 
 public fun String.startApp(context: Context) {
@@ -328,6 +328,10 @@ public fun String.startApp(context: Context) {
 
 public fun String.copy() {
     RUtils.copyText(this)
+}
+
+public fun String.toBitmap(context: Context): Bitmap {
+    return RUtils.textToBitmap(context, this)
 }
 
 public fun Context.runMain() {

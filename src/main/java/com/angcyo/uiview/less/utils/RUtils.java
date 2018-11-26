@@ -1394,20 +1394,44 @@ public class RUtils {
      * 分享图片对象
      */
     public static void shareBitmap(Context context, Bitmap bitmap) {
-
+        shareBitmap(context, bitmap, false, true);
     }
 
-    public static void shareBitmap(Context context, Bitmap bitmap, boolean shareQQ) {
+//    public static void shareBitmap(Context context, byte[] data, boolean shareQQ) {
+//        Intent intent = new Intent();
+//        intent.setAction(Intent.ACTION_SEND);//设置分享行为
+//        intent.setType("image/*");//设置分享内容的类型
+//        intent.putExtra(Intent.EXTRA_STREAM, data);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
+//        List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
+//
+//        if (shareQQ) {
+//            configQQIntent(intent);
+//        } else {
+//            intent = Intent.createChooser(intent, "分享图片");
+//        }
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        context.startActivity(intent);
+//    }
+
+    public static void shareBitmap(Context context, Bitmap bitmap, boolean shareQQ, boolean chooser) {
         Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null));
         Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_SEND);//设置分享行为
         intent.setType("image/*");//设置分享内容的类型
         intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        //List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
+
         if (shareQQ) {
             configQQIntent(intent);
+            if (chooser) {
+                intent = Intent.createChooser(intent, "分享图片");//QQ WX分享的BUG
+            }
         } else {
-            intent = Intent.createChooser(intent, "分享图片");
+            intent = Intent.createChooser(intent, "分享图片");//QQ WX分享的BUG
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
@@ -1452,10 +1476,11 @@ public class RUtils {
     }
 
     public static void shareText(Context context, final String title, final String text) {
-        shareText(context, title, text, false);
+        shareText(context, title, text, false, true);
     }
 
-    public static void shareText(Context context, final String title, final String text, boolean shareQQ /*强制使用QQ分享*/) {
+    public static void shareText(Context context, final String title, final String text,
+                                 boolean shareQQ /*强制使用QQ分享*/, boolean chooser) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         if (TextUtils.isEmpty(title)) {
@@ -1472,7 +1497,11 @@ public class RUtils {
 
         if (shareQQ) {
             configQQIntent(intent);
-            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            if (chooser) {
+                intent = Intent.createChooser(intent, "选择分享")
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            context.startActivity(intent);
         } else {
             context.startActivity(Intent.createChooser(intent, "选择分享")
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
