@@ -47,6 +47,16 @@ public class BaseService extends Service implements Handler.Callback {
         }
     }
 
+    public static void start(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //在 API 28 上, 需要 android.permission.FOREGROUND_SERVICE 权限
+            context.startForegroundService(intent);
+        } else {
+            // Pre-O behavior.
+            context.startService(intent);
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
