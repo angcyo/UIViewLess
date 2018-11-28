@@ -60,4 +60,9 @@ public class RDialog {
         });
         builder.show();
     }
+
+    public static AlertDialog.Builder builder(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        return builder;
+    }
 }

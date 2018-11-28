@@ -9,6 +9,7 @@ import android.support.multidex.MultiDex;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import com.angcyo.lib.L;
+import com.angcyo.okdownload.FDown;
 import com.angcyo.uiview.less.manager.RNotifier;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.utils.*;
@@ -170,6 +171,8 @@ public class RApplication extends Application {
 
         isLowDevice = isLowDevice();
         isHighDevice = isHighDevice();
+
+        FDown.init(this);
     }
 
     @Override

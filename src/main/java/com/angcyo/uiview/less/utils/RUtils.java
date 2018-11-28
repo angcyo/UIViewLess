@@ -42,6 +42,7 @@ import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.RCrashHandler;
 import com.angcyo.uiview.less.utils.permission.SettingsCompat;
 import com.angcyo.uiview.less.utils.rsa.Base64Utils;
+import com.angcyo.uiview.less.utils.utilcode.utils.AppUtils;
 import com.angcyo.uiview.less.utils.utilcode.utils.ClipboardUtils;
 import com.angcyo.uiview.less.utils.utilcode.utils.FileUtils;
 import com.angcyo.uiview.less.widget.ExEditText;
@@ -2900,5 +2901,13 @@ public class RUtils {
     public static class QueryAppBean {
         public AppInfo mAppInfo;
         public Intent startIntent;
+    }
+
+    public static void installApp(Context context, String apkPath) {
+        AppUtils.installApp(context, apkPath);
+    }
+
+    public static void installApp(Context context, File apkFile) {
+        AppUtils.installApp(context, apkFile);
     }
 }
