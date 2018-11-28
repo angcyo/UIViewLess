@@ -1721,7 +1721,7 @@ public class RUtils {
             String[] list = folder.list();//如果列表文件很多, 比如20W+, 会OOM
             int size = list.length;
 
-            for (int i = size; i < Integer.MAX_VALUE; i++) {
+            for (int i = 1; i < Integer.MAX_VALUE; i++) {
                 newFileName = fileName + String.format("_%05d", i) + extName;
                 file = new File(saveFolder, newFileName);
                 if (file.length() >= maxFileSize /*大于10MB重命名*/) {
