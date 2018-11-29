@@ -145,8 +145,14 @@ public class CharInputFilter implements InputFilter {
             return null;
         }
 
+        //此次操作后, 原来的字符修改后的新值
+        StringBuilder newDest = new StringBuilder();
+        newDest.append(dest.subSequence(0, dstart));
+        newDest.append(dest.subSequence(dend, dest.length()));
+        int length = newDest.length();
+
         //此次操作后, 原来的字符数量
-        int length = dest.length() - (dend - dstart);
+        //int length = dest.length() - (dend - dstart);
         if (maxInputLength > 0) {
             if (length == maxInputLength) {
                 return "";
@@ -180,14 +186,13 @@ public class CharInputFilter implements InputFilter {
             }
             if ((filterModel & MODEL_ID_CARD) == MODEL_ID_CARD) {
                 if (length == 14 || length == 17) {
-                    String oldString = dest.toString();
+                    String oldString = newDest.toString();
+                    //本次输入的是x X 乘号
                     append = (!oldString.contains("x") &&
                             !oldString.contains("X") &&
-                            !oldString.contains("×") &&
-                            (c == 'x' || c == 'X' || c == '×')
-                    )
-                            || append;
-                    if (append) {
+                            (c == 'x' || c == 'X' || c == '×')) || append;
+
+                    if (c == '×') {
                         c = 'X';
                     }
                 }
