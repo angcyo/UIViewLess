@@ -3,11 +3,14 @@ package com.angcyo.uiview.less.base;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
@@ -35,6 +38,9 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         viewHolder = new RBaseViewHolder(getWindow().getDecorView());
 
         L.v("taskId:" + getTaskId());
+
+        //ActivityHelper.setStatusBarColor(this, Color.YELLOW);
+        //ActivityHelper.setStatusBarDrawable(this, getDrawableCompat(R.drawable.base_nav_shadow));
     }
 
     /**
@@ -177,5 +183,9 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         if (hasFocus) {
             Debug.addDebugTextView(this);
         }
+    }
+
+    public Drawable getDrawableCompat(@DrawableRes int res) {
+        return ContextCompat.getDrawable(this, res);
     }
 }
