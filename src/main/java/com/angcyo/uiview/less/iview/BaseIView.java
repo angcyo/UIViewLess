@@ -191,6 +191,7 @@ public abstract class BaseIView {
                     endRunnable.run();
                 }
             });
+            startAnimation(getAnimationView(), animation);
         }
     }
 
@@ -227,6 +228,7 @@ public abstract class BaseIView {
                             removeRunnable.run();
                         }
                     });
+                    startAnimation(getAnimationView(), animation);
                 }
             }
         }
@@ -251,6 +253,22 @@ public abstract class BaseIView {
             rootView.postDelayed(action, delay);
         }
     }
+
+    protected void startAnimation(@Nullable View view, @Nullable Animation animation) {
+        if (view == null || animation == null) {
+
+        } else {
+            view.startAnimation(animation);
+        }
+    }
+
+    /**
+     * 返回需要作用动画的View
+     */
+    protected View getAnimationView() {
+        return rootView;
+    }
+
 
     public static abstract class AnimationEnd implements Animation.AnimationListener {
         @Override

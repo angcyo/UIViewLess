@@ -51,6 +51,7 @@ public class Root {
         builder.append("m:").append(Build.MODEL).append(" ");
         builder.append("d:").append(Build.DEVICE).append(" ");
         builder.append("h:").append(Build.HARDWARE).append(" ");
+        builder.append(ResUtil.getThemeString(RApplication.getApp(), "user_name"));
 
         return builder.toString();
     }
