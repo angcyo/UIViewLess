@@ -207,11 +207,11 @@ public class BaseAppCompatActivity extends AppCompatActivity {
 
         boolean needDo = true;
         if (fragment.isAdded()) {
-            if (fragment.isHidden()) {
+//            if (fragment.isHidden()) {
                 transaction.show(fragment);
-            } else {
-                needDo = false;
-            }
+//            } else {
+//                needDo = false;
+//            }
         } else {
             //如果是恢复模式, 可以拿到系统恢复的对象
             Fragment fragmentByTag = manager.findFragmentByTag(tag);

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.angcyo.lib.L;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
@@ -24,11 +25,13 @@ public class BaseFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        L.d(this.getClass().getSimpleName() + " " + hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        L.d(this.getClass().getSimpleName() + " " + isVisibleToUser);
     }
 
     @Override
@@ -71,11 +74,13 @@ public class BaseFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
@@ -86,26 +91,31 @@ public class BaseFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        L.d(this.getClass().getSimpleName());
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        L.d(this.getClass().getSimpleName());
     }
     //</editor-fold>
 
