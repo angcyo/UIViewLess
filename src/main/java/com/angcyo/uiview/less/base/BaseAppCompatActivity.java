@@ -9,7 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
@@ -187,5 +191,47 @@ public class BaseAppCompatActivity extends AppCompatActivity {
 
     public Drawable getDrawableCompat(@DrawableRes int res) {
         return ContextCompat.getDrawable(this, res);
+    }
+
+    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout) {
+        return showFragment(fragment, parentLayout, false);
+    }
+
+    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout, boolean stateLoss) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+        Fragment result = fragment;
+
+        String tag = fragment.getClass().getSimpleName();
+
+        boolean needDo = true;
+        if (fragment.isAdded()) {
+            if (fragment.isHidden()) {
+                transaction.show(fragment);
+            } else {
+                needDo = false;
+            }
+        } else {
+            //如果是恢复模式, 可以拿到系统恢复的对象
+            Fragment fragmentByTag = manager.findFragmentByTag(tag);
+
+            if (fragmentByTag == null) {
+                transaction.add(parentLayout, fragment, tag);
+            } else {
+                result = fragmentByTag;
+                needDo = false;
+            }
+        }
+
+        if (needDo) {
+            if (stateLoss) {
+                transaction.commitAllowingStateLoss();
+            } else {
+                transaction.commit();
+            }
+        }
+
+        return result;
     }
 }
