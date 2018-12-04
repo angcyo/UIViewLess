@@ -44,7 +44,7 @@ public class RDrawIOSSwitch extends BaseDraw {
     private int trackOffColor = Color.parseColor("#EBEBEB");
     private int trackOnColor = Color.parseColor("#FFE300");
     private int shadowColor = Color.parseColor("#10000000");
-    private int borderColor = Color.parseColor("#e1e1e1");
+    private int borderColor = Color.parseColor("#e9e9e9");
     private int borderWidth = (int) (2 * density());
 
     /**
