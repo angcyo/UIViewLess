@@ -54,7 +54,7 @@ public class RDrawNoRead extends BaseDraw {
     }
 
     @Override
-    protected void initAttribute(AttributeSet attr) {
+    public void initAttribute(AttributeSet attr) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attr, R.styleable.RDrawNoread);
         showNoRead = typedArray.getBoolean(R.styleable.RDrawNoread_r_show_noread, showNoRead);
         noReadRadius = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoread_r_noread_radius, (int) noReadRadius);

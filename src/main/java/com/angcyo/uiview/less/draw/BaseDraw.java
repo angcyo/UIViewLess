@@ -34,6 +34,11 @@ public abstract class BaseDraw {
     public Paint mBasePaint;
     protected View mView;
 
+    /**
+     * 去除padding后, 允许绘制的区域
+     */
+    protected RectF mDrawRectF;
+
     public BaseDraw(@NonNull View view) {
         this(view, null);
     }
@@ -49,6 +54,8 @@ public abstract class BaseDraw {
         mBasePaint.setStyle(Paint.Style.FILL);
         mBasePaint.setTextSize(12 * density());
         mBasePaint.setColor(getBaseColor());
+
+        mDrawRectF = new RectF();
 
         //initAttribute(attr);//父类当中调用此方法初始化子类的成员, 会导致被覆盖的BUG
         //所以此方法, 请在子类当中触发
@@ -152,26 +159,30 @@ public abstract class BaseDraw {
     }
 
     public void draw(@NonNull Canvas canvas) {
-
+        mDrawRectF.set(getPaddingLeft(), getPaddingTop(), getViewWidth() - getPaddingRight(), getViewHeight() - getPaddingBottom());
     }
 
     public void onDraw(@NonNull Canvas canvas) {
-
+        mDrawRectF.set(getPaddingLeft(), getPaddingTop(), getViewWidth() - getPaddingRight(), getViewHeight() - getPaddingBottom());
     }
 
     protected TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) {
         return getContext().obtainStyledAttributes(set, attrs);
     }
 
-    protected abstract void initAttribute(AttributeSet attr);
+    public abstract void initAttribute(AttributeSet attr);
 
+    @Deprecated
     public int measureDrawWidth() {
         return mView.getMeasuredWidth();
     }
 
+    @Deprecated
     public int measureDrawHeight() {
         return (int) (mBasePaint.descent() - mBasePaint.ascent());
     }
+
+    private int[] measureTemp = new int[2];
 
     public int[] measureDraw(int widthMeasureSpec, int heightMeasureSpec) {
         //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -182,14 +193,41 @@ public abstract class BaseDraw {
 
         if (widthMode == View.MeasureSpec.AT_MOST) {
             //wrap_content
-            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawWidth(), View.MeasureSpec.EXACTLY);
+            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawWidth(widthSize, widthMode), View.MeasureSpec.EXACTLY);
         }
 
         if (heightMode == View.MeasureSpec.AT_MOST) {
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawHeight(), View.MeasureSpec.EXACTLY);
+            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawHeight(heightSize, heightMode), View.MeasureSpec.EXACTLY);
         }
 
-        return new int[]{widthMeasureSpec, heightMeasureSpec};
+        measureTemp[0] = widthMeasureSpec;
+        measureTemp[1] = heightMeasureSpec;
+        return measureTemp;
+    }
+
+    /**
+     * 返回测量Draw的宽度
+     */
+    public int measureDrawWidth(int widthSize, int widthMode) {
+        return measureDrawWidth();
+    }
+
+    /**
+     * 返回测量Draw的高度
+     */
+    public int measureDrawHeight(int heightSize, int heightMode) {
+        return measureDrawHeight();
+    }
+
+
+    //wrap_content
+    protected boolean isWrapContent(int mode) {
+        return mode == View.MeasureSpec.AT_MOST;
+    }
+
+    //match_parent
+    protected boolean isMatchParent(int mode) {
+        return mode == View.MeasureSpec.EXACTLY;
     }
 
     public int drawCenterX() {
@@ -217,5 +255,19 @@ public abstract class BaseDraw {
         rectF.set(getPaddingLeft(), getPaddingTop(),
                 getPaddingLeft() + size, getPaddingTop() + size);
         return rectF;
+    }
+
+    /**
+     * 竖直方向上的padding
+     */
+    protected int getPaddingVertical() {
+        return getPaddingTop() + getPaddingBottom();
+    }
+
+    /**
+     * 水平方向上的padding
+     */
+    protected int getPaddingHorizontal() {
+        return getPaddingLeft() + getPaddingRight();
     }
 }

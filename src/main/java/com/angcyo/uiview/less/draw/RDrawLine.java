@@ -42,7 +42,7 @@ public class RDrawLine extends BaseDraw {
     }
 
     @Override
-    protected void initAttribute(AttributeSet attr) {
+    public void initAttribute(AttributeSet attr) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attr, R.styleable.RDrawLine);
 
         drawLine = typedArray.getInt(R.styleable.RDrawLine_r_draw_line, drawLine);

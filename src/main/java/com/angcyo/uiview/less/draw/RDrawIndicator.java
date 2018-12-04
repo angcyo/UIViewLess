@@ -39,7 +39,7 @@ public class RDrawIndicator extends BaseDraw {
     }
 
     @Override
-    protected void initAttribute(AttributeSet attr) {
+    public void initAttribute(AttributeSet attr) {
         final float density = getResources().getDisplayMetrics().density;
         mCircleSize *= density;
         mCircleSpace *= density;
