@@ -56,15 +56,15 @@ public class BaseFragment extends AbsFragment implements IFragment {
 
     //<editor-fold desc="自定义, 可以重写 的方法">
 
-    protected void switchVisible(boolean visible) {
+    protected void switchVisible(boolean visible /*可见*/) {
         if (isFragmentVisible == visible) {
             return;
         }
         isFragmentVisible = visible;
         if (visible) {
-            onFragmentHide();
-        } else {
             onFragmentShow(null);
+        } else {
+            onFragmentHide();
         }
     }
 
