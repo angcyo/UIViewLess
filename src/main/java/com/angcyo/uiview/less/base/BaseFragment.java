@@ -18,7 +18,8 @@ import com.angcyo.uiview.less.resources.ResUtil;
  * Created by angcyo on 2018/12/03 23:17
  */
 public class BaseFragment extends Fragment {
-    RBaseViewHolder baseViewHolder;
+    protected RBaseViewHolder baseViewHolder;
+    protected Context mAttachContext;
 
     //<editor-fold desc="生命周期, 系统的方法">
 
@@ -42,6 +43,7 @@ public class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mAttachContext = context;
         L.d(this.getClass().getSimpleName() + " " + context);
     }
 
