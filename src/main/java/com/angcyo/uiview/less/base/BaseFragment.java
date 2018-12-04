@@ -42,11 +42,13 @@ public class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        L.d(this.getClass().getSimpleName() + " " + context);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        L.d(this.getClass().getSimpleName() + " " + savedInstanceState);
     }
 
     @Nullable
