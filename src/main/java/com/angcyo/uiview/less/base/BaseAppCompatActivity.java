@@ -198,6 +198,10 @@ public class BaseAppCompatActivity extends AppCompatActivity {
     }
 
     public Fragment showFragment(@NonNull Fragment fragment, int parentLayout, boolean stateLoss) {
+        return showFragment(fragment, null, parentLayout, stateLoss);
+    }
+
+    public Fragment showFragment(@NonNull Fragment fragment, @Nullable Fragment hideFragment, int parentLayout, boolean stateLoss) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
@@ -223,6 +227,11 @@ public class BaseAppCompatActivity extends AppCompatActivity {
                 result = fragmentByTag;
                 needDo = false;
             }
+        }
+
+        if (hideFragment != null) {
+            transaction.hide(hideFragment);
+            needDo = true;
         }
 
         if (needDo) {
