@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="r_switch_thumb_color" format="reference|color"/>
+    <attr name="r_switch_border_color" format="reference|color"/>
     <attr name="r_switch_track_off_color" format="reference|color"/>
     <attr name="r_switch_track_on_color" format="reference|color"/>
     <attr name="r_switch_shadow_color" format="reference|color"/>
     <attr name="r_switch_shadow_radius" format="dimension"/>
     <attr name="r_switch_thumb_offset" format="dimension"/>
+    <attr name="r_switch_border_width" format="dimension"/>
 
     <declare-styleable name="RIOSSwitch">
         <attr name="r_switch_thumb_color"/>
         <attr name="r_switch_track_off_color"/>
+        <attr name="r_switch_border_color"/>
         <attr name="r_switch_track_on_color"/>
         <attr name="r_switch_shadow_color"/>
         <attr name="r_switch_shadow_radius"/>
         <attr name="r_switch_thumb_offset"/>
+        <attr name="r_switch_border_width"/>
     </declare-styleable>
 
     <declare-styleable name="RDrawIOSSwitch">
         <attr name="r_switch_thumb_color"/>
         <attr name="r_switch_track_off_color"/>
         <attr name="r_switch_track_on_color"/>
+        <attr name="r_switch_border_color"/>
         <attr name="r_switch_shadow_color"/>
         <attr name="r_switch_shadow_radius"/>
+        <attr name="r_switch_border_width"/>
         <attr name="r_switch_thumb_offset"/>
     </declare-styleable>
 </resources>

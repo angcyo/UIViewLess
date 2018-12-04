@@ -5,11 +5,13 @@ import android.animation.ValueAnimator;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.v4.math.MathUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import com.angcyo.uiview.less.R;
 
@@ -42,6 +44,8 @@ public class RDrawIOSSwitch extends BaseDraw {
     private int trackOffColor = Color.parseColor("#EBEBEB");
     private int trackOnColor = Color.parseColor("#FFE300");
     private int shadowColor = Color.parseColor("#10000000");
+    private int borderColor = Color.parseColor("#e1e1e1");
+    private int borderWidth = (int) (2 * density());
 
     /**
      * 浮子阴影
@@ -59,6 +63,7 @@ public class RDrawIOSSwitch extends BaseDraw {
      * 动画轨道矩形控制
      */
     private RectF animThumbRectF = new RectF();
+    private RectF borderRectF = new RectF();
 
     public RDrawIOSSwitch(View view) {
         super(view);
@@ -73,9 +78,11 @@ public class RDrawIOSSwitch extends BaseDraw {
         trackOffColor = array.getColor(R.styleable.RDrawIOSSwitch_r_switch_track_off_color, trackOffColor);
         trackOnColor = array.getColor(R.styleable.RDrawIOSSwitch_r_switch_track_on_color, trackOnColor);
         shadowColor = array.getColor(R.styleable.RDrawIOSSwitch_r_switch_shadow_color, shadowColor);
+        borderColor = array.getColor(R.styleable.RDrawIOSSwitch_r_switch_border_color, borderColor);
 
         shadowRadius = array.getDimensionPixelOffset(R.styleable.RDrawIOSSwitch_r_switch_shadow_radius, (int) shadowRadius);
         thumbOffset = array.getDimensionPixelOffset(R.styleable.RDrawIOSSwitch_r_switch_thumb_offset, thumbOffset);
+        borderWidth = array.getDimensionPixelOffset(R.styleable.RDrawIOSSwitch_r_switch_border_width, borderWidth);
 
         array.recycle();
     }
@@ -94,7 +101,7 @@ public class RDrawIOSSwitch extends BaseDraw {
         //浮子绘制进度 0-1f
         float progress = thumbDrawProgress;
         //轨道进度 快一点执行, 视差效果
-        float thumbProgress = trackDrawProgress;
+        float thumbProgress = trackDrawProgress * 2;
         //浮子半径
         float thumbRadius = (mDrawRectF.height() - 2 * thumbOffset) / 2;
         //浮子中心点允许绘制开始的x坐标
@@ -105,6 +112,8 @@ public class RDrawIOSSwitch extends BaseDraw {
         float thumbDrawX = thumbStartX + (thumbEndX - thumbStartX) * progress;
 
         /*轨道绘制*/
+        mBasePaint.setStrokeWidth(0f);
+        mBasePaint.setStyle(Paint.Style.FILL);
         mBasePaint.clearShadowLayer();
         mBasePaint.setColor(trackOnColor);
         canvas.drawRoundRect(mDrawRectF, trackRadius, trackRadius, mBasePaint);
@@ -114,27 +123,44 @@ public class RDrawIOSSwitch extends BaseDraw {
         animThumbRectF.set(mDrawRectF);
 
         //这段代码可以实现平移动画
-//        animThumbRectF.left = mDrawRectF.left + mDrawRectF.width() * thumbProgress;
-//
-//        //左平移动画
-//        if (animThumbRectF.left >= thumbEndX - thumbRadius) {
-//            //限制left最大坐标
-//            animThumbRectF.left = thumbEndX - thumbRadius;
-//
-//            //轨道缩小动画
-//            animThumbRectF.inset((animThumbRectF.height() * thumbProgress) / 2,
-//                    (mDrawRectF.height() * thumbProgress) / 2);
-//        }
+        animThumbRectF.left = mDrawRectF.left + mDrawRectF.width() * thumbProgress;
 
-        //这段代码可以实现缩放动画
-        //轨道缩小动画
-        animThumbRectF.inset((mDrawRectF.width() * thumbProgress) / 2,
-                (mDrawRectF.height() * thumbProgress) / 2);
+        //左平移动画
+        if (animThumbRectF.left >= thumbEndX - thumbRadius) {
+            //限制left最大坐标
+            animThumbRectF.left = thumbEndX - thumbRadius;
+
+            thumbProgress = thumbProgress / 2;
+
+            //轨道缩小动画
+            animThumbRectF.inset((animThumbRectF.height() * thumbProgress) / 2,
+                    (mDrawRectF.height() * thumbProgress) / 2);
+        }
+
+
+//        //这段代码可以实现缩放动画
+//        //轨道缩小动画
+//        animThumbRectF.inset((mDrawRectF.width() * thumbProgress) / 2,
+//                (mDrawRectF.height() * thumbProgress) / 2);
+//
+//        animThumbRectF.offset((mDrawRectF.width() * thumbProgress) / 2, 0f);
 
         canvas.drawRoundRect(animThumbRectF, trackRadius, trackRadius, mBasePaint);
         /*end*/
 
+        if (progress <= 0.2f) {
+            //绘制边框
+            mBasePaint.setColor(borderColor);
+            mBasePaint.setStrokeWidth(borderWidth);
+            mBasePaint.setStyle(Paint.Style.STROKE);
+            borderRectF.set(mDrawRectF);
+            borderRectF.inset(borderWidth / 2, borderWidth / 2);
+            canvas.drawRoundRect(borderRectF, trackRadius, trackRadius, mBasePaint);
+        }
+
         /*浮子绘制*/
+        mBasePaint.setStrokeWidth(0f);
+        mBasePaint.setStyle(Paint.Style.FILL);
         mBasePaint.setColor(thumbColor);
         mBasePaint.setShadowLayer(shadowRadius, 0, 0, shadowColor);
         canvas.drawCircle(thumbDrawX, mDrawRectF.centerY(), thumbRadius, mBasePaint);
@@ -211,11 +237,11 @@ public class RDrawIOSSwitch extends BaseDraw {
         thumbAnimation = ValueAnimator.ofFloat(0f, 1f);
         trackAnimation = ValueAnimator.ofFloat(0f, 1f);
 
-        final long duration = 700;
+        final long duration = 500;
         final long delay = 160;
 
         thumbAnimation.setInterpolator(new LinearInterpolator());
-        trackAnimation.setInterpolator(new LinearInterpolator());
+        trackAnimation.setInterpolator(new AccelerateInterpolator());
         thumbAnimation.setDuration(duration);
         trackAnimation.setDuration(duration);
 
@@ -224,11 +250,15 @@ public class RDrawIOSSwitch extends BaseDraw {
 //            //需要打开
 //            //thumbAnimation.setStartDelay(delay);
 //
-//            thumbAnimation.setDuration(duration + delay);
+//            //thumbAnimation.setDuration(duration + delay);
+//
+//            trackAnimation.setInterpolator(new DecelerateInterpolator());
 //        } else if (progress <= 0f) {
 //            //需要关闭
 //            //trackAnimation.setStartDelay(delay);
-//            trackAnimation.setDuration(duration + delay);
+//            //trackAnimation.setDuration(duration + delay);
+//
+//            trackAnimation.setInterpolator(new AccelerateInterpolator());
 //        }
 
         final float finalProgress = progress;
