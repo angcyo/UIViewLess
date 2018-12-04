@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -33,14 +34,15 @@ public abstract class BaseDraw {
     public Paint mBasePaint;
     protected View mView;
 
-    public BaseDraw(View view) {
+    public BaseDraw(@NonNull View view) {
         this(view, null);
     }
 
     /**
      * 请注意, 需要在继承类 中手动调用 {@link #initAttribute(AttributeSet)} 方法
      */
-    public BaseDraw(View view, AttributeSet attr) {
+    @Deprecated
+    public BaseDraw(@NonNull View view, @Nullable AttributeSet attr) {
         mView = view;
         mBasePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBasePaint.setFilterBitmap(true);
