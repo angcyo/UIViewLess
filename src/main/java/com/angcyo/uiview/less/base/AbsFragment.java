@@ -26,13 +26,22 @@ public class AbsFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        L.d(this.getClass().getSimpleName() + " " + hidden);
+        L.v(this.getClass().getSimpleName() + " hidden:" + hidden);
+        onVisibleChanged(!hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        L.d(this.getClass().getSimpleName() + " " + isVisibleToUser);
+        L.v(this.getClass().getSimpleName() + " isVisibleToUser:" + isVisibleToUser);
+        onVisibleChanged(isVisibleToUser);
+    }
+
+    /**
+     * 可见性变化
+     */
+    protected void onVisibleChanged(boolean visible /*是否可见*/) {
+        L.d(this.getClass().getSimpleName() + " hidden:" + isHidden() + " visible:" + getUserVisibleHint() + " ->" + visible);
     }
 
     @Override
@@ -44,7 +53,7 @@ public class AbsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mAttachContext = context;
-        L.d(this.getClass().getSimpleName() + " " + context);
+        L.d(this.getClass().getSimpleName() + "\n" + context + " id:" + getId() + " tag:" + getTag() + "\nParent:" + getParentFragment());
     }
 
     @Override
@@ -56,6 +65,8 @@ public class AbsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        L.d(this.getClass().getSimpleName() + "\n" + container + " " + savedInstanceState);
+
         int layoutId = getLayoutId();
         View rootView;
         if (layoutId != -1) {
@@ -67,6 +78,7 @@ public class AbsFragment extends Fragment {
         baseViewHolder = new RBaseViewHolder(rootView);
 
         initBaseView(getArguments(), savedInstanceState);
+
         return rootView;
     }
 

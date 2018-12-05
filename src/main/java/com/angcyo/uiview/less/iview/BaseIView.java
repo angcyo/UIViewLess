@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.view.*;
 import android.view.animation.Animation;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.resources.AnimUtil;
 
 
 /**
@@ -196,7 +194,11 @@ public abstract class BaseIView {
     }
 
     public void show() {
-        show(parent, null);
+        show(parent, AnimUtil.translateStartAnimation());
+    }
+
+    public void show(@NonNull Activity activity, @Nullable Animation animation) {
+        show((ViewGroup) activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT), null, animation, null);
     }
 
     public void show(@NonNull ViewGroup parent, @Nullable Animation animation) {
@@ -235,7 +237,7 @@ public abstract class BaseIView {
     }
 
     public void remove() {
-        remove(null);
+        remove(AnimUtil.translateFinishAnimation());
     }
 
     public void remove(Animation animation) {

@@ -202,46 +202,6 @@ public class BaseAppCompatActivity extends AppCompatActivity {
     }
 
     public Fragment showFragment(@NonNull Fragment fragment, @Nullable Fragment hideFragment, int parentLayout, boolean stateLoss) {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        Fragment result = fragment;
-
-        String tag = fragment.getClass().getSimpleName();
-
-        boolean needDo = true;
-        if (fragment.isAdded()) {
-            if (fragment.isHidden()) {
-                transaction.show(fragment);
-            } else {
-                needDo = false;
-                fragment.getView().bringToFront();
-            }
-        } else {
-            //如果是恢复模式, 可以拿到系统恢复的对象
-            Fragment fragmentByTag = manager.findFragmentByTag(tag);
-
-            if (fragmentByTag == null) {
-                transaction.add(parentLayout, fragment, tag);
-            } else {
-                result = fragmentByTag;
-                needDo = false;
-            }
-        }
-
-        if (hideFragment != null) {
-            transaction.hide(hideFragment);
-            needDo = true;
-        }
-
-        if (needDo) {
-            if (stateLoss) {
-                transaction.commitAllowingStateLoss();
-            } else {
-                transaction.commit();
-            }
-        }
-
-        return result;
+        return FragmentHelper.showFragment(getSupportFragmentManager(), fragment, hideFragment, parentLayout, stateLoss);
     }
 }
