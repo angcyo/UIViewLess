@@ -1,11 +1,15 @@
 package com.angcyo.uiview.less.base;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
  * Created by angcyo on 2018/12/02 19:21
  */
 public class ActivityHelper {
+
+    public static final String KEY_EXTRA = "key_extra";
 
     /**
      * 设置状态栏背景颜色
@@ -112,5 +118,22 @@ public class ActivityHelper {
         if (actionBar != null) {
             actionBar.hide();
         }
+    }
+
+    public static <T extends Activity> void startActivity(@NonNull Context context, Class<T> cls, @Nullable Bundle bundle) {
+        Intent intent = new Intent(context, cls);
+        if (bundle != null) {
+            intent.putExtra(KEY_EXTRA, bundle);
+        }
+        startActivity(context, intent);
+    }
+
+    public static void startActivity(@NonNull Context context, @NonNull Intent intent) {
+        if (context instanceof Activity) {
+
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        context.startActivity(intent);
     }
 }

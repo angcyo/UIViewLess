@@ -2892,6 +2892,10 @@ public class RUtils {
         return result;
     }
 
+    public static boolean isLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
     interface OnPutValue {
         void onValue(String key, String value);
 

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Build
 import android.text.TextUtils
 import android.util.Base64
 import android.view.MotionEvent
@@ -43,6 +44,8 @@ public fun Int.isIn(value1: Int, value2: Int): Boolean {
 public fun Int.remove(value: Int): Int = this and value.inv()
 public fun Int.add(value: Int): Int = this or value
 public fun Int.dpi(designDpi: Float): Int = RUtils.size(this, designDpi)
+
+public inline fun <T> T.isLollipop() = RUtils.isLollipop()
 
 public inline fun <T> T.nextInt(until: Int) = Random.nextInt(until)
 public inline fun <T> T.nextInt(from: Int /*包含*/, to: Int /*不包含*/) = Random.nextInt(from, to)

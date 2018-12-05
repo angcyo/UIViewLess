@@ -83,6 +83,8 @@ public class FragmentHelper {
 
     public static void logFragment(@Nullable Fragment fragment, StringBuilder builder) {
         if (fragment != null) {
+            builder.append(Integer.toHexString(getFragmentContainerId(fragment)).toUpperCase());
+            builder.append(" ");
             builder.append(fragment);
             View view = fragment.getView();
             if (view != null) {
