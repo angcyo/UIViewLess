@@ -237,7 +237,11 @@ public class FragmentHelper {
             }
             if (parentFragment instanceof IFragment &&
                     lastFragment instanceof IFragment) {
+                ((IFragment) lastFragment).setFragmentInViewPager(((IFragment) parentFragment).isFragmentInViewPager());
                 ((IFragment) parentFragment).setLastFragment((IFragment) lastFragment);
+                if (!parentFragment.getUserVisibleHint()) {
+                    lastFragment.setUserVisibleHint(false);
+                }
             }
         }
 

@@ -32,9 +32,9 @@ public class BaseFragment extends AbsFragment implements IFragment {
     //<editor-fold desc="生命周期, 系统的方法">
 
     @Override
-    protected void onVisibleChanged(boolean visible) {
-        super.onVisibleChanged(visible);
-        switchVisible(visible);
+    protected void onVisibleChanged(boolean oldHidden, boolean oldUserVisibleHint, boolean visible) {
+        super.onVisibleChanged(oldHidden, oldUserVisibleHint, visible);
+        switchVisible(oldHidden, oldUserVisibleHint, visible);
     }
 
     @Override
@@ -77,9 +77,15 @@ public class BaseFragment extends AbsFragment implements IFragment {
 
     //<editor-fold desc="自定义, 可以重写 的方法">
 
-    protected void switchVisible(boolean visible /*是否可见*/) {
+    protected void switchVisible(boolean oldHidden, boolean oldUserVisibleHint, boolean visible /*是否可见*/) {
         if (isInViewPager) {
-
+            if (!isAdded() && visible) {
+                //需要可见状态, 但是Fragment又没有add.
+                return;
+            }
+            if (oldUserVisibleHint == visible) {
+                return;
+            }
         } else {
             if (isFragmentVisible == visible) {
                 //已经是可见状态, 或者不可见状态
@@ -111,7 +117,11 @@ public class BaseFragment extends AbsFragment implements IFragment {
     @Override
     public boolean isFragmentHide() {
         if (isInViewPager) {
-            return !getUserVisibleHint();
+            if (isAdded()) {
+                return !getUserVisibleHint();
+            } else {
+                return true;
+            }
         }
 
         //boolean isVisible = getUserVisibleHint() && !isHidden();
@@ -128,6 +138,19 @@ public class BaseFragment extends AbsFragment implements IFragment {
     @Override
     public IFragment getLastFragment() {
         return iLastFragment;
+    }
+
+    @Override
+    public void setFragmentInViewPager(boolean inViewPager) {
+        isInViewPager = inViewPager;
+        if (isInViewPager) {
+            isFragmentVisible = false;
+        }
+    }
+
+    @Override
+    public boolean isFragmentInViewPager() {
+        return isInViewPager;
     }
 
     //</editor-fold>

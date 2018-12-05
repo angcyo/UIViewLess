@@ -21,6 +21,12 @@ public class AbsFragment extends Fragment {
     protected RBaseViewHolder baseViewHolder;
     protected Context mAttachContext;
 
+    /**
+     * 保存回调方法之前的状态值
+     */
+    protected boolean mUserVisibleHintOld = true;
+    protected boolean mHiddenOld = false;
+
     //<editor-fold desc="生命周期, 系统的方法">
 
     /**
@@ -29,8 +35,10 @@ public class AbsFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        L.v(this.getClass().getSimpleName() + " hidden:" + hidden + " isAdded:" + isAdded());
-        onVisibleChanged(!hidden);
+        boolean old = mHiddenOld;
+        mHiddenOld = hidden;
+        L.v(this.getClass().getSimpleName() + " hiddenOld:" + old + " hidden:" + hidden + " isAdded:" + isAdded());
+        onVisibleChanged(old, mUserVisibleHintOld, !hidden);
     }
 
     /**
@@ -39,17 +47,18 @@ public class AbsFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        L.v(this.getClass().getSimpleName() + " isVisibleToUser:" + isVisibleToUser + " isAdded:" + isAdded());
-        if (isAdded()) {
-            onVisibleChanged(isVisibleToUser);
-        }
+        boolean old = mUserVisibleHintOld;
+        mUserVisibleHintOld = isVisibleToUser;
+        L.v(this.getClass().getSimpleName() + " isVisibleToUserOld:" + old + " isVisibleToUser:" + isVisibleToUser + " isAdded:" + isAdded());
+        onVisibleChanged(mHiddenOld, old, isVisibleToUser);
     }
 
     /**
      * 可见性变化
      */
-    protected void onVisibleChanged(boolean visible /*是否可见*/) {
-        L.d(this.getClass().getSimpleName() + " isAdded:" + isAdded() + " hidden:" + isHidden() + " visible:" + getUserVisibleHint() + " ->" + visible);
+    protected void onVisibleChanged(boolean oldHidden, boolean oldUserVisibleHint, boolean visible /*是否可见*/) {
+        L.d(this.getClass().getSimpleName() + " isAdded:" + isAdded()
+                + " hidden:" + oldHidden + "->" + isHidden() + " visible:" + oldUserVisibleHint + "->" + getUserVisibleHint() + " ->" + visible);
     }
 
     @Override

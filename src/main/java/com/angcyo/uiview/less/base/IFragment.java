@@ -33,6 +33,10 @@ public interface IFragment {
     @Nullable
     IFragment getLastFragment();
 
+    void setFragmentInViewPager(boolean inViewPager);
+
+    boolean isFragmentInViewPager();
+
     //void onFragmentShowInPager();
 
     //void onFragmentHideInPager();

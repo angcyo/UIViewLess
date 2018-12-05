@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 import com.angcyo.uiview.less.base.BaseFragment;
+import com.angcyo.uiview.less.base.IFragment;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,11 +52,25 @@ public class RFragmentAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int i) {
-        if (mDataList == null) {
-            return mAllFragments.get(i);
+    final public Fragment getItem(int i) {
+        Fragment fragment = createFragment(i);
+        if (fragment instanceof IFragment) {
+            ((IFragment) fragment).setFragmentInViewPager(true);
         }
-        return mDataList.get(i);
+        return fragment;
+    }
+
+    /**
+     * 如果已经创建了Fragment, 则不会创建
+     */
+    public Fragment createFragment(int position) {
+        Fragment fragment;
+        if (mDataList == null) {
+            fragment = mAllFragments.get(position);
+        } else {
+            fragment = mDataList.get(position);
+        }
+        return fragment;
     }
 
     @Override
