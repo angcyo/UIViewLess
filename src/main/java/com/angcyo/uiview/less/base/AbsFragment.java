@@ -23,25 +23,33 @@ public class AbsFragment extends Fragment {
 
     //<editor-fold desc="生命周期, 系统的方法">
 
+    /**
+     * 此方法, 通常在 hide show fragment的时候调用
+     */
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        L.v(this.getClass().getSimpleName() + " hidden:" + hidden);
+        L.v(this.getClass().getSimpleName() + " hidden:" + hidden + " isAdded:" + isAdded());
         onVisibleChanged(!hidden);
     }
 
+    /**
+     * 此方法, 通常在 FragmentStatePagerAdapter 中调用
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        L.v(this.getClass().getSimpleName() + " isVisibleToUser:" + isVisibleToUser);
-        onVisibleChanged(isVisibleToUser);
+        L.v(this.getClass().getSimpleName() + " isVisibleToUser:" + isVisibleToUser + " isAdded:" + isAdded());
+        if (isAdded()) {
+            onVisibleChanged(isVisibleToUser);
+        }
     }
 
     /**
      * 可见性变化
      */
     protected void onVisibleChanged(boolean visible /*是否可见*/) {
-        L.d(this.getClass().getSimpleName() + " hidden:" + isHidden() + " visible:" + getUserVisibleHint() + " ->" + visible);
+        L.d(this.getClass().getSimpleName() + " isAdded:" + isAdded() + " hidden:" + isHidden() + " visible:" + getUserVisibleHint() + " ->" + visible);
     }
 
     @Override

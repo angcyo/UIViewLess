@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import com.angcyo.lib.L;
 
 /**
@@ -17,6 +21,13 @@ public class BaseFragment extends AbsFragment implements IFragment {
      * Fragment 是否对用户可见, 不管是GONE, 还是被覆盖, 都是不可见
      */
     protected boolean isFragmentVisible = true;
+
+    /**
+     * Fragment 是否在 ViewPager中
+     * <p>
+     * ViewPager中, 所有的onFragmentShow方法, 都将在 Adapter中回调
+     */
+    protected boolean isInViewPager = false;
 
     //<editor-fold desc="生命周期, 系统的方法">
 
@@ -42,6 +53,17 @@ public class BaseFragment extends AbsFragment implements IFragment {
         }
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (container instanceof ViewPager) {
+            isInViewPager = true;
+            //ViewPager中, 默认是隐藏状态
+            isFragmentVisible = false;
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -56,11 +78,16 @@ public class BaseFragment extends AbsFragment implements IFragment {
     //<editor-fold desc="自定义, 可以重写 的方法">
 
     protected void switchVisible(boolean visible /*是否可见*/) {
-        if (isFragmentVisible == visible) {
-            //已经是可见状态, 或者不可见状态
-            return;
+        if (isInViewPager) {
+
+        } else {
+            if (isFragmentVisible == visible) {
+                //已经是可见状态, 或者不可见状态
+                return;
+            }
+            isFragmentVisible = visible;
         }
-        isFragmentVisible = visible;
+
         if (visible) {
             onFragmentShow(null);
         } else {
@@ -83,6 +110,10 @@ public class BaseFragment extends AbsFragment implements IFragment {
 
     @Override
     public boolean isFragmentHide() {
+        if (isInViewPager) {
+            return !getUserVisibleHint();
+        }
+
         //boolean isVisible = getUserVisibleHint() && !isHidden();
         //return !isVisible;
         return !isFragmentVisible;

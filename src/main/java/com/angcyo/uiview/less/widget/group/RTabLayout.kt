@@ -142,6 +142,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         if (currentItem >= 0) {
             viewPager.setCurrentItem(currentItem, false)
         }
+
+
     }
 
     /**重置每个Item的样式*/
