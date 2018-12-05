@@ -107,6 +107,12 @@ public class AbsFragment extends Fragment {
     }
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        L.d(this.getClass().getSimpleName() + " " + savedInstanceState);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         L.d(this.getClass().getSimpleName());

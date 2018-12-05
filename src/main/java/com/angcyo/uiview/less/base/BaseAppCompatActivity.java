@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.BuildConfig;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -40,6 +41,8 @@ public class BaseAppCompatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewHolder = new RBaseViewHolder(getWindow().getDecorView());
+
+        FragmentManager.enableDebugLogging(BuildConfig.DEBUG);
 
         L.v("taskId:" + getTaskId());
 
