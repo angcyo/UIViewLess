@@ -118,10 +118,20 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         onTabLayoutListener?.let {
             if (currentItem == position) {
                 //view pager 往下一页滚
-                it.onPageScrolled(this, getChildAt(currentItem), getChildAt(currentItem + 1), positionOffset)
+                it.onPageScrolled(
+                    this,
+                    getChildAt(currentItem), getChildAt(currentItem + 1),
+                    currentItem, currentItem + 1,
+                    positionOffset
+                )
             } else {
                 //往上一页滚
-                it.onPageScrolled(this, getChildAt(currentItem), getChildAt(position), 1f - positionOffset)
+                it.onPageScrolled(
+                    this,
+                    getChildAt(currentItem), getChildAt(position),
+                    currentItem, position,
+                    1f - positionOffset
+                )
             }
         }
     }
@@ -134,6 +144,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
                 //L.e("call: onPageScrollStateChanged -> $state")
+                val isClickScrollPagerOld = isClickScrollPager
+
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) {
                     isViewPagerDragging = true
                 } else if (state == ViewPager.SCROLL_STATE_IDLE) {
@@ -143,6 +155,10 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
                 onTabLayoutListener?.let {
                     it.onPageScrollStateChanged(state)
+                }
+
+                if (isClickScrollPagerOld) {
+                    resetItemStyle()
                 }
             }
 
@@ -482,7 +498,7 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
     /**事件监听*/
     open class OnTabLayoutListener {
 
-        var pagerScrollState = ViewPager.SCROLL_STATE_IDLE
+        protected var pagerScrollState = ViewPager.SCROLL_STATE_IDLE
 
         open fun isScrollEnd() = pagerScrollState == ViewPager.SCROLL_STATE_IDLE
 
@@ -492,8 +508,18 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         }
 
         /**ViewPager滚动回调*/
+        @Deprecated("")
         open fun onPageScrolled(tabLayout: RTabLayout, currentView: View?, nextView: View?, positionOffset: Float) {
-            //L.w("-> $positionOffset scrollEnd:${isScrollEnd()}")
+        }
+
+        open fun onPageScrolled(
+            tabLayout: RTabLayout,
+            currentView: View?, nextView: View?,
+            currentPosition: Int, nextPosition: Int,
+            positionOffset: Float
+        ) {
+            onPageScrolled(tabLayout, currentView, nextView, positionOffset)
+            //L.w("$currentPosition->$nextPosition $positionOffset scrollEnd:${isScrollEnd()}")
             //positionOffset 距离到达 nextView 的百分比; 1f 表示已经到达nextView
 //            if (currentView is TextView) {
 //                currentView.setTextSizeDp(14 + 4 * (1 - positionOffset))
@@ -543,8 +569,16 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         var maxTextSize: Int = ResUtil.dpToPx(16f).toInt()
         var minTextSize: Int = ResUtil.dpToPx(12f).toInt()
 
-        override fun onPageScrolled(tabLayout: RTabLayout, currentView: View?, nextView: View?, positionOffset: Float) {
-            super.onPageScrolled(tabLayout, currentView, nextView, positionOffset)
+        override fun onPageScrolled(
+            tabLayout: RTabLayout,
+            currentView: View?,
+            nextView: View?,
+            currentPosition: Int,
+            nextPosition: Int,
+            positionOffset: Float
+        ) {
+            super.onPageScrolled(tabLayout, currentView, nextView, currentPosition, nextPosition, positionOffset)
+
             val currentDrawTextView = currentView?.findViewById<RDrawTextView>(R.id.base_draw_text_view)
             val nextDrawTextView = nextView?.findViewById<RDrawTextView>(R.id.base_draw_text_view)
 
@@ -555,11 +589,13 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
                 selectorTextView(positionOffset < 0.5f, it)
             }
 
-            nextDrawTextView?.drawText?.let {
-                it.drawTextSize =
-                        (minTextSize + (maxTextSize - minTextSize) * (positionOffset)).toInt()
+            if ((currentPosition - nextPosition).abs() == 1) {
+                nextDrawTextView?.drawText?.let {
+                    it.drawTextSize =
+                            (minTextSize + (maxTextSize - minTextSize) * (positionOffset)).toInt()
 
-                selectorTextView(positionOffset > 0.5f, it)
+                    selectorTextView(positionOffset > 0.5f, it)
+                }
             }
         }
 
@@ -576,12 +612,10 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
         override fun onUnSelectorItemView(tabLayout: RTabLayout, itemView: View, index: Int) {
             super.onUnSelectorItemView(tabLayout, itemView, index)
-            if (isScrollEnd()) {
-                val drawTextView = itemView.findViewById<RDrawTextView>(R.id.base_draw_text_view)
-                drawTextView?.drawText?.let {
-                    it.drawTextSize = minTextSize
-                    selectorTextView(false, it)
-                }
+            val drawTextView = itemView.findViewById<RDrawTextView>(R.id.base_draw_text_view)
+            drawTextView?.drawText?.let {
+                it.drawTextSize = minTextSize
+                selectorTextView(false, it)
             }
         }
 

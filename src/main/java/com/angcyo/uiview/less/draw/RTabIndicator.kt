@@ -69,14 +69,25 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
         indicatorColor = baseColor
         indicatorColor = typedArray.getColor(R.styleable.RTabIndicator_r_indicator_color, indicatorColor)
         indicatorWidth = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_width, indicatorWidth)
-        indicatorHeight = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_height, indicatorHeight)
-        indicatorOffsetY = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_offset_y, indicatorOffsetY)
-        indicatorWidthOffset = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_offset_width, indicatorWidthOffset)
-        indicatorHeightOffset = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_offset_height, indicatorHeightOffset)
-        indicatorRoundSize = typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_round_size, indicatorRoundSize)
+        indicatorHeight =
+                typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_height, indicatorHeight)
+        indicatorOffsetY =
+                typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_offset_y, indicatorOffsetY)
+        indicatorWidthOffset = typedArray.getDimensionPixelOffset(
+            R.styleable.RTabIndicator_r_indicator_offset_width,
+            indicatorWidthOffset
+        )
+        indicatorHeightOffset = typedArray.getDimensionPixelOffset(
+            R.styleable.RTabIndicator_r_indicator_offset_height,
+            indicatorHeightOffset
+        )
+        indicatorRoundSize =
+                typedArray.getDimensionPixelOffset(R.styleable.RTabIndicator_r_indicator_round_size, indicatorRoundSize)
 
-        enableIndicatorAnim = typedArray.getBoolean(R.styleable.RTabIndicator_r_indicator_enable_anim, enableIndicatorAnim)
-        enableOvershoot = typedArray.getBoolean(R.styleable.RTabIndicator_r_indicator_enable_anim_overshoot, enableOvershoot)
+        enableIndicatorAnim =
+                typedArray.getBoolean(R.styleable.RTabIndicator_r_indicator_enable_anim, enableIndicatorAnim)
+        enableOvershoot =
+                typedArray.getBoolean(R.styleable.RTabIndicator_r_indicator_enable_anim_overshoot, enableOvershoot)
 
         indicatorDrawable = typedArray.getDrawable(R.styleable.RTabIndicator_r_indicator_drawable)
         typedArray.recycle()
@@ -168,7 +179,8 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
         if (index in 0..(childCount - 1)) {
             val curChildView = getChildAt(index)
             //child横向中心x坐标
-            return curChildView.left + curChildView.measuredWidth / 2
+            return curChildView.left + curChildView.paddingLeft +
+                    (curChildView.measuredWidth - curChildView.paddingLeft - curChildView.paddingRight) / 2
         }
         //返回上一次结束的x坐标
         return animEndCenterX
@@ -179,7 +191,7 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
             if (index in 0..(childCount - 1)) {
                 val curChildView = getChildAt(index)
                 //child横向中心x坐标
-                return curChildView.measuredWidth
+                return curChildView.measuredWidth - curChildView.paddingLeft - curChildView.paddingRight
             }
             //返回上一次结束的x坐标
             return animEndWidth
@@ -239,19 +251,31 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
                     }
                     INDICATOR_TYPE_BOTTOM_LINE -> {
                         mBasePaint.color = indicatorColor
-                        canvas.drawRoundRect(indicatorDrawRect, indicatorRoundSize.toFloat(), indicatorRoundSize.toFloat(), mBasePaint)
+                        canvas.drawRoundRect(
+                            indicatorDrawRect,
+                            indicatorRoundSize.toFloat(),
+                            indicatorRoundSize.toFloat(),
+                            mBasePaint
+                        )
                     }
                     INDICATOR_TYPE_ROUND_RECT_BLOCK -> {
                         mBasePaint.color = indicatorColor
-                        canvas.drawRoundRect(indicatorDrawRect, indicatorRoundSize.toFloat(), indicatorRoundSize.toFloat(), mBasePaint)
+                        canvas.drawRoundRect(
+                            indicatorDrawRect,
+                            indicatorRoundSize.toFloat(),
+                            indicatorRoundSize.toFloat(),
+                            mBasePaint
+                        )
                     }
                 }
             } else {
                 indicatorDrawable?.let {
-                    it.setBounds(indicatorDrawRect.left.toInt(),
-                            indicatorDrawRect.top.toInt(),
-                            indicatorDrawRect.right.toInt(),
-                            indicatorDrawRect.bottom.toInt())
+                    it.setBounds(
+                        indicatorDrawRect.left.toInt(),
+                        indicatorDrawRect.top.toInt(),
+                        indicatorDrawRect.right.toInt(),
+                        indicatorDrawRect.bottom.toInt()
+                    )
                     it.draw(canvas)
                 }
             }
