@@ -1,12 +1,14 @@
 package com.angcyo.uiview.less.base;
 
 import android.app.Activity;
+import android.arch.core.util.Function;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.AnimRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,8 +18,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import com.angcyo.lib.L;
 import com.angcyo.uiview.less.kotlin.ExKt;
 import org.jetbrains.annotations.NotNull;
+
 
 /**
  * Created by angcyo on 2018/12/02 19:21
@@ -120,20 +124,122 @@ public class ActivityHelper {
         }
     }
 
+    @Deprecated
     public static <T extends Activity> void startActivity(@NonNull Context context, Class<T> cls, @Nullable Bundle bundle) {
-        Intent intent = new Intent(context, cls);
-        if (bundle != null) {
-            intent.putExtra(KEY_EXTRA, bundle);
-        }
-        startActivity(context, intent);
+        build(context)
+                .setClass(cls)
+                .setBundle(bundle)
+                .start();
     }
 
+    @Deprecated
     public static void startActivity(@NonNull Context context, @NonNull Intent intent) {
-        if (context instanceof Activity) {
+        build(context)
+                .setIntent(intent)
+                .start();
+    }
 
-        } else {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    /**
+     * 获取启动的时, 设置的参数
+     */
+    public static Bundle getBundle(@NonNull Intent intent) {
+        return intent.getBundleExtra(KEY_EXTRA);
+    }
+
+    public static Builder build(@NonNull Context context) {
+        return new Builder(context);
+    }
+
+    public static class Builder {
+        Context context;
+        Intent intent;
+        Bundle bundle;
+        int enterAnim = -1;
+        int exitAnim = -1;
+
+        public Builder(@NonNull Context context) {
+            this.context = context;
         }
-        context.startActivity(intent);
+
+        /**
+         * 用cls, 启动Activity
+         */
+        public Builder setClass(@NonNull Class<? extends Activity> cls) {
+            intent = new Intent(context, cls);
+            configIntent();
+            return this;
+        }
+
+        /**
+         * 用Intent, 启动Activity
+         */
+        public Builder setIntent(@NonNull Intent intent) {
+            this.intent = intent;
+            configIntent();
+            return this;
+        }
+
+        /**
+         * 用包名, 启动Activity
+         */
+        public Builder setPackageName(@NonNull String packageName) {
+            intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+            configIntent();
+            return this;
+        }
+
+        private void configIntent() {
+            if (context instanceof Activity) {
+
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+
+            if (bundle != null) {
+                intent.putExtra(KEY_EXTRA, bundle);
+            }
+        }
+
+        /**
+         * 设置传输的参数
+         */
+        public Builder setBundle(Bundle bundle) {
+            this.bundle = bundle;
+            return this;
+        }
+
+        /**
+         * 扩展设置
+         */
+        public Builder extra(@NonNull Function<Bundle, Void> function) {
+            this.bundle = new Bundle();
+            function.apply(bundle);
+            return this;
+        }
+
+        public Builder enterAnim(@AnimRes int enterAnim) {
+            this.enterAnim = enterAnim;
+            return this;
+        }
+
+        public Builder exitAnim(@AnimRes int exitAnim) {
+            this.exitAnim = exitAnim;
+            return this;
+        }
+
+        public Intent start() {
+            if (intent == null) {
+                L.e("必要的参数不合法,请检查参数:" + "\n1->intent:" + intent + " ×");
+            } else {
+                context.startActivity(intent);
+
+                if (context instanceof Activity) {
+                    if (enterAnim != -1 || exitAnim != -1) {
+                        ((Activity) context).overridePendingTransition(enterAnim, exitAnim);
+                    }
+                }
+            }
+            return intent;
+        }
     }
 }

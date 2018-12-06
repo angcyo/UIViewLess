@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="theme_color_primary">#0BD1A0</color>
-    <color name="theme_color_primary_dark">#20a886</color>
-    <color name="theme_color_accent">#0BD1A0</color>
+
+    <!--APP工程中的相同资源, 会覆盖library中的-->
+    <color name="colorPrimary">#09C1CE</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="theme_color_primary">@color/colorPrimary</color>
+    <color name="theme_color_primary_dark">@color/colorPrimaryDark</color>
+    <color name="theme_color_accent">@color/colorAccent</color>
     <color name="theme_color_disable">#CBCBCB</color>
 
     <color name="theme_color_primary_dark_tran">#800BD1A0</color>

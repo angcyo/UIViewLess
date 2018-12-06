@@ -28,6 +28,12 @@ public class RFragmentAdapter extends FragmentStatePagerAdapter {
      */
     private ArrayList<Fragment> mDataList = null;
 
+
+    /**
+     * Adapter 所在的父Fragment, 用来将父Fragment的可见性, 传递给 Item Fragment
+     */
+    private Fragment parentFragment;
+
     public RFragmentAdapter(@NonNull FragmentManager fm) {
         super(fm);
         init();
@@ -91,9 +97,28 @@ public class RFragmentAdapter extends FragmentStatePagerAdapter {
         return super.getPageTitle(position);
     }
 
+    /**
+     * 设置 父 Fragment
+     */
+    public RFragmentAdapter setParentFragment(Fragment parentFragment) {
+        this.parentFragment = parentFragment;
+        return this;
+    }
+
     @Override
     public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        super.setPrimaryItem(container, position, object);
+        boolean pass = false;
+        if (parentFragment instanceof IFragment) {
+            if (((IFragment) parentFragment).isFragmentHide()) {
+                pass = true;
+            }
+            if (object instanceof IFragment) {
+                ((IFragment) parentFragment).setLastFragment((IFragment) object);
+            }
+        }
+        if (!pass) {
+            super.setPrimaryItem(container, position, object);
+        }
         //L.e("test..." + object);
     }
 

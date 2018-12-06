@@ -8,8 +8,8 @@
         <item name="colorAccent">@color/theme_color_accent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
         <item name="android:windowContentOverlay">@null</item>
         <!--<item name="android:windowActionBarOverlay">true</item>-->
         <!--<item name="android:windowActionModeOverlay">true</item>-->
@@ -26,15 +26,18 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <!--透明主题, 透明主题 在overridePendingTransition 执行动画的时候, exitAnim 不会执行.-->
     <style name="BaseTranTheme" parent="BaseAppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
+        <!--<item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>-->
     </style>
 
+    <!--透明无动画-->
     <style name="BaseTranNoAnimTheme" parent="BaseTranTheme">
         <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="BaseDialogBaseTextStyle">
