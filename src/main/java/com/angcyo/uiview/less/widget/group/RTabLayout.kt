@@ -377,33 +377,35 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             val absX = Math.abs(distanceX)
             val absY = Math.abs(distanceY)
 
+
+            var handle = false
             if (absX > TouchLayout.scrollDistanceSlop || absY > TouchLayout.scrollDistanceSlop) {
                 if (absY > absX) {
                     //竖直方向的Scroll操作
-                    onScrollChange(
+                    handle = onScrollChange(
                         if (distanceY > 0) TouchLayout.ORIENTATION.TOP else TouchLayout.ORIENTATION.BOTTOM,
                         distanceY
                     )
                 } else if (absX > absY) {
                     //水平方向的Scroll操作
-                    onScrollChange(
+                    handle = onScrollChange(
                         if (distanceX > 0) TouchLayout.ORIENTATION.LEFT else TouchLayout.ORIENTATION.RIGHT,
                         distanceX
                     )
                 }
             }
 
-            return true
+            return handle
         }
     })
 
     private var interceptTouchEvent = false
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.isDown()) {
-            interceptTouchEvent = canScroll()
-        }
+//        if (ev.isDown()) {
+//            interceptTouchEvent = canScroll()
+//        }
         val result = gestureDetector.onTouchEvent(ev)
-        return result && interceptTouchEvent
+        return result /*&& interceptTouchEvent*/
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -416,9 +418,11 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         return true
     }
 
+    fun maxScrollX() = childMaxWidth - measuredWidth + paddingLeft + paddingRight
+
     override fun scrollTo(x: Int, y: Int) {
         //L.e("call: scrollTo -> $x")
-        val maxScrollX = childMaxWidth - measuredWidth + paddingLeft + paddingRight
+        val maxScrollX = maxScrollX()
         when {
             x > maxScrollX -> super.scrollTo(maxScrollX, y)
             x < 0 -> super.scrollTo(0, y)
@@ -442,14 +446,25 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
     }
 
     /**Scroll操作的处理方法*/
-    fun onScrollChange(orientation: TouchLayout.ORIENTATION, distance: Float) {
+    fun onScrollChange(orientation: TouchLayout.ORIENTATION, distance: Float): Boolean {
         if (canScroll()) {
+            if (orientation == TouchLayout.ORIENTATION.LEFT && scrollX >= maxScrollX()) {
+                return false
+            }
+
+            if (orientation == TouchLayout.ORIENTATION.RIGHT && scrollX <= 0) {
+                return false
+            }
+
             if (orientation == TouchLayout.ORIENTATION.LEFT || orientation == TouchLayout.ORIENTATION.RIGHT) {
                 scrollBy(distance.toInt(), 0)
 
                 parent.requestDisallowInterceptTouchEvent(true)
+
+                return true
             }
         }
+        return false
     }
 
     /**Fling操作的处理方法*/
