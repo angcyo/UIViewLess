@@ -601,6 +601,8 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable ex) {
 //        boolean isShow = false;
 
+        L.e("捕获到异常:" + thread.getName() + ":" + ex.getMessage());
+
         ex.printStackTrace();
 
         if (!L.LOG_DEBUG) {
@@ -615,18 +617,18 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
 
 //        if (!isShow) {
         /*注意下面的代码, 不能少哦*/
-//            if (defaultUncaughtExceptionHandler != null) {
-//                defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
-//            } else {
-//                Process.killProcess(Process.myPid());
-//            }
-//        }
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (defaultUncaughtExceptionHandler != null) {
+            defaultUncaughtExceptionHandler.uncaughtException(thread, ex);
+        } else {
+            //Process.killProcess(Process.myPid());
         }
+//    }
+
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         System.exit(0);
         Process.killProcess(Process.myPid());

@@ -153,6 +153,13 @@ public class BaseFragment extends AbsFragment implements IFragment {
         return isInViewPager;
     }
 
+    /**
+     * 需要显示的标题
+     */
+    public String getFragmentTitle() {
+        return this.getClass().getSimpleName();
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="界面操作">

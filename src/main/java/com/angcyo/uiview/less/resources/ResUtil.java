@@ -12,6 +12,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -47,12 +48,28 @@ public class ResUtil {
         return px;
     }
 
+    public static float dpToPx(float dp) {
+        return dpToPx(RApplication.getApp(), dp);
+    }
+
     public static float dpToPx(Context context, float dp) {
         return dpToPx(context.getResources(), dp);
     }
 
     public static float spToPx(Context context, float sp) {
         return spToPx(context.getResources(), sp);
+    }
+
+    public static int getDimen(@DimenRes int res) {
+        return RApplication.getApp().getResources().getDimensionPixelOffset(res);
+    }
+
+    public static int getColor(@ColorRes int res) {
+        return ContextCompat.getColor(RApplication.getApp(), res);
+    }
+
+    public static Drawable getDrawable(@DrawableRes int res) {
+        return ContextCompat.getDrawable(RApplication.getApp(), res);
     }
 
     /**
@@ -442,10 +459,6 @@ public class ResUtil {
      */
     public static int getThemeColorAccent(Context context) {
         return getThemeColor(context, "colorAccent");
-    }
-
-    public static int getColor(@ColorRes int id) {
-        return RApplication.getApp().getResources().getColor(id);
     }
 
     /**

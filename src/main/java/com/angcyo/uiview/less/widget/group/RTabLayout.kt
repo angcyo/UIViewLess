@@ -1,7 +1,10 @@
 package com.angcyo.uiview.less.widget.group
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
+import android.graphics.Color
+import android.support.annotation.LayoutRes
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.*
@@ -9,8 +12,11 @@ import android.widget.FrameLayout
 import android.widget.OverScroller
 import com.angcyo.uiview.less.R
 import com.angcyo.uiview.less.draw.RDrawBorder
+import com.angcyo.uiview.less.draw.RDrawText
 import com.angcyo.uiview.less.draw.RTabIndicator
 import com.angcyo.uiview.less.kotlin.*
+import com.angcyo.uiview.less.resources.ResUtil
+import com.angcyo.uiview.less.widget.RDrawTextView
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -39,7 +45,7 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
                 field?.onTabSelector(this, currentItem, currentItem)
             }
         }
-    private var currentItem = -1
+    private var currentItem = 0
     var itemEquWidth = false
 
     init {
@@ -56,6 +62,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         tabIndicator.curIndex = currentItem
     }
 
+
+    private var isClickScrollPager = false
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         super.addView(child, index, params)
         child?.apply {
@@ -64,6 +72,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
                 if (onTabLayoutListener?.canSelectorTab(this@RTabLayout, currentItem, toIndex) == false) {
                 } else {
+                    //开启ViewPager滚动回调
+                    isClickScrollPager = true
                     setCurrentItem(toIndex)
 //                    this@RTabLayout.scrollTo(0, 0)
 
@@ -83,6 +93,9 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
                 onTabLayoutListener?.onTabReSelector(this, getChildAt(oldIndex), oldIndex)
             }
         } else {
+            if (notify && isClickScrollPager) {
+                onTabLayoutListener?.onPageScrollStateChanged(ViewPager.SCROLL_STATE_SETTLING)
+            }
             if (oldIndex in 0 until childCount) {
                 onTabLayoutListener?.onUnSelectorItemView(this, getChildAt(oldIndex), oldIndex)
             }
@@ -97,8 +110,10 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
     /**ViewPager 滚动监听*/
     fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        tabIndicator.pagerPosition = position
-        tabIndicator.pagerPositionOffset = positionOffset
+        if (!isClickScrollPager) {
+            tabIndicator.pagerPosition = position
+            tabIndicator.pagerPositionOffset = positionOffset
+        }
 
         onTabLayoutListener?.let {
             if (currentItem == position) {
@@ -123,12 +138,17 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
                     isViewPagerDragging = true
                 } else if (state == ViewPager.SCROLL_STATE_IDLE) {
                     isViewPagerDragging = false
+                    isClickScrollPager = false
+                }
+
+                onTabLayoutListener?.let {
+                    it.onPageScrollStateChanged(state)
                 }
             }
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                if (isViewPagerDragging) {
+                if (isViewPagerDragging || isClickScrollPager) {
                     this@RTabLayout.onPageScrolled(position, positionOffset, positionOffsetPixels)
                 }
             }
@@ -143,7 +163,41 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             viewPager.setCurrentItem(currentItem, false)
         }
 
+        /**如果没有item, 则使用默认的item*/
+        if (childCount <= 0) {
+            viewPager.adapter?.let {
+                val titles = mutableListOf<String>()
+                for (i in 0 until it.count) {
+                    titles.add(it.getPageTitle(i)?.toString() ?: "pos:$i")
+                }
+                resetItems(R.layout.base_tab_layout_item, titles, object : OnAddViewCallback<String>() {
+                    override fun onInitView(view: View, data: String?, index: Int) {
+                        super.onInitView(view, data, index)
+                        view.findViewById<RDrawTextView>(R.id.base_draw_text_view).drawText.setDrawText(data)
+                    }
+                })
+            }
 
+            /**默认实现*/
+            onTabLayoutListener = DefaultTabLayoutListener(viewPager)
+        }
+    }
+
+    fun <T> resetItems(@LayoutRes layoutId: Int, items: List<T>, callback: OnAddViewCallback<T>) {
+        addView(items, object : OnAddViewCallback<T>() {
+            override fun getLayoutId(): Int {
+                return layoutId
+            }
+
+            override fun onCreateView(child: View) {
+                super.onCreateView(child)
+            }
+
+            override fun onInitView(view: View, data: T?, index: Int) {
+                super.onInitView(view, data, index)
+                callback.onInitView(view, data, index)
+            }
+        })
     }
 
     /**重置每个Item的样式*/
@@ -188,8 +242,10 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             lp.topMargin = 0
             lp.bottomMargin = 0
 
-            val widthHeight = calcLayoutWidthHeight(lp.layoutWidth, lp.layoutHeight,
-                    widthSize, heightSize, 0, 0)
+            val widthHeight = calcLayoutWidthHeight(
+                lp.layoutWidth, lp.layoutHeight,
+                widthSize, heightSize, 0, 0
+            )
             val childHeightSpec = if (widthHeight[1] > 0) {
                 exactlyMeasure(widthHeight[1])
             } else {
@@ -197,7 +253,10 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             }
 
             if (itemEquWidth) {
-                childView.measure(exactlyMeasure((widthSize - paddingLeft - paddingRight) / childCount), childHeightSpec)
+                childView.measure(
+                    exactlyMeasure((widthSize - paddingLeft - paddingRight) / childCount),
+                    childHeightSpec
+                )
             } else {
                 if (widthHeight[0] > 0) {
                     childView.measure(exactlyMeasure(widthHeight[0]), childHeightSpec)
@@ -231,9 +290,11 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             }
 
             /*默认垂直居中显示*/
-            childView.layout(left, top,
-                    left + childView.measuredWidth,
-                    top + childView.measuredHeight)
+            childView.layout(
+                left, top,
+                left + childView.measuredWidth,
+                top + childView.measuredHeight
+            )
             left += childView.measuredWidth + lp.rightMargin
         }
         if (changed) {
@@ -278,10 +339,16 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             if (absX > TouchLayout.flingVelocitySlop || absY > TouchLayout.flingVelocitySlop) {
                 if (absY > absX) {
                     //竖直方向的Fling操作
-                    onFlingChange(if (velocityY > 0) TouchLayout.ORIENTATION.BOTTOM else TouchLayout.ORIENTATION.TOP, velocityY)
+                    onFlingChange(
+                        if (velocityY > 0) TouchLayout.ORIENTATION.BOTTOM else TouchLayout.ORIENTATION.TOP,
+                        velocityY
+                    )
                 } else if (absX > absY) {
                     //水平方向的Fling操作
-                    onFlingChange(if (velocityX > 0) TouchLayout.ORIENTATION.RIGHT else TouchLayout.ORIENTATION.LEFT, velocityX)
+                    onFlingChange(
+                        if (velocityX > 0) TouchLayout.ORIENTATION.RIGHT else TouchLayout.ORIENTATION.LEFT,
+                        velocityX
+                    )
                 }
             }
 
@@ -297,10 +364,16 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
             if (absX > TouchLayout.scrollDistanceSlop || absY > TouchLayout.scrollDistanceSlop) {
                 if (absY > absX) {
                     //竖直方向的Scroll操作
-                    onScrollChange(if (distanceY > 0) TouchLayout.ORIENTATION.TOP else TouchLayout.ORIENTATION.BOTTOM, distanceY)
+                    onScrollChange(
+                        if (distanceY > 0) TouchLayout.ORIENTATION.TOP else TouchLayout.ORIENTATION.BOTTOM,
+                        distanceY
+                    )
                 } else if (absX > absY) {
                     //水平方向的Scroll操作
-                    onScrollChange(if (distanceX > 0) TouchLayout.ORIENTATION.LEFT else TouchLayout.ORIENTATION.RIGHT, distanceX)
+                    onScrollChange(
+                        if (distanceX > 0) TouchLayout.ORIENTATION.LEFT else TouchLayout.ORIENTATION.RIGHT,
+                        distanceX
+                    )
                 }
             }
 
@@ -409,8 +482,18 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
     /**事件监听*/
     open class OnTabLayoutListener {
 
+        var pagerScrollState = ViewPager.SCROLL_STATE_IDLE
+
+        open fun isScrollEnd() = pagerScrollState == ViewPager.SCROLL_STATE_IDLE
+
+        open fun onPageScrollStateChanged(state: Int) {
+            pagerScrollState = state
+            //L.w("滚动状态-> $state scrollEnd:${isScrollEnd()}")
+        }
+
         /**ViewPager滚动回调*/
         open fun onPageScrolled(tabLayout: RTabLayout, currentView: View?, nextView: View?, positionOffset: Float) {
+            //L.w("-> $positionOffset scrollEnd:${isScrollEnd()}")
             //positionOffset 距离到达 nextView 的百分比; 1f 表示已经到达nextView
 //            if (currentView is TextView) {
 //                currentView.setTextSizeDp(14 + 4 * (1 - positionOffset))
@@ -423,6 +506,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
         /**某个Item选中, 可以自定义样式*/
         open fun onSelectorItemView(tabLayout: RTabLayout, itemView: View, index: Int) {
+            //L.w("选择-> $index scrollEnd:${isScrollEnd()}")
+
 //            if (itemView is TextView) {
 //                itemView.setTextSizeDp(14 + 4f)
 //            }
@@ -430,6 +515,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
         /**取消Item选中*/
         open fun onUnSelectorItemView(tabLayout: RTabLayout, itemView: View, index: Int) {
+            //L.w("取消选择-> $index scrollEnd:${isScrollEnd()}")
+
 //            if (itemView is TextView) {
 //                itemView.setTextSizeDp(14f)
 //            }
@@ -448,6 +535,77 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         /**重复选中*/
         open fun onTabReSelector(tabLayout: RTabLayout, itemView: View, index: Int) {
 
+        }
+    }
+
+    /**默认实现*/
+    open class DefaultTabLayoutListener(val viewPager: ViewPager? = null) : OnTabLayoutListener() {
+        var maxTextSize: Int = ResUtil.dpToPx(16f).toInt()
+        var minTextSize: Int = ResUtil.dpToPx(12f).toInt()
+
+        override fun onPageScrolled(tabLayout: RTabLayout, currentView: View?, nextView: View?, positionOffset: Float) {
+            super.onPageScrolled(tabLayout, currentView, nextView, positionOffset)
+            val currentDrawTextView = currentView?.findViewById<RDrawTextView>(R.id.base_draw_text_view)
+            val nextDrawTextView = nextView?.findViewById<RDrawTextView>(R.id.base_draw_text_view)
+
+            currentDrawTextView?.drawText?.let {
+                it.drawTextSize =
+                        (minTextSize + (maxTextSize - minTextSize) * (1 - positionOffset)).toInt()
+
+                selectorTextView(positionOffset < 0.5f, it)
+            }
+
+            nextDrawTextView?.drawText?.let {
+                it.drawTextSize =
+                        (minTextSize + (maxTextSize - minTextSize) * (positionOffset)).toInt()
+
+                selectorTextView(positionOffset > 0.5f, it)
+            }
+        }
+
+        override fun onSelectorItemView(tabLayout: RTabLayout, itemView: View, index: Int) {
+            super.onSelectorItemView(tabLayout, itemView, index)
+            if (isScrollEnd()) {
+                val drawTextView = itemView.findViewById<RDrawTextView>(R.id.base_draw_text_view)
+                drawTextView?.drawText?.let {
+                    it.drawTextSize = maxTextSize
+                    selectorTextView(true, it)
+                }
+            }
+        }
+
+        override fun onUnSelectorItemView(tabLayout: RTabLayout, itemView: View, index: Int) {
+            super.onUnSelectorItemView(tabLayout, itemView, index)
+            if (isScrollEnd()) {
+                val drawTextView = itemView.findViewById<RDrawTextView>(R.id.base_draw_text_view)
+                drawTextView?.drawText?.let {
+                    it.drawTextSize = minTextSize
+                    selectorTextView(false, it)
+                }
+            }
+        }
+
+        override fun canSelectorTab(tabLayout: RTabLayout, fromIndex: Int, toIndex: Int): Boolean {
+            return super.canSelectorTab(tabLayout, fromIndex, toIndex)
+        }
+
+        override fun onTabSelector(tabLayout: RTabLayout, fromIndex: Int, toIndex: Int) {
+            super.onTabSelector(tabLayout, fromIndex, toIndex)
+            viewPager?.setCurrentItem(toIndex, true)
+        }
+
+        override fun onTabReSelector(tabLayout: RTabLayout, itemView: View, index: Int) {
+            super.onTabReSelector(tabLayout, itemView, index)
+        }
+
+        protected fun selectorTextView(selector: Boolean, view: RDrawText) {
+            if (selector) {
+                view.setBoldText(true)
+                view.setTextColor(ColorStateList.valueOf(Color.BLACK))
+            } else {
+                view.setBoldText(false)
+                view.setTextColor(ResUtil.getColor(R.color.base_text_color))
+            }
         }
     }
 }

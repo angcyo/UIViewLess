@@ -92,9 +92,9 @@ public class RFragmentAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         Fragment fragment = getItem(position);
         if (fragment instanceof BaseFragment) {
-
+            return ((BaseFragment) fragment).getFragmentTitle();
         }
-        return super.getPageTitle(position);
+        return fragment.getClass().getSimpleName();
     }
 
     /**

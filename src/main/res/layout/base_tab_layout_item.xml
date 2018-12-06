@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/base_tab_item_root_layout"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_height="match_parent">
+
+    <com.angcyo.uiview.less.widget.RDrawTextView
+            android:id="@+id/base_draw_text_view"
+            app:r_draw_text_size="@dimen/default_text_size16"
+            app:r_draw_text_gravity="CENTER"
+            app:r_draw_text_color="@color/base_text_color"
+            tools:r_draw_text_string="文本"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+
+</android.support.constraint.ConstraintLayout>

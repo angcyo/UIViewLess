@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ import com.angcyo.uiview.less.skin.SkinHelper;
  * Version: 1.0.0
  */
 public abstract class BaseDraw {
-    public Paint mBasePaint;
+    public TextPaint mBasePaint;
     protected View mView;
 
     /**
@@ -49,7 +50,7 @@ public abstract class BaseDraw {
     @Deprecated
     public BaseDraw(@NonNull View view, @Nullable AttributeSet attr) {
         mView = view;
-        mBasePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBasePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mBasePaint.setFilterBitmap(true);
         mBasePaint.setStyle(Paint.Style.FILL);
         mBasePaint.setTextSize(12 * density());
@@ -269,5 +270,31 @@ public abstract class BaseDraw {
      */
     protected int getPaddingHorizontal() {
         return getPaddingLeft() + getPaddingRight();
+    }
+
+    /**
+     * 设置是否加粗文本
+     */
+    public void setBoldText(boolean bool) {
+        addFlags(bool, Paint.FAKE_BOLD_TEXT_FLAG);
+    }
+
+    public void addFlags(boolean add, int flat) {
+        addPaintFlags(mBasePaint, add, flat);
+    }
+
+    public void addPaintFlags(TextPaint paint, boolean add, int flat) {
+        addPaintFlags(paint, add, flat, true);
+    }
+
+    public void addPaintFlags(TextPaint paint, boolean add, int flat, boolean invalidate) {
+        if (add) {
+            paint.setFlags(paint.getFlags() | flat);
+        } else {
+            paint.setFlags(paint.getFlags() & ~flat);
+        }
+        if (invalidate) {
+            postInvalidate();
+        }
     }
 }
