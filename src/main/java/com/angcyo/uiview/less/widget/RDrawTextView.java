@@ -34,7 +34,9 @@ public class RDrawTextView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int[] measureDraw = drawText.measureDraw(widthMeasureSpec, heightMeasureSpec);
-        super.onMeasure(measureDraw[0], measureDraw[1]);
+        //super.onMeasure(measureDraw[0], measureDraw[1]);
+        setMeasuredDimension(measureDraw[0] + drawText.getPaddingHorizontal(),
+                measureDraw[1] + drawText.getPaddingVertical());
     }
 
     @Override

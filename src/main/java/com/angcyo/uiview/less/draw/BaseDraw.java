@@ -185,6 +185,9 @@ public abstract class BaseDraw {
 
     private int[] measureTemp = new int[2];
 
+    /**
+     * 返回测量后, Draw的宽高大小
+     */
     public int[] measureDraw(int widthMeasureSpec, int heightMeasureSpec) {
         //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -192,17 +195,20 @@ public abstract class BaseDraw {
         int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
         int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
 
-        if (widthMode == View.MeasureSpec.AT_MOST) {
-            //wrap_content
-            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawWidth(widthSize, widthMode), View.MeasureSpec.EXACTLY);
+        if (widthMode != View.MeasureSpec.EXACTLY) {
+            //wrap_content unspecified
+            //widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawWidth(widthSize, widthMode), View.MeasureSpec.EXACTLY);
+            widthSize = measureDrawWidth(widthSize, widthMode);
         }
 
-        if (heightMode == View.MeasureSpec.AT_MOST) {
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawHeight(heightSize, heightMode), View.MeasureSpec.EXACTLY);
+        if (heightMode != View.MeasureSpec.EXACTLY) {
+            //wrap_content unspecified
+            //heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(measureDrawHeight(heightSize, heightMode), View.MeasureSpec.EXACTLY);
+            heightSize = measureDrawHeight(heightSize, heightMode);
         }
 
-        measureTemp[0] = widthMeasureSpec;
-        measureTemp[1] = heightMeasureSpec;
+        measureTemp[0] = widthSize;
+        measureTemp[1] = heightSize;
         return measureTemp;
     }
 
@@ -261,14 +267,14 @@ public abstract class BaseDraw {
     /**
      * 竖直方向上的padding
      */
-    protected int getPaddingVertical() {
+    public int getPaddingVertical() {
         return getPaddingTop() + getPaddingBottom();
     }
 
     /**
      * 水平方向上的padding
      */
-    protected int getPaddingHorizontal() {
+    public int getPaddingHorizontal() {
         return getPaddingLeft() + getPaddingRight();
     }
 

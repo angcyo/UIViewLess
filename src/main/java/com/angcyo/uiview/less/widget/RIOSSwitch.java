@@ -76,7 +76,8 @@ public class RIOSSwitch extends View implements Checkable {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int[] measureDraw = drawIOSSwitch.measureDraw(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(measureDraw[0], measureDraw[1]);
+        setMeasuredDimension(measureDraw[0] + drawIOSSwitch.getPaddingHorizontal(),
+                measureDraw[1] + drawIOSSwitch.getPaddingVertical());
     }
 
     @Override
