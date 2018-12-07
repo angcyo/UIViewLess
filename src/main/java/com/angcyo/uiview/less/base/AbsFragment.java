@@ -16,10 +16,17 @@ import com.angcyo.uiview.less.resources.ResUtil;
 
 /**
  * Created by angcyo on 2018/12/03 23:17
+ * <p>
+ * 一些生命周期日志的输出,和创建跟视图
  */
-public class AbsFragment extends Fragment {
+public abstract class AbsFragment extends Fragment {
+
+    //<editor-fold desc="对象属性">
+
     protected RBaseViewHolder baseViewHolder;
     protected Context mAttachContext;
+
+    //</editor-fold">
 
     /**
      * 保存回调方法之前的状态值
@@ -89,8 +96,7 @@ public class AbsFragment extends Fragment {
         if (layoutId != -1) {
             rootView = inflater.inflate(layoutId, container, false);
         } else {
-            rootView = new View(getContext());
-            rootView.setBackgroundColor(ResUtil.getColor(R.color.base_dark_red_tran));
+            rootView = createRootView();
         }
         baseViewHolder = new RBaseViewHolder(rootView);
 
@@ -161,6 +167,16 @@ public class AbsFragment extends Fragment {
     //</editor-fold>
 
     //<editor-fold desc="自定义, 可以重写 的方法">
+
+    /**
+     * 不指定布局Id的时候, 可以用代码创建跟视图
+     */
+    @NonNull
+    protected View createRootView() {
+        View view = new View(getContext());
+        view.setBackgroundColor(ResUtil.getColor(R.color.base_dark_red_tran));
+        return view;
+    }
 
     @LayoutRes
     protected int getLayoutId() {

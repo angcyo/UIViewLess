@@ -1,5 +1,6 @@
 package com.angcyo.uiview.less.widget.group;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.base.ActivityHelper;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 
 /**
@@ -26,6 +28,9 @@ public class TitleBarLayout extends FrameLayout {
      */
     private int maxHeight = -1;
 
+    int statusBarHeight;
+    int actionBarHeight;
+
     public TitleBarLayout(Context context) {
         this(context, null);
     }
@@ -36,12 +41,18 @@ public class TitleBarLayout extends FrameLayout {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TitleBarLayout);
             maxHeight = typedArray.getDimensionPixelOffset(R.styleable.TitleBarLayout_r_max_height, -1);
             enablePadding = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+            if (enablePadding && context instanceof Activity) {
+                enablePadding = ActivityHelper.isLayoutFullScreen((Activity) context);
+            }
             fitActionBar = typedArray.getBoolean(R.styleable.TitleBarLayout_r_fit_action_bar_height, fitActionBar);
             enablePadding = typedArray.getBoolean(R.styleable.TitleBarLayout_r_fit_status_bar_height, enablePadding);
             isScreenHeight = typedArray.getBoolean(R.styleable.TitleBarLayout_r_is_screen_height, isScreenHeight);
 
             resetMaxHeight();
             typedArray.recycle();
+
+            statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+            actionBarHeight = getResources().getDimensionPixelSize(R.dimen.action_bar_height);
         }
         initLayout();
     }
@@ -71,7 +82,7 @@ public class TitleBarLayout extends FrameLayout {
     public void addView(View child, int index, ViewGroup.LayoutParams params) {
         super.addView(child, index, params);
         if (getChildCount() > 1) {
-            throw new IllegalArgumentException("Need Only One Child View.");
+            throw new IllegalArgumentException("只能包含一个子视图. Need Only One Child View.");
         }
     }
 
@@ -81,8 +92,7 @@ public class TitleBarLayout extends FrameLayout {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
-        int actionBarHeight = getResources().getDimensionPixelSize(R.dimen.action_bar_height);
+
         int topHeight = 0;
         int viewHeight = 0;
 

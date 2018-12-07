@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FragmentContentWrapperLayout">
+        <attr name="r_content_layout_status" format="flags">
+            <flag name="CONTENT_BOTTOM_OF_TITLE" value="0x01"/>
+            <flag name="CONTENT_BACK_OF_TITLE" value="0x02"/>
+        </attr>
+        <attr name="r_content_view_index" format="integer"/>
+        <attr name="r_title_view_index" format="integer"/>
+    </declare-styleable>
+</resources>
