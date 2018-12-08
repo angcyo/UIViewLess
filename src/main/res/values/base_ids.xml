@@ -29,4 +29,6 @@
     <item name="tag_base_iview" type="id"/>
     <item name="tag_state_ui" type="id"/>
 
+    <item name="base_title_back_view" type="id"/>
+
 </resources>

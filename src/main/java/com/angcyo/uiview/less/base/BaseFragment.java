@@ -7,6 +7,6 @@ import android.os.Bundle;
  * <p>
  * 生命周期的封装, 只需要关注 {@link #onFragmentShow(Bundle)} 和 {@link #onFragmentHide()}
  */
-public class BaseFragment extends AbsLifeCycleFragment {
+public abstract class BaseFragment extends AbsLifeCycleFragment {
 
 }

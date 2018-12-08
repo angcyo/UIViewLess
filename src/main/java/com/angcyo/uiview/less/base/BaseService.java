@@ -18,7 +18,7 @@ import com.angcyo.lib.L;
  * @author angcyo
  * @date 2018/11/14
  */
-public class BaseService extends Service implements Handler.Callback {
+public abstract class BaseService extends Service implements Handler.Callback {
 
     protected int FOREGROUND_NOTIFICATION_ID = this.hashCode();
     protected NotificationManager mNM;

@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.BuildConfig;
 
@@ -142,6 +144,111 @@ public class FragmentHelper {
         return viewId;
     }
 
+    /**
+     * 拿到Fragment所在的ViewGroup
+     */
+    public static ViewGroup getFragmentViewGroup(@NonNull FragmentManager fragmentManager,
+                                                 @IdRes int fragmentContainerId) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        ViewGroup targetViewGroup = null;
+        viewGroup:
+        for (Fragment f : fragments) {
+            if (getFragmentContainerId(f) ==
+                    fragmentContainerId) {
+
+                View view = f.getView();
+                if (view != null && view.getParent() instanceof ViewGroup) {
+                    targetViewGroup = (ViewGroup) view.getParent();
+                    break viewGroup;
+                }
+            }
+        }
+        return targetViewGroup;
+    }
+
+    /**
+     * 从指定的ViewGroup中, 获取排好序的Fragment
+     */
+    public static List<Fragment> getFragmentList(@NonNull FragmentManager fragmentManager,
+                                                 @IdRes int fragmentContainerId) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        List<Fragment> fragmentsResult = new ArrayList<>();
+        ViewGroup targetViewGroup = getFragmentViewGroup(fragmentManager, fragmentContainerId);
+
+        if (targetViewGroup != null) {
+            for (int i = 0; i < targetViewGroup.getChildCount(); i++) {
+                for (Fragment f : fragments) {
+                    if (f.getView() == targetViewGroup.getChildAt(i)) {
+                        fragmentsResult.add(f);
+                    }
+                }
+            }
+        }
+
+        return fragmentsResult;
+    }
+
+    /**
+     * 获取顶层视图, 对应的Fragment
+     *
+     * @param lastIndex 倒数第几个视图, 从0开始
+     */
+    public static Fragment getLastFragment(@NonNull FragmentManager fragmentManager,
+                                           @IdRes int fragmentContainerId,
+                                           int lastIndex /*倒数第几个, 从0开始*/) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        //拿到目标Fragment需要添加到的ViewGroup
+        ViewGroup targetViewGroup = getFragmentViewGroup(fragmentManager, fragmentContainerId);
+
+        //拿到当前最顶层显示的Fragment
+        Fragment lastFragment = null;
+        if (targetViewGroup != null) {
+            lastFragment:
+            for (int i = targetViewGroup.getChildCount() - 1 - lastIndex; i >= 0; i--) {
+                View childAt = targetViewGroup.getChildAt(i);
+
+                for (int j = fragments.size() - 1; j >= 0; j--) {
+                    Fragment f = fragments.get(j);
+                    if (f.getView() == childAt) {
+                        lastFragment = f;
+                        break lastFragment;
+                    }
+                }
+
+                break lastFragment;
+            }
+        }
+        return lastFragment;
+    }
+
+    public static List<Fragment> getBeforeFragment(@NonNull FragmentManager fragmentManager,
+                                                   Fragment excludeFragment,
+                                                   @IdRes int fragmentContainerId,
+                                                   int beforeIndex /*从excludeFragment的前面第几个开始*/) {
+        List<Fragment> fragments = getFragmentList(fragmentManager, fragmentContainerId);
+        List<Fragment> beforeFragments = new ArrayList<>();
+        List<Fragment> result = new ArrayList<>();
+
+        for (Fragment f : fragments) {
+            if (f == excludeFragment
+                /*f.getView() == resultFragment.getView()*/) {
+                continue;
+            }
+            if (getFragmentContainerId(f) ==
+                    fragmentContainerId) {
+                beforeFragments.add(f);
+            }
+        }
+        beforeFragments.add(excludeFragment);
+
+        for (int i = 0; i < beforeFragments.size() - beforeIndex; i++) {
+            result.add(beforeFragments.get(i));
+        }
+        return result;
+    }
+
     public static class Builder {
         FragmentManager fragmentManager;
         /**
@@ -192,6 +299,13 @@ public class FragmentHelper {
         @IdRes
         int parentLayoutId = -1;
 
+        String tag = null;
+
+        /**
+         * 是否优先使用已经保存过的Fragment, 比如恢复模式下, 就需要设置为true
+         */
+        boolean isFromCreate = true;
+
         public Builder(@NonNull FragmentManager fragmentManager) {
             this.fragmentManager = fragmentManager;
         }
@@ -231,6 +345,16 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder setTag(String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public Builder setFromCreate(boolean fromCreate) {
+            isFromCreate = fromCreate;
+            return this;
+        }
+
         private void parent(Fragment lastFragment) {
             if (lastFragment == null || parentFragment == null) {
                 return;
@@ -245,6 +369,7 @@ public class FragmentHelper {
             }
         }
 
+
         public Fragment doIt() {
             if (fragmentManager == null ||
                     showFragment == null ||
@@ -258,10 +383,21 @@ public class FragmentHelper {
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             Fragment resultFragment = showFragment;
-            String fragmentTag = showFragment.getClass().getSimpleName();
+            String fragmentTag;
+            if (tag == null) {
+                fragmentTag = showFragment.getClass().getSimpleName();
+            } else {
+                fragmentTag = tag;
+            }
 
             //如果是恢复模式, 可以拿到系统恢复的对象
-            Fragment fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
+            Fragment fragmentByTag;
+            if (isFromCreate) {
+                fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
+            } else {
+                fragmentByTag = showFragment;
+            }
+
             if (fragmentByTag != null) {
                 resultFragment = fragmentByTag;
             }
@@ -269,6 +405,7 @@ public class FragmentHelper {
             boolean needCommit = true;
             boolean isFragmentAdded = resultFragment.isAdded();
             boolean isFragmentHide = false;
+            int fragmentViewVisibility = View.VISIBLE;
 
             if (resultFragment instanceof IFragment) {
                 isFragmentHide = ((IFragment) resultFragment).isFragmentHide();
@@ -283,17 +420,21 @@ public class FragmentHelper {
             if (isFragmentAdded) {
                 fragmentContainerId = getFragmentContainerId(resultFragment);
 
+                View fragmentView = resultFragment.getView();
+                if (fragmentView != null) {
+                    fragmentViewVisibility = fragmentView.getVisibility();
+                }
+
                 //已经存在
-                if (isFragmentHide) {
+                if (isFragmentHide && fragmentViewVisibility == View.GONE) {
                     transaction.show(resultFragment);
                 } else {
                     needCommit = false;
                     try {
                         resultFragment.setUserVisibleHint(true);
 
-                        View fragmentView = resultFragment.getView();
                         if (fragmentView != null) {
-                            if (fragmentView.getVisibility() != View.VISIBLE) {
+                            if (fragmentViewVisibility != View.VISIBLE) {
                                 fragmentView.setVisibility(View.VISIBLE);
                             }
                             fragmentView.bringToFront();
@@ -321,55 +462,66 @@ public class FragmentHelper {
             //隐藏之前的Fragment
             if (hideBeforeIndex > 0) {
                 /*Fragment的顺序和add的顺序保持一致, 无法修改*/
-                List<Fragment> fragments = fragmentManager.getFragments();
-                List<Fragment> beforeFragments = new ArrayList<>();
+                List<Fragment> beforeFragments = getBeforeFragment(fragmentManager, resultFragment, fragmentContainerId, hideBeforeIndex);
 
-                for (Fragment f : fragments) {
-                    if (f == resultFragment
-                        /*f.getView() == resultFragment.getView()*/) {
-                        continue;
-                    }
-                    if (getFragmentContainerId(f) ==
-                            fragmentContainerId) {
-                        beforeFragments.add(f);
-                    }
-                }
-                beforeFragments.add(resultFragment);
-
-                for (int i = 0; i < beforeFragments.size() - hideBeforeIndex; i++) {
+                for (int i = 0; i < beforeFragments.size(); i++) {
                     transaction.hide(beforeFragments.get(i));
                     needCommit = true;
+                }
+            } else {
+                //如果不隐藏之前的Fragment, 那么onHiddenChanged不会触发.
+                //此时界面对用户不可见,需要手动调用setUserVisibleHint方法
+                Fragment lastFragment = getLastFragment(fragmentManager, fragmentContainerId, isFragmentAdded ? 1 : 0);
+
+                if (lastFragment != null) {
+                    lastFragment.setUserVisibleHint(false);
                 }
             }
 
             //日志输出
+            logInner(transaction, needCommit);
+
+            //提交事务
+            if (needCommit) {
+                commitInner(transaction);
+            }
+            return resultFragment;
+        }
+
+        private void logInner(FragmentTransaction transaction, boolean needCommit) {
             if (BuildConfig.DEBUG) {
-                transaction.runOnCommit(new Runnable() {
+                Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         logFragments(fragmentManager);
                     }
-                });
-            }
-
-            //提交事务
-            if (needCommit) {
-                if (commitNow) {
-                    if (allowStateLoss) {
-                        transaction.commitNowAllowingStateLoss();
-                    } else {
-                        transaction.commitNow();
-                    }
+                };
+                if (needCommit) {
+                    transaction.runOnCommit(runnable);
                 } else {
-                    if (allowStateLoss) {
-                        transaction.commitAllowingStateLoss();
-                    } else {
-                        transaction.commit();
-                    }
+                    runnable.run();
                 }
             }
-
-            return resultFragment;
         }
+
+        /**
+         * 提交事务
+         */
+        private void commitInner(FragmentTransaction transaction) {
+            if (commitNow) {
+                if (allowStateLoss) {
+                    transaction.commitNowAllowingStateLoss();
+                } else {
+                    transaction.commitNow();
+                }
+            } else {
+                if (allowStateLoss) {
+                    transaction.commitAllowingStateLoss();
+                } else {
+                    transaction.commit();
+                }
+            }
+        }
+
     }
 }

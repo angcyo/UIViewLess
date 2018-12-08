@@ -227,6 +227,9 @@ public class ActivityHelper {
             return this;
         }
 
+        /**
+         * 用来启动Activity
+         */
         public Intent start() {
             if (intent == null) {
                 L.e("必要的参数不合法,请检查参数:" + "\n1->intent:" + intent + " ×");
@@ -240,6 +243,13 @@ public class ActivityHelper {
                 }
             }
             return intent;
+        }
+
+        /**
+         * 可以在Fragment中, 关闭Activity , 或者 Remove  Fragment
+         */
+        public void back() {
+
         }
     }
 }

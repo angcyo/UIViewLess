@@ -16,7 +16,8 @@ import com.angcyo.uiview.less.R;
  * 默认(可以指定)
  * 第一个childView 为内容
  * 第二个childView 为标题
- * 不支持3个child
+ * <p>
+ * 其他布局, 将按照FragmentLayout的布局方式 叠加在 内容布局上面
  *
  * <p>
  * 1: 标题浮动在内容布局的上面
@@ -43,6 +44,7 @@ public class FragmentContentWrapperLayout extends FrameLayout {
     private int contentLayoutState = CONTENT_BOTTOM_OF_TITLE;
 
     private int titleViewIndex = 1;
+    @Deprecated
     private int contentViewIndex = 0;
 
     public FragmentContentWrapperLayout(@NonNull Context context) {
@@ -60,69 +62,128 @@ public class FragmentContentWrapperLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (getChildCount() != 2 || contentLayoutState == CONTENT_BACK_OF_TITLE) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        } else {
-            //内容在标题的下面, 线性布局方式
-            int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
-            int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
-            int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
-            int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+        //内容在标题的下面, 线性布局方式
+        int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
 
-            View titleView = titleView();
-            View contentView = contentView();
+        View titleView = titleView();
 
+        int titleViewHeight = 0;
+        int titleViewWidth = 0;
+
+        int titleViewMarginVertical = 0;
+        int titleViewMarginHorizontal = 0;
+        if (titleView != null && titleView.getVisibility() != View.GONE) {
             //测量标题宽高
             measureChildWithMargins(titleView, widthMeasureSpec, 0, heightMeasureSpec, 0);
+            titleViewWidth = titleView.getMeasuredWidth();
+            titleViewHeight = titleView.getMeasuredHeight();
 
-            //测量内容宽高
-            int heightUsed = titleView.getMeasuredHeight() + marginVertical(titleView);
-            measureChildWithMargins(contentView, widthMeasureSpec, 0, heightMeasureSpec, heightUsed);
-
-            if (widthMode != View.MeasureSpec.EXACTLY) {
-                //宽度 wrap_content
-                widthSize = Math.max(titleView.getMeasuredWidth() + marginHorizontal(titleView),
-                        contentView.getMeasuredWidth() + marginHorizontal(contentView)) + getPaddingHorizontal();
-            }
-
-            if (heightMode != View.MeasureSpec.EXACTLY) {
-                heightSize = titleView.getMeasuredHeight() + marginVertical(titleView)
-                        + contentView.getMeasuredHeight() + marginVertical(contentView)
-                        + getPaddingVertical();
-            }
-
-            setMeasuredDimension(widthSize, heightSize);
+            titleViewMarginHorizontal = marginHorizontal(titleView);
+            titleViewMarginVertical = marginVertical(titleView);
         }
+
+        int heightUsed = 0;
+        if (contentLayoutState == CONTENT_BOTTOM_OF_TITLE) {
+            heightUsed = titleViewHeight + titleViewMarginVertical;
+        }
+
+        /*视图需要多大宽度, 可以容纳子view*/
+        int maxWidth = titleViewWidth + titleViewMarginHorizontal;
+
+        int maxTitleHeight = titleViewHeight + titleViewMarginVertical;
+        int maxChildHeight = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View childAt = getChildAt(i);
+            if (childAt == titleView) {
+                continue;
+            }
+
+            if (childAt.getVisibility() != View.GONE) {
+                //测量内容宽高
+                measureChildWithMargins(childAt, widthMeasureSpec, 0, heightMeasureSpec, heightUsed);
+
+                maxWidth = Math.max(maxWidth, childAt.getMeasuredWidth() + marginHorizontal(childAt));
+                maxChildHeight = Math.max(maxChildHeight, childAt.getMeasuredHeight() + marginVertical(childAt));
+            }
+        }
+
+        if (widthMode != View.MeasureSpec.EXACTLY) {
+            //宽度 wrap_content
+            widthSize = maxWidth + getPaddingHorizontal();
+        }
+
+        if (heightMode != View.MeasureSpec.EXACTLY) {
+            if (contentLayoutState == CONTENT_BOTTOM_OF_TITLE) {
+                heightSize = maxTitleHeight + maxChildHeight + getPaddingVertical();
+            } else {
+                heightSize = Math.max(maxTitleHeight, maxChildHeight) + getPaddingVertical();
+            }
+        }
+
+        setMeasuredDimension(widthSize, heightSize);
+
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        if (getChildCount() != 2 || contentLayoutState == CONTENT_BACK_OF_TITLE) {
-            super.onLayout(changed, left, top, right, bottom);
-        } else {
-            View titleView = titleView();
-            View contentView = contentView();
+        View titleView = titleView();
 
-            MarginLayoutParams titleParams = (MarginLayoutParams) titleView.getLayoutParams();
-            int titleTop = getPaddingTop() + titleParams.topMargin;
-            titleView.layout(getPaddingLeft() + titleParams.leftMargin, titleTop,
-                    getPaddingLeft() + titleParams.leftMargin + titleView.getMeasuredWidth(),
-                    titleTop + titleView.getMeasuredHeight());
+        int titleViewHeight = 0;
+        int titleViewWidth = 0;
 
-            MarginLayoutParams contentParams = (MarginLayoutParams) contentView.getLayoutParams();
-            int contentTop = titleView.getBottom() + titleParams.bottomMargin + contentParams.topMargin;
-            contentView.layout(getPaddingLeft() + contentParams.leftMargin, contentTop,
-                    getPaddingLeft() + contentParams.leftMargin + contentView.getMeasuredWidth(),
-                    contentTop + contentView.getMeasuredHeight());
+        int titleViewMarginVertical = 0;
+        int titleViewMarginHorizontal = 0;
+        if (titleView != null && titleView.getVisibility() != View.GONE) {
+            //测量标题宽高
+            titleViewWidth = titleView.getMeasuredWidth();
+            titleViewHeight = titleView.getMeasuredHeight();
+
+            titleViewMarginHorizontal = marginHorizontal(titleView);
+            titleViewMarginVertical = marginVertical(titleView);
+        }
+
+        int heightUsed = 0;
+        if (contentLayoutState == CONTENT_BOTTOM_OF_TITLE) {
+            heightUsed = titleViewHeight + titleViewMarginVertical;
+        }
+
+        for (int i = 0; i < getChildCount(); i++) {
+            View childAt = getChildAt(i);
+            if (childAt.getVisibility() == View.GONE) {
+                continue;
+            }
+            MarginLayoutParams params = (MarginLayoutParams) childAt.getLayoutParams();
+            int layoutTop = getPaddingTop() + params.topMargin;
+            int layoutLeft = getPaddingLeft() + params.leftMargin;
+
+            if (childAt == titleView) {
+
+            } else {
+                layoutTop += heightUsed;
+            }
+
+            childAt.layout(layoutLeft, layoutTop,
+                    layoutLeft + childAt.getMeasuredWidth(),
+                    layoutTop + childAt.getMeasuredHeight());
         }
     }
 
     private View titleView() {
-        return getChildAt(titleViewIndex);
+        if (getChildCount() > titleViewIndex) {
+            return getChildAt(titleViewIndex);
+        }
+        return null;
     }
 
+    @Deprecated
     private View contentView() {
-        return getChildAt(contentViewIndex);
+        if (getChildCount() > contentViewIndex) {
+            return getChildAt(contentViewIndex);
+        }
+        return null;
     }
 
     /**

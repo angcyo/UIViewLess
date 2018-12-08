@@ -31,7 +31,7 @@ import rx.functions.Func2;
  * @author angcyo
  * @date 2018/11/13
  */
-public class BaseAppCompatActivity extends AppCompatActivity {
+public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     protected RBaseViewHolder viewHolder;
 

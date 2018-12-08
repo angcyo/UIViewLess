@@ -1,11 +1,19 @@
 package com.angcyo.uiview.less.base;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.iview.AffectUI;
 import com.angcyo.uiview.less.skin.SkinHelper;
+import com.angcyo.uiview.less.widget.ImageTextView;
+import com.angcyo.uiview.less.widget.group.TitleBarLayout;
 
 /**
  * Email:angcyo@126.com
@@ -14,7 +22,30 @@ import com.angcyo.uiview.less.skin.SkinHelper;
  * @author angcyo
  * @date 2018/12/07
  */
-public class BaseTitleFragment extends BaseFragment {
+public abstract class BaseTitleFragment extends BaseFragment implements AffectUI.OnAffectListener {
+
+    /**
+     * Fragment 内容布局, 将add到这个ViewGroup
+     */
+    protected FrameLayout contentWrapperLayout;
+
+    /**
+     * 标题栏和padding控制的布局
+     */
+    protected TitleBarLayout titleBarLayout;
+
+    /**
+     * 子类的内容布局
+     */
+    protected View contentView;
+
+    /**
+     * 情感图控制
+     */
+    protected AffectUI affectUI;
+
+    //<editor-fold desc="初始化方法">
+
     @NonNull
     @Override
     protected View createRootView() {
@@ -30,13 +61,188 @@ public class BaseTitleFragment extends BaseFragment {
     protected void initBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
         super.initBaseView(arguments, savedInstanceState);
 
-        baseViewHolder.v(R.id.base_title_bar_layout).setBackgroundColor(SkinHelper.getSkin().getThemeColor());
-
-        baseViewHolder.vg(R.id.base_title_left_layout).addView(TitleItemHelper.createItem(mAttachContext, R.drawable.base_back));
-        baseViewHolder.vg(R.id.base_title_left_layout).addView(TitleItemHelper.createItem(mAttachContext, "测试1"));
-        baseViewHolder.vg(R.id.base_title_left_layout).addView(TitleItemHelper.createItem(mAttachContext, "测试2"));
-
-        baseViewHolder.vg(R.id.base_title_right_layout).addView(TitleItemHelper.createItem(mAttachContext, R.drawable.base_back, "测试1"));
-        baseViewHolder.vg(R.id.base_title_right_layout).addView(TitleItemHelper.createItem(mAttachContext, R.drawable.base_back, "测试2"));
+        onInitBaseView(arguments, savedInstanceState);
     }
+
+    protected void onInitBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        contentWrapperLayout = baseViewHolder.v(R.id.base_content_wrapper_layout);
+        titleBarLayout = baseViewHolder.v(R.id.base_title_bar_layout);
+
+        initBaseTitleLayout(arguments);
+        initContentLayout(arguments);
+    }
+
+    /**
+     * 初始化标题部分
+     */
+    protected void initBaseTitleLayout(@Nullable Bundle arguments) {
+        //设置标题背景颜色
+        titleBarLayout.setBackgroundColor(SkinHelper.getSkin().getThemeColor());
+
+        //设置标题
+        setTitleString(getFragmentTitle());
+
+        //添加返回按钮
+        addLeftItem(createBackItem());
+    }
+
+    /**
+     * 初始化内容部分
+     */
+    protected void initContentLayout(@Nullable Bundle arguments) {
+        int contentLayoutId = getContentLayoutId();
+        if (contentLayoutId == -1) {
+            contentView = createContentView(contentWrapperLayout);
+        } else {
+            contentView = LayoutInflater.from(mAttachContext).inflate(contentLayoutId, contentWrapperLayout, false);
+        }
+        contentWrapperLayout.addView(contentView);
+
+        affectUI = createAffectUI();
+    }
+
+    /**
+     * 创建情感图控制类
+     */
+    protected AffectUI createAffectUI() {
+        return AffectUI.build(contentWrapperLayout)
+                .register(AffectUI.AFFECT_LOADING, R.layout.base_title_item_layout)
+                .register(AffectUI.AFFECT_ERROR, R.layout.base_title_item_layout)
+                .register(AffectUI.AFFECT_OTHER, R.layout.base_title_item_layout)
+                .setContentAffect(AffectUI.CONTENT_AFFECT_INVISIBLE)
+                .setAffectChangeListener(this)
+                .create();
+    }
+
+    /**
+     * 切换情感图
+     */
+    protected void switchAffectUI(int affect) {
+        if (affectUI != null) {
+            affectUI.showAffect(affect);
+        }
+    }
+
+    /**
+     * 设置显示的标题
+     */
+    public void setTitleString(@NonNull String title) {
+        TextView textView = baseViewHolder.tv(R.id.base_title_view);
+        if (textView != null) {
+            textView.setText(title);
+        }
+    }
+
+    /**
+     * 创建返回按钮
+     */
+    protected View createBackItem() {
+        ImageTextView backItem = TitleItemHelper.createItem(mAttachContext, R.drawable.base_back, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTitleBackClick(v);
+            }
+        });
+        backItem.setId(R.id.base_title_back_view);
+        return backItem;
+    }
+
+    public void onTitleBackClick(@NonNull View view) {
+        hideTitleBar();
+    }
+
+    /**
+     * 添加左边控制按钮
+     */
+    public void addLeftItem(@NonNull View itemView) {
+        leftControl().addView(itemView);
+    }
+
+    public void addRightItem(@NonNull View itemView) {
+        rightControl().addView(itemView);
+    }
+
+    public ViewGroupHelper leftControl() {
+        return new ViewGroupHelper(baseViewHolder.vg(R.id.base_title_left_layout));
+    }
+
+    public ViewGroupHelper rightControl() {
+        return new ViewGroupHelper(baseViewHolder.vg(R.id.base_title_right_layout));
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="界面属性控制方法">
+
+    /**
+     * 隐藏标题栏
+     */
+    public void hideTitleBar() {
+        if (titleBarLayout != null) {
+            titleBarLayout.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 隐藏返回按钮
+     */
+    public void hideBackView() {
+        leftControl().selector(R.id.base_title_back_view).gone();
+    }
+
+    /**
+     * 移除返回按钮
+     */
+    public void removeBackView() {
+        leftControl().selector(R.id.base_title_back_view).remove();
+    }
+
+    public void hideTitleShadow() {
+        new ViewGroupHelper((ViewGroup) getView()).selector(R.id.base_title_shadow_view).gone();
+    }
+
+    public void removeTitleShadow() {
+        new ViewGroupHelper((ViewGroup) getView()).selector(R.id.base_title_shadow_view).remove();
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="需要重写的方法">
+
+    /**
+     * 获取内容布局id
+     */
+    @LayoutRes
+    protected int getContentLayoutId() {
+        return -1;
+    }
+
+    @NonNull
+    protected View createContentView(@NonNull ViewGroup contentWrapperLayout) {
+        TextView textView = new TextView(contentWrapperLayout.getContext());
+        textView.setText("默认的内容布局");
+        return textView;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="情感图回调方法">
+
+    @Override
+    public void onAffectChangeBefore(AffectUI affectUI, int fromAffect, int toAffect) {
+
+    }
+
+    @Override
+    public void onAffectChange(AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView) {
+
+    }
+
+    @Override
+    public void onInitLayout(AffectUI affectUI, int affect, @NonNull View rootView) {
+
+    }
+
+    //</editor-fold>
+
+
 }

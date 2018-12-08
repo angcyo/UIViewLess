@@ -7,10 +7,13 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.widget.ImageTextView;
+import com.angcyo.uiview.view.RClickListener;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 标题栏 item 创建/控制
@@ -23,18 +26,18 @@ import com.angcyo.uiview.less.widget.ImageTextView;
 public class TitleItemHelper {
 
     @NonNull
-    public static ImageTextView createItem(@NonNull Context context, String text) {
-        return new Builder(context).setText(text).build();
+    public static ImageTextView createItem(@NonNull Context context, String text, View.OnClickListener listener) {
+        return new Builder(context).setText(text).setClickListener(listener).build();
     }
 
     @NonNull
-    public static ImageTextView createItem(@NonNull Context context, @DrawableRes int src) {
-        return new Builder(context).setSrc(src).build();
+    public static ImageTextView createItem(@NonNull Context context, @DrawableRes int src, View.OnClickListener listener) {
+        return new Builder(context).setSrc(src).setClickListener(listener).build();
     }
 
     @NonNull
-    public static ImageTextView createItem(@NonNull Context context, int src, String text) {
-        return new Builder(context).setText(text).setSrc(src).build();
+    public static ImageTextView createItem(@NonNull Context context, int src, String text, View.OnClickListener listener) {
+        return new Builder(context).setText(text).setSrc(src).setClickListener(listener).build();
     }
 
     public static class Builder {
@@ -61,6 +64,23 @@ public class TitleItemHelper {
 
         int textSize = -1;
         int textColor = -1;
+
+        View.OnClickListener listener;
+
+        int leftMargin;
+        int rightMargin;
+
+        /**
+         * 视图id, 可以用来findViewById
+         */
+        int viewId = -1;
+
+        Object tag = null;
+
+        /**
+         * AddView中的Index
+         */
+        int viewIndex = -1;
 
         public Builder(@NonNull Context context) {
             this.context = context;
@@ -114,6 +134,36 @@ public class TitleItemHelper {
             return this;
         }
 
+        public Builder setClickListener(View.OnClickListener listener) {
+            this.listener = listener;
+            return this;
+        }
+
+        public Builder setLeftMargin(int leftMargin) {
+            this.leftMargin = leftMargin;
+            return this;
+        }
+
+        public Builder setRightMargin(int rightMargin) {
+            this.rightMargin = rightMargin;
+            return this;
+        }
+
+        public Builder setViewId(int viewId) {
+            this.viewId = viewId;
+            return this;
+        }
+
+        public Builder setTag(Object tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public Builder setViewIndex(int viewIndex) {
+            this.viewIndex = viewIndex;
+            return this;
+        }
+
         public ImageTextView build() {
             return build(null);
         }
@@ -128,7 +178,23 @@ public class TitleItemHelper {
                 view = (ImageTextView) LayoutInflater.from(context)
                         .inflate(R.layout.base_title_item_layout,
                                 viewGroup, false);
-                viewGroup.addView(view);
+                viewGroup.addView(view, viewIndex);
+            }
+            if (viewId != -1) {
+                view.setId(viewId);
+            }
+            if (tag != null) {
+                view.setTag(tag);
+            }
+            if (listener != null) {
+                view.setOnClickListener(new RClickListener() {
+                    @Override
+                    public void onRClick(@Nullable View view) {
+                        if (listener != null) {
+                            listener.onClick(view);
+                        }
+                    }
+                });
             }
             if (text != null) {
                 view.setShowText(text);
@@ -154,6 +220,10 @@ public class TitleItemHelper {
             if (itemWidth != -100) {
                 ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
                 layoutParams.width = itemWidth;
+                if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                    ((ViewGroup.MarginLayoutParams) layoutParams).leftMargin = leftMargin;
+                    ((ViewGroup.MarginLayoutParams) layoutParams).rightMargin = rightMargin;
+                }
                 view.setLayoutParams(layoutParams);
             }
             return view;

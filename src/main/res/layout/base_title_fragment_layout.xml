@@ -5,6 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         app:r_content_layout_status="CONTENT_BOTTOM_OF_TITLE"
         android:layout_width="match_parent"
+        app:r_title_view_index="1"
         android:layout_height="match_parent">
 
     <!--内容布局-->
@@ -74,5 +75,12 @@
             </com.angcyo.uiview.less.widget.group.RTitleCenterLayout>
         </FrameLayout>
     </com.angcyo.uiview.less.widget.group.TitleBarLayout>
+
+    <!--标题栏下面的阴影-->
+    <View
+            android:id="@+id/base_title_shadow_view"
+            android:background="@drawable/base_title_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
 
 </com.angcyo.uiview.less.widget.group.FragmentContentWrapperLayout>

@@ -21,7 +21,7 @@ import android.view.ViewParent;
 public class AffectUI {
 
     /**
-     * 情感图 内容
+     * 情感图 内容, 此变量用来显示内容视图. 请勿用来注册
      */
     public static final int AFFECT_CONTENT = 1;
     /**
