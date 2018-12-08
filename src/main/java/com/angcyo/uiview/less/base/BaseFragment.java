@@ -31,6 +31,14 @@ public abstract class BaseFragment extends AbsLifeCycleFragment {
     }
 
     /**
+     * 此方法会在onCreateView之后回调
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    /**
      * 模拟Activity 的 onPostCreate啊
      */
     protected void onPostCreateView(@Nullable ViewGroup container, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
