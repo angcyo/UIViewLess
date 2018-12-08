@@ -107,7 +107,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
     /**
      * 创建适配器
      */
-    protected RBaseAdapter<T> onCreateAdapter(List<T> datas) {
+    protected RBaseAdapter<T> onCreateAdapter(@Nullable List<T> datas) {
         return new RBaseAdapter<T>(mAttachContext, datas) {
             @Override
             protected int getItemLayoutId(int viewType) {

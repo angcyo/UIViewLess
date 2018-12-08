@@ -25,37 +25,46 @@ import java.util.List;
  */
 public abstract class BaseExItemFragment extends BaseRecyclerFragment<IExStringDataType> {
     @Override
-    protected RBaseAdapter<IExStringDataType> onCreateAdapter(List<IExStringDataType> datas) {
-        RExItemAdapter<String, IExStringDataType> adapter = new RExItemAdapter<>(mAttachContext, new RExItemFactory<String, IExStringDataType>() {
+    protected RBaseAdapter<IExStringDataType> onCreateAdapter(@Nullable List<IExStringDataType> datas) {
+        RExItemAdapter<String, IExStringDataType> adapter = new RExItemAdapter<>(mAttachContext,
+                new RExItemFactory<String, IExStringDataType>() {
 
-            @Override
-            public void registerItems(@NonNull ArrayList<RExItem<String, IExStringDataType>> allRegItems) {
-                BaseExItemFragment.this.registerItems(allRegItems);
-            }
+                    @Override
+                    public void registerItems(@NonNull ArrayList<RExItem<String, IExStringDataType>> allRegItems) {
+                        BaseExItemFragment.this.registerItems(allRegItems);
+                    }
 
-            @Nullable
-            @Override
-            public String getItemTypeFromData(@Nullable IExStringDataType data, int position) {
-                if (data == null) {
-                    return null;
-                }
-                return data.getItemDataType();
-            }
+                    @Nullable
+                    @Override
+                    public String getItemTypeFromData(@Nullable IExStringDataType data, int position) {
+                        if (data == null) {
+                            return null;
+                        }
+                        return data.getItemDataType();
+                    }
 
-            @Override
-            public void onItemFactoryInit() {
-                super.onItemFactoryInit();
-            }
+                    @Override
+                    public void onItemFactoryInit() {
+                        super.onItemFactoryInit();
+                    }
 
-            @Override
-            public void onCreateItemHolder(@NonNull RExItemHolder<IExStringDataType> itemHolder) {
-                super.onCreateItemHolder(itemHolder);
-            }
-        });
+                    @Override
+                    public void onCreateItemHolder(@NonNull RExItemHolder<IExStringDataType> itemHolder) {
+                        super.onCreateItemHolder(itemHolder);
+                        BaseExItemFragment.this.onCreateItemHolder(itemHolder);
+                    }
+                });
 
         //必须
         adapter.initItemFactory();
         return adapter;
+    }
+
+    /**
+     * 实例化ItemHolder之后回调
+     */
+    public void onCreateItemHolder(@NonNull RExItemHolder<IExStringDataType> itemHolder) {
+
     }
 
     /**

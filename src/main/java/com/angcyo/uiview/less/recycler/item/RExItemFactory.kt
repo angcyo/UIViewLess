@@ -45,6 +45,7 @@ abstract class RExItemFactory<ItemType, DataType> {
             allItemHolder.put(index, itemHolder)
             onCreateItemHolder(itemHolder)
         }
+
         onItemFactoryInit()
     }
 
