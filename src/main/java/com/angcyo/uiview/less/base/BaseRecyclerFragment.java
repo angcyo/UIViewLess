@@ -8,6 +8,7 @@ import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
+import com.angcyo.uiview.less.smart.MaterialHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -51,15 +52,16 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             smartRefreshLayout.setOnRefreshListener(this);
             /*设置加载更多监听之后, 会自动开启加载更多*/
             smartRefreshLayout.setOnLoadMoreListener(this);
-            //关闭加载更多
-            //smartRefreshLayout.setEnableLoadMore(false);
+            //激活加载更多, 关闭加载更多时, 尽量也关闭不满一页时候开启上拉加载功能
+            smartRefreshLayout.setEnableLoadMore(false);
+            //是否在列表不满一页时候开启上拉加载功能
+            smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
 
             //是否启用下拉刷新功能
             smartRefreshLayout.setEnableRefresh(true);
 
             //是否启用列表惯性滑动到底部时自动加载更多, 关闭之后, 需要释放手指, 才能加载更多
             smartRefreshLayout.setEnableAutoLoadMore(false);
-
 
             //是否启用嵌套滚动
             //smartRefreshLayout.setEnableNestedScroll(false);
@@ -71,15 +73,19 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             smartRefreshLayout.setEnableHeaderTranslationContent(true);
             //是否上拉Footer的时候向上平移列表或者内容, 内容是否跟手
             smartRefreshLayout.setEnableFooterTranslationContent(true);
-            //是否在列表不满一页时候开启上拉加载功能
-            smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(true);
+
             //是否在全部加载结束之后Footer跟随内容1.0.4
             smartRefreshLayout.setEnableFooterFollowWhenLoadFinished(true);
             //是否启用越界拖动（仿苹果效果）1.0.4
             smartRefreshLayout.setEnableOverScrollDrag(true);
 
+            //android 原生样式
+            smartRefreshLayout.setRefreshHeader(new MaterialHeader(mAttachContext));
+            //关闭内容跟随移动, 更像原生样式
+            smartRefreshLayout.setEnableHeaderTranslationContent(false);
+
             //ios的下拉刷新样式
-            smartRefreshLayout.setRefreshHeader(new ClassicsHeader(mAttachContext));
+            //smartRefreshLayout.setRefreshHeader(new ClassicsHeader(mAttachContext));
             smartRefreshLayout.setRefreshFooter(new ClassicsFooter(mAttachContext));
         }
         if (recyclerView != null) {
