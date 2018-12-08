@@ -1,8 +1,11 @@
 package com.angcyo.uiview.less.recycler;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,9 +22,10 @@ import java.util.List;
 
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
+import com.angcyo.uiview.less.recycler.widget.ILoadMore;
+import com.angcyo.uiview.less.recycler.widget.IShowState;
+import com.angcyo.uiview.less.recycler.widget.ItemShowStateLayout;
 import com.angcyo.uiview.less.utils.RUtils;
-import com.angcyo.uiview.less.widget.ILoadMore;
-import com.angcyo.uiview.less.widget.IShowState;
 import rx.Observer;
 import rx.functions.Action1;
 import rx.functions.Func2;
@@ -73,14 +77,16 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
      */
     boolean animToShowState = false;
 
+    protected Handler handler;
+
     public RBaseAdapter(Context context) {
-        mAllDatas = new ArrayList<>();
-        this.mContext = context;
+        this(context, null);
     }
 
     public RBaseAdapter(Context context, List<T> datas) {
         this.mAllDatas = datas == null ? new ArrayList<T>() : datas;
         this.mContext = context;
+        handler = new Handler(Looper.getMainLooper());
     }
 
     public static int getListSize(List list) {
@@ -213,12 +219,10 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
             }
 
             if (mEnableShowState && viewType == ITEM_TYPE_SHOW_STATE) {
-//                itemView = LayoutInflater.from(mContext)
-//                        .inflate(R.layout.base_item_show_state_layout, parent, false);
+                itemView = createShowState(mContext, parent);
                 mIShowState = (IShowState) itemView;
             } else if (mEnableLoadMore && viewType == ITEM_TYPE_LOAD_MORE) {
-//                itemView = LayoutInflater.from(mContext)
-//                        .inflate(R.layout.base_item_load_more_layout, parent, false);
+                itemView = createLoadMore(mContext, parent);
                 mLoadMoreView = (ILoadMore) itemView;
             } else {
                 itemView = createItemView(parent, viewType);
@@ -252,10 +256,10 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
                     mIShowState = (IShowState) holder.itemView;
                 }
 //
-//                if (mIShowState != null) {
-//                    mIShowState.setShowState(mShowState);
-//                    onBindShowStateView((ItemShowStateLayout) mIShowState, mShowState);
-//                }
+                if (mIShowState != null) {
+                    mIShowState.setShowState(mShowState);
+                    onBindShowStateView((ItemShowStateLayout) mIShowState, mShowState);
+                }
             } else if (mEnableLoadMore && isLast(position)) {
                 /**如果第一个就是加载更多的布局, 需要调用加载更多么?*/
                 if (holder.getItemViewType() == ITEM_TYPE_LOAD_MORE) {
@@ -278,24 +282,44 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
     }
 
     /**
+     * 创建状态显示切换布局
+     * View 需要实现 IShowState 接口
+     */
+    protected View createShowState(Context context, ViewGroup parent) {
+        View itemView = LayoutInflater.from(context)
+                .inflate(R.layout.base_item_show_state_layout, parent, false);
+        return itemView;
+    }
+
+    /**
+     * 创建加载更多布局
+     * View 需要实现 ILoadMore 接口
+     */
+    protected View createLoadMore(Context context, ViewGroup parent) {
+        View itemView = LayoutInflater.from(context)
+                .inflate(R.layout.base_item_load_more_layout, parent, false);
+        return itemView;
+    }
+
+    /**
      * 直接从data 列表索引拿数据
      */
     public T getDataByIndex(int position) {
         return getAllDatas().size() > position ? mAllDatas.get(position) : null;
     }
 
-//    /**
-//     * 不同的状态, 显示不同的布局
-//     *
-//     * @see R.layout.base_item_show_state_layout
-//     */
-//    protected void onBindShowStateView(@NonNull ItemShowStateLayout showStateLayout, int showState) {
-//
-//    }
+    /**
+     * 不同的状态, 显示不同的布局
+     * <p>
+     * R.layout.base_item_show_state_layout
+     */
+    protected void onBindShowStateView(@NonNull ItemShowStateLayout showStateLayout, int showState) {
+
+    }
 
     /**
      * @see #onBindLoadMoreView(RBaseViewHolder, int)
-     * @see R.layout.base_item_load_more_layout
+     * R.layout.base_item_load_more_layout
      */
     @Deprecated
     private void onBindLoadMore(int position) {
@@ -305,10 +329,17 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
             /**如果第一个就是加载更多的布局, 需要调用加载更多么?*/
             if (position != 0) {
                 mLoadState = ILoadMore.LOAD_MORE;
-                onLoadMore();
-                if (mLoadMoreListener != null) {
-                    mLoadMoreListener.onAdapterLodeMore(this);
-                }
+
+                //触发加载更多回调
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onLoadMore();
+                        if (mLoadMoreListener != null) {
+                            mLoadMoreListener.onAdapterLodeMore(RBaseAdapter.this);
+                        }
+                    }
+                });
             }
         }
 

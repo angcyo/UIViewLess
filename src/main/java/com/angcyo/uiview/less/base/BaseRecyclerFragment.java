@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.TextView;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
@@ -15,6 +16,9 @@ import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * RecyclerView打底的Fragment
@@ -56,6 +60,8 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             smartRefreshLayout.setEnableLoadMore(false);
             //是否在列表不满一页时候开启上拉加载功能
             smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
+            //越界滚动
+            smartRefreshLayout.setEnableOverScrollDrag(false);
 
             //是否启用下拉刷新功能
             smartRefreshLayout.setEnableRefresh(true);
@@ -77,7 +83,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             //是否在全部加载结束之后Footer跟随内容1.0.4
             smartRefreshLayout.setEnableFooterFollowWhenLoadFinished(true);
             //是否启用越界拖动（仿苹果效果）1.0.4
-            smartRefreshLayout.setEnableOverScrollDrag(true);
+            //smartRefreshLayout.setEnableOverScrollDrag(true);
 
             //android 原生样式
             smartRefreshLayout.setRefreshHeader(new MaterialHeader(mAttachContext));
@@ -89,10 +95,9 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             smartRefreshLayout.setRefreshFooter(new ClassicsFooter(mAttachContext));
         }
         if (recyclerView != null) {
-            baseAdapter = onCreateAdapter();
+            baseAdapter = onCreateAdapter(new ArrayList<T>());
             recyclerView.setAdapter(baseAdapter);
-
-            recyclerView.setBackgroundColor(Color.GREEN);
+            //recyclerView.setBackgroundColor(Color.GREEN);
         }
     }
 
@@ -101,16 +106,29 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
     /**
      * 创建适配器
      */
-    protected RBaseAdapter<T> onCreateAdapter() {
-        return new RBaseAdapter<T>(mAttachContext) {
+    protected RBaseAdapter<T> onCreateAdapter(List<T> datas) {
+        return new RBaseAdapter<T>(mAttachContext, datas) {
             @Override
             protected int getItemLayoutId(int viewType) {
-                return 0;
+                return android.R.layout.simple_list_item_1;
             }
 
             @Override
             protected void onBindView(@NonNull RBaseViewHolder holder, int position, T bean) {
+                if (holder.itemView instanceof TextView && bean instanceof String) {
+                    ((TextView) holder.itemView).setText((String) bean);
+                }
+            }
 
+            @Override
+            protected void onLoadMore() {
+                super.onLoadMore();
+                baseViewHolder.postDelay(2_000, new Runnable() {
+                    @Override
+                    public void run() {
+                        setNoMore(true);
+                    }
+                });
             }
         };
     }

@@ -1,4 +1,4 @@
-package com.angcyo.uiview.less.widget;
+package com.angcyo.uiview.less.recycler.widget;
 
 /**
  * 显示状态

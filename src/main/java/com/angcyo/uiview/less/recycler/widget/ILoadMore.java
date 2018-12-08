@@ -1,4 +1,4 @@
-package com.angcyo.uiview.less.widget;
+package com.angcyo.uiview.less.recycler.widget;
 
 /**
  * Created by angcyo on 2016-12-18.
