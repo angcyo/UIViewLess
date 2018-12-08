@@ -17,6 +17,11 @@ import com.angcyo.lib.L;
  */
 public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragment {
 
+    /**
+     * 保存可见性, 用来恢复状态.
+     */
+    public static final String KEY_FRAGMENT_VISIBLE = "key_fragment_visible";
+
     protected IFragment iLastFragment;
 
     /**
@@ -61,7 +66,9 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         if (container instanceof ViewPager) {
             isInViewPager = true;
             //ViewPager中, 默认是隐藏状态
-            isFragmentVisible = false;
+            if (savedInstanceState == null) {
+                isFragmentVisible = false;
+            }
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -76,6 +83,15 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         super.onDetach();
     }
     //</editor-fold>
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            //状态恢复
+            isFragmentVisible = savedInstanceState.getBoolean(KEY_FRAGMENT_VISIBLE, isFragmentVisible);
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +113,7 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         if (arguments != null) {
             outState.putBundle(ActivityHelper.KEY_EXTRA, arguments);
         }
+        outState.putBoolean(KEY_FRAGMENT_VISIBLE, isFragmentVisible);
     }
 
     //<editor-fold desc="自定义, 可以重写 的方法">
@@ -108,11 +125,17 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
                 return;
             }
             if (oldUserVisibleHint == visible) {
+                if (visible) {
+                    onFragmentReShow();
+                }
                 return;
             }
         } else {
             if (isFragmentVisible == visible) {
                 //已经是可见状态, 或者不可见状态
+                if (visible) {
+                    onFragmentReShow();
+                }
                 return;
             }
             isFragmentVisible = visible;
@@ -128,14 +151,25 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         }
     }
 
+    public void onFragmentReShow() {
+        L.i(this.getClass().getSimpleName() +
+                " view:" + (getView() == null ? "×" : "√") +
+                " viewHolder:" + (baseViewHolder == null ? "×" : "√"));
+    }
+
     @Override
     public void onFragmentShow(@Nullable Bundle bundle) {
-        L.i(this.getClass().getSimpleName() + " " + bundle);
+        L.i(this.getClass().getSimpleName() +
+                " view:" + (getView() == null ? "×" : "√") +
+                " viewHolder:" + (baseViewHolder == null ? "×" : "√") +
+                " bundle:" + (bundle == null ? "×" : "√"));
     }
 
     @Override
     public void onFragmentHide() {
-        L.i(this.getClass().getSimpleName());
+        L.i(this.getClass().getSimpleName() +
+                " view:" + (getView() == null ? "×" : "√") +
+                " viewHolder:" + (baseViewHolder == null ? "×" : "√"));
     }
 
     @Override

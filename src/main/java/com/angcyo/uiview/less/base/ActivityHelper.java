@@ -12,6 +12,8 @@ import android.support.annotation.AnimRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,9 @@ import android.view.WindowManager;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.kotlin.ExKt;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -137,6 +142,34 @@ public class ActivityHelper {
         build(context)
                 .setIntent(intent)
                 .start();
+    }
+
+    /**
+     * 从fragmentManager中, 恢复Fragment. 如果没有, 则创建新对象, 请在super.onCreate()之后调用
+     */
+    public static List<Fragment> restore(@NonNull Context context,
+                                         @NonNull FragmentManager fragmentManager,
+                                         Class<? extends Fragment>... cls) {
+        List<Fragment> fragments = new ArrayList<>();
+        StringBuilder builder = new StringBuilder("恢复Fragment:");
+        for (Class f : cls) {
+            builder.append("\n");
+            String tag = f.getSimpleName();
+            Fragment fragmentByTag = fragmentManager.findFragmentByTag(tag);
+            if (fragmentByTag == null) {
+                fragmentByTag = Fragment.instantiate(context, f.getName());
+                builder.append("创建:");
+            } else {
+                builder.append("恢复:");
+            }
+            fragments.add(fragmentByTag);
+
+            builder.append(tag);
+            builder.append("->");
+            FragmentHelper.logFragment(fragmentByTag, builder);
+        }
+        L.w(builder.toString());
+        return fragments;
     }
 
     /**

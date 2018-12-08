@@ -88,6 +88,14 @@ public class FragmentHelper {
             builder.append(Integer.toHexString(getFragmentContainerId(fragment)).toUpperCase());
             builder.append(" ");
             builder.append(fragment);
+
+            builder.append(" isAdd:");
+            builder.append(fragment.isAdded() ? "√" : "×");
+            builder.append(" isHidden:");
+            builder.append(fragment.isHidden() ? "√" : "×");
+            builder.append(" userVisible:");
+            builder.append(fragment.getUserVisibleHint() ? "√" : "×");
+
             View view = fragment.getView();
             if (view != null) {
                 builder.append(" view:");
@@ -107,6 +115,8 @@ public class FragmentHelper {
                         break;
                 }
                 builder.append(string);
+            } else {
+                builder.append(" view:×");
             }
 
             if (fragment instanceof IFragment) {

@@ -115,7 +115,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        L.e("\n" + this.getClass().getSimpleName() + " 权限状态-->\n"
+                        L.e("\n" + BaseAppCompatActivity.this.getClass().getSimpleName() + " 权限状态-->\n"
                                 + s.replaceAll("1", " 允许").replaceAll("0", " 拒绝").replaceAll(":", "\n"));
                         onResult.call(s);
                     }

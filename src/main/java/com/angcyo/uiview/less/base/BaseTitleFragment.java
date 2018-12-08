@@ -98,6 +98,7 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         }
         contentWrapperLayout.addView(contentView);
 
+        //情感图
         affectUI = createAffectUI();
     }
 
@@ -220,7 +221,7 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     @NonNull
     protected View createContentView(@NonNull ViewGroup contentWrapperLayout) {
         TextView textView = new TextView(contentWrapperLayout.getContext());
-        textView.setText("默认的内容布局");
+        textView.setText("默认的内容布局\n请重写\ngetContentLayoutId()\n或\ncreateContentView()\n方法, 自定义.");
         return textView;
     }
     //</editor-fold>

@@ -3,10 +3,7 @@ package com.angcyo.uiview.less.draw;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.*;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -64,7 +61,8 @@ public abstract class BaseDraw {
 
     protected int getBaseColor() {
         if (isInEditMode()) {
-            return getColor(R.color.base_dark_red);
+            return Color.RED;
+            //return getColor(R.color.base_dark_red);
         } else {
             return SkinHelper.getSkin().getThemeSubColor();
         }

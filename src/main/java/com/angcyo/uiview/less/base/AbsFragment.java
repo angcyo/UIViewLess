@@ -89,7 +89,7 @@ public abstract class AbsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        L.d(this.getClass().getSimpleName() + "\n" + container + " " + savedInstanceState);
+        L.d(this.getClass().getSimpleName() + "\n" + container + " state:" + (savedInstanceState == null ? "×" : "√"));
 
         int layoutId = getLayoutId();
         View rootView;
@@ -105,10 +105,13 @@ public abstract class AbsFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * 状态恢复, 回调顺序 最优先
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        L.d(this.getClass().getSimpleName() + " " + savedInstanceState);
+        L.d(this.getClass().getSimpleName() + " state:" + (savedInstanceState == null ? "×" : "√"));
     }
 
     @Override
@@ -129,10 +132,13 @@ public abstract class AbsFragment extends Fragment {
         L.d(this.getClass().getSimpleName() + " " + outState);
     }
 
+    /**
+     * View需要恢复状态
+     */
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        L.d(this.getClass().getSimpleName() + " " + savedInstanceState);
+        L.d(this.getClass().getSimpleName() + " state:" + (savedInstanceState == null ? "×" : "√"));
     }
 
     @Override
