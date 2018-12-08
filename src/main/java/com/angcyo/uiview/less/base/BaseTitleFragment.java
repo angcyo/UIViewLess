@@ -239,7 +239,7 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     }
 
     @Override
-    public void onInitLayout(AffectUI affectUI, int affect, @NonNull View rootView) {
+    public void onAffectInitLayout(AffectUI affectUI, int affect, @NonNull View rootView) {
 
     }
 

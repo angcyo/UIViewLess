@@ -182,7 +182,6 @@
         <item name="android:background">@drawable/base_white_bg_selector</item>
         <item name="android:paddingLeft">@dimen/base_xhdpi</item>
         <item name="android:paddingRight">@dimen/base_xhdpi</item>
-        <item name="android:clickable">true</item>
         <item name="item_dark_textColor">@color/base_text_color_dark</item>
         <item name="item_dark_textSize">@dimen/default_text_size</item>
         <item name="item_textColor">@color/base_text_color</item>

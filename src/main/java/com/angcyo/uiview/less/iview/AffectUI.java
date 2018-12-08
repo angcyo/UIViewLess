@@ -165,7 +165,7 @@ public class AffectUI {
                     viewMap.put(affect, rootView);
 
                     if (builder.affectChangeListener != null) {
-                        builder.affectChangeListener.onInitLayout(this, affect, rootView);
+                        builder.affectChangeListener.onAffectInitLayout(this, affect, rootView);
                     }
                 } else {
                     builder.parent.addView(view);
@@ -258,6 +258,6 @@ public class AffectUI {
         /**
          * 只在第一次inflate的时候, 会调用
          */
-        void onInitLayout(AffectUI affectUI, int affect, @NonNull View rootView);
+        void onAffectInitLayout(AffectUI affectUI, int affect, @NonNull View rootView);
     }
 }
