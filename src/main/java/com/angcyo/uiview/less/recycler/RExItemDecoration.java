@@ -49,7 +49,7 @@ public class RExItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public RExItemDecoration() {
-        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        this(null);
     }
 
     public static RExItemDecoration build(ItemDecorationCallback itemDecorationCallback) {

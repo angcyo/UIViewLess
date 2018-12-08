@@ -77,7 +77,9 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      */
     protected void initBaseTitleLayout(@Nullable Bundle arguments) {
         //设置标题背景颜色
-        titleBarLayout.setBackgroundColor(SkinHelper.getSkin().getThemeColor());
+        if (titleBarLayout != null) {
+            titleBarLayout.setBackgroundColor(SkinHelper.getSkin().getThemeColor());
+        }
 
         //设置标题
         setTitleString(getFragmentTitle());

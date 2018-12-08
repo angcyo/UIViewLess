@@ -1,13 +1,14 @@
 package com.angcyo.uiview.less.base;
 
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
-import com.angcyo.uiview.less.recycler.RBaseAdapter;
-import com.angcyo.uiview.less.recycler.RBaseViewHolder;
-import com.angcyo.uiview.less.recycler.RModelAdapter;
-import com.angcyo.uiview.less.recycler.RRecyclerView;
+import com.angcyo.uiview.less.recycler.*;
 import com.angcyo.uiview.less.recycler.item.RItemAdapter;
 import com.angcyo.uiview.less.recycler.item.SingleItem;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -45,7 +46,29 @@ public abstract class BaseItemFragment extends BaseRecyclerFragment<SingleItem> 
             smartRefreshLayout.setEnableHeaderTranslationContent(true);
         }
         if (recyclerView != null) {
+            recyclerView.setHasFixedSize(true);
             recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            recyclerView.addItemDecoration(
+                    new RExItemDecoration(
+                            new RExItemDecoration.SingleItemCallback() {
+
+                                @Override
+                                public void getItemOffsets2(Rect outRect, int position, int edge) {
+                                    SingleItem t = singleItems.get(position);
+                                    t.setItemOffsets2(outRect, edge);
+                                }
+
+                                @Override
+                                public void draw(Canvas canvas, TextPaint paint, View itemView, Rect offsetRect, int itemCount, int position) {
+                                    SingleItem t = singleItems.get(position);
+                                    t.draw(canvas, paint, itemView, offsetRect, itemCount, position);
+                                }
+                            }));
+
+            if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).setRecycleChildrenOnDetach(true);
+            }
+            recyclerView.setItemViewCacheSize(1);
         }
     }
 
@@ -65,6 +88,18 @@ public abstract class BaseItemFragment extends BaseRecyclerFragment<SingleItem> 
 
         };
         return adapter;
+    }
+
+
+    /**
+     * 强转后返回
+     */
+    @Nullable
+    public RItemAdapter<SingleItem> getItemAdapter() {
+        if (baseAdapter instanceof RItemAdapter) {
+            return (RItemAdapter<SingleItem>) baseAdapter;
+        }
+        return null;
     }
 
     /**

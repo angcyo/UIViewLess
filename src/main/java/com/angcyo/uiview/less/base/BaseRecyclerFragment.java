@@ -56,34 +56,35 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             smartRefreshLayout.setOnRefreshListener(this);
             /*设置加载更多监听之后, 会自动开启加载更多*/
             smartRefreshLayout.setOnLoadMoreListener(this);
-            //激活加载更多, 关闭加载更多时, 尽量也关闭不满一页时候开启上拉加载功能
+            // √ 激活加载更多, 关闭加载更多时, 尽量也关闭不满一页时候开启上拉加载功能
             smartRefreshLayout.setEnableLoadMore(false);
-            //是否在列表不满一页时候开启上拉加载功能
+            // √ 是否在列表不满一页时候开启上拉加载功能
             smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
-            //越界滚动
+            // √ 是否启用越界拖动（仿苹果效果）1.0.4
             smartRefreshLayout.setEnableOverScrollDrag(false);
 
-            //是否启用下拉刷新功能
+            // √ 是否启用下拉刷新功能
             smartRefreshLayout.setEnableRefresh(true);
 
-            //是否启用列表惯性滑动到底部时自动加载更多, 关闭之后, 需要释放手指, 才能加载更多
+            // √ 是否启用列表惯性滑动到底部时自动加载更多, 关闭之后, 需要释放手指, 才能加载更多
             smartRefreshLayout.setEnableAutoLoadMore(false);
 
-            //是否启用嵌套滚动
+            //是否启用嵌套滚动, 默认智能控制
             //smartRefreshLayout.setEnableNestedScroll(false);
+            // √ 是否启用越界回弹, 关闭后, 快速下滑列表不会触发刷新事件回调
+            smartRefreshLayout.setEnableOverScrollBounce(false);
+
             //是否在刷新完成时滚动列表显示新的内容 1.0.5,
             smartRefreshLayout.setEnableScrollContentWhenRefreshed(true);
             //是否在加载完成时滚动列表显示新的内容
             smartRefreshLayout.setEnableScrollContentWhenLoaded(true);
-            //是否下拉Header的时候向下平移列表或者内容, 内容是否跟手
+            // √ 是否下拉Header的时候向下平移列表或者内容, 内容是否跟手
             smartRefreshLayout.setEnableHeaderTranslationContent(true);
-            //是否上拉Footer的时候向上平移列表或者内容, 内容是否跟手
+            // √ 是否上拉Footer的时候向上平移列表或者内容, 内容是否跟手
             smartRefreshLayout.setEnableFooterTranslationContent(true);
 
             //是否在全部加载结束之后Footer跟随内容1.0.4
             smartRefreshLayout.setEnableFooterFollowWhenLoadFinished(true);
-            //是否启用越界拖动（仿苹果效果）1.0.4
-            //smartRefreshLayout.setEnableOverScrollDrag(true);
 
             //android 原生样式
             smartRefreshLayout.setRefreshHeader(new MaterialHeader(mAttachContext));
