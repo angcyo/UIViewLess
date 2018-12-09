@@ -721,6 +721,10 @@ public class RUtils {
         }
     }
 
+    public static QueryAppBean queryIntentFromUrl(String url) {
+        return queryIntentFromUrl(RApplication.getApp(), url);
+    }
+
     public static QueryAppBean queryIntentFromUrl(Context context, String url) {
         if (TextUtils.isEmpty(url)) {
             return null;

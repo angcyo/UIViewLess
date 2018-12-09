@@ -25,6 +25,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TitleItemHelper {
 
+    public static Builder build(@NonNull Context context) {
+        return new Builder(context);
+    }
+
     @NonNull
     public static ImageTextView createItem(@NonNull Context context, String text, View.OnClickListener listener) {
         return new Builder(context).setText(text).setClickListener(listener).build();

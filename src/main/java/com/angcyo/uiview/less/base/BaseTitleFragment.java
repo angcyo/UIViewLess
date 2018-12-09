@@ -150,8 +150,11 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         return backItem;
     }
 
+    /**
+     * 标题栏默认的返回按钮点击事件
+     */
     public void onTitleBackClick(@NonNull View view) {
-        hideTitleBar();
+        //hideTitleBar();
     }
 
     /**
@@ -171,6 +174,10 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
 
     public ViewGroupHelper rightControl() {
         return new ViewGroupHelper(baseViewHolder.vg(R.id.base_title_right_layout));
+    }
+
+    public ViewGroupHelper titleControl() {
+        return new ViewGroupHelper(titleBarLayout);
     }
 
     //</editor-fold>
