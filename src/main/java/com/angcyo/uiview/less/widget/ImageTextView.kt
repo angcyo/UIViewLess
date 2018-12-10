@@ -30,7 +30,7 @@ class ImageTextView(context: Context, attributeSet: AttributeSet? = null) : AppC
     var showText: String? = null
         set(value) {
             field = value
-            postInvalidate()
+            requestLayout()
         }
     var showTextSize: Float = 14 * density
         set(value) {

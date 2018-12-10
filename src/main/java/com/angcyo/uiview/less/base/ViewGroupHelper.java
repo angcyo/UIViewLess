@@ -1,11 +1,16 @@
 package com.angcyo.uiview.less.base;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
+import android.support.annotation.*;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.widget.ImageTextView;
 
 public class ViewGroupHelper {
     ViewGroup viewGroup;
@@ -73,6 +78,49 @@ public class ViewGroupHelper {
     public ViewGroupHelper selectorByIndex(int index) {
         selectorView = getView(index);
         return this;
+    }
+
+    public ViewGroupHelper setText(String text) {
+        if (selectorView != null) {
+            if (selectorView instanceof TextView) {
+                ((TextView) selectorView).setText(text);
+            } else if (selectorView instanceof ImageTextView) {
+                ((ImageTextView) selectorView).setShowText(text);
+            }
+        }
+        return this;
+    }
+
+    public ViewGroupHelper setBackgroundColor(@ColorInt int color) {
+        if (selectorView != null) {
+            selectorView.setBackgroundColor(color);
+        }
+        return this;
+    }
+
+    public ViewGroupHelper setBackground(@Nullable Drawable background) {
+        if (selectorView != null) {
+            ViewCompat.setBackground(selectorView, background);
+        }
+        return this;
+    }
+
+    public ViewGroupHelper setImageResource(@DrawableRes int resId) {
+        if (selectorView != null) {
+            if (selectorView instanceof ImageTextView) {
+                ((ImageTextView) selectorView).setImageResource(resId);
+            } else if (selectorView instanceof ImageView) {
+                ((ImageView) selectorView).setImageResource(resId);
+            }
+        }
+        return this;
+    }
+
+    public <T> T cast() {
+        if (selectorView == null) {
+            return null;
+        }
+        return (T) selectorView;
     }
 
     public ViewGroupHelper replace(int index, @NonNull View newView) {
