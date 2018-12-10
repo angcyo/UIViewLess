@@ -1,6 +1,8 @@
 package com.angcyo.uiview.less.base;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -36,6 +38,13 @@ public interface IFragment {
     void setFragmentInViewPager(boolean inViewPager);
 
     boolean isFragmentInViewPager();
+
+    /**
+     * Activity 的 onBackPressed 回调.
+     *
+     * @return true 允许关闭当前的Fragment
+     */
+    boolean onBackPressed(@NonNull Activity activity);
 
     //void onFragmentShowInPager();
 

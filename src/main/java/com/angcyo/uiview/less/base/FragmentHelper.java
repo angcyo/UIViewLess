@@ -1,17 +1,17 @@
 package com.angcyo.uiview.less.base;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.BuildConfig;
+import com.angcyo.uiview.less.R;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -316,6 +316,14 @@ public class FragmentHelper {
          */
         boolean isFromCreate = true;
 
+        /**
+         * Fragment的参数
+         */
+        Bundle args;
+
+        int enterAnim = -1;
+        int exitAnim = -1;
+
         public Builder(@NonNull FragmentManager fragmentManager) {
             this.fragmentManager = fragmentManager;
         }
@@ -327,6 +335,13 @@ public class FragmentHelper {
 
         public Builder showFragment(Fragment showFragment) {
             this.showFragment = showFragment;
+            return this;
+        }
+
+        public Builder showFragment(Context context, Class<? extends Fragment> showFragment) {
+            this.showFragment = Fragment.instantiate(context, showFragment.getName());
+            //关闭从恢复模式获取Fragment
+            isFromCreate = false;
             return this;
         }
 
@@ -365,12 +380,40 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder setArgs(Bundle args) {
+            this.args = args;
+            return this;
+        }
+
+        public Builder enterAnim(@AnimRes int enterAnim) {
+            this.enterAnim = enterAnim;
+            return this;
+        }
+
+        public Builder exitAnim(@AnimRes int exitAnim) {
+            this.exitAnim = exitAnim;
+            return this;
+        }
+
+        public Builder defaultExitAnim() {
+            this.enterAnim = R.anim.base_alpha_exit;
+            this.exitAnim = R.anim.base_tran_to_bottom;
+            return this;
+        }
+
+        public Builder defaultEnterAnim() {
+            this.exitAnim = R.anim.base_alpha_exit;
+            this.enterAnim = R.anim.base_tran_to_top;
+            return this;
+        }
+
         private void parent(Fragment lastFragment) {
             if (lastFragment == null || parentFragment == null) {
                 return;
             }
             if (parentFragment instanceof IFragment &&
                     lastFragment instanceof IFragment) {
+                //父参数, 传递给 子Fragment
                 ((IFragment) lastFragment).setFragmentInViewPager(((IFragment) parentFragment).isFragmentInViewPager());
                 ((IFragment) parentFragment).setLastFragment((IFragment) lastFragment);
                 if (!parentFragment.getUserVisibleHint()) {
@@ -379,7 +422,103 @@ public class FragmentHelper {
             }
         }
 
+        private void animation(FragmentTransaction fragmentTransaction) {
+            if (enterAnim != -1 || exitAnim != -1) {
+                fragmentTransaction.setCustomAnimations(enterAnim, exitAnim,
+                        enterAnim, exitAnim);
+            }
+        }
 
+        /**
+         * 用来在Activity里面按下返回键
+         *
+         * @return true 可以关闭Activity, false 不可以关闭Activity
+         */
+        @Nullable
+        public boolean back(@NonNull AppCompatActivity activity) {
+            if (fragmentManager == null ||
+                    parentLayoutId == -1) {
+                L.e("必要的参数不合法,请检查参数:"
+                        + "\n1->fragmentManager:" + fragmentManager + (fragmentManager == null ? " ×" : " √")
+                        + "\n2->parentLayoutId:" + parentLayoutId + (parentLayoutId == -1 ? " ×" : " √"));
+                return false;
+            }
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            List<Fragment> fragments = getFragmentList(fragmentManager, parentLayoutId);
+            int size = fragments.size();
+
+            boolean canBack = false;
+            boolean needCommit = false;
+
+            //动画设置
+            animation(fragmentTransaction);
+
+//            fragmentTransaction.setCustomAnimations(R.anim.base_tran_to_top, R.anim.base_alpha_exit,
+//                    R.anim.base_tran_to_top, R.anim.base_alpha_exit);
+
+            if (size <= 0) {
+                //当前parentLayoutId中,没有Fragment
+                canBack = true;
+            } else if (size == 1) {
+                Fragment fragment = fragments.get(0);
+                if (fragment instanceof IFragment) {
+                    canBack = ((IFragment) fragment).onBackPressed(activity);
+                } else {
+                    canBack = true;
+                }
+            } else {
+                Fragment lastFragment = fragments.get(size - 1);
+                if (lastFragment instanceof IFragment) {
+                    canBack = ((IFragment) lastFragment).onBackPressed(activity);
+
+                    if (canBack) {
+                        needCommit = true;
+                        canBack = false;
+
+                        //移除最顶上的Fragment
+                        fragmentTransaction.remove(lastFragment);
+
+                        Fragment preFragment = fragments.get(size - 2);
+
+                        View view = preFragment.getView();
+                        if (view != null) {
+                            if (view.getVisibility() == View.GONE) {
+                                //显示次顶上的Fragment
+                                fragmentTransaction.show(preFragment);
+                            } else {
+                                if (preFragment instanceof IFragment) {
+                                    preFragment.setUserVisibleHint(true);
+                                } else {
+                                    //不支持
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    canBack = true;
+                }
+            }
+
+            //日志输出
+            logInner(fragmentTransaction, needCommit);
+
+            //提交事务
+            if (needCommit) {
+                commitInner(fragmentTransaction);
+            }
+
+            return canBack;
+        }
+
+        /**
+         * 用来显示Fragment
+         * <p>
+         * 如果已经Add, 那么就是 showFragment
+         * 否则就是 addFragment
+         */
+        @Nullable
         public Fragment doIt() {
             if (fragmentManager == null ||
                     showFragment == null ||
@@ -411,6 +550,13 @@ public class FragmentHelper {
             if (fragmentByTag != null) {
                 resultFragment = fragmentByTag;
             }
+
+            if (args != null) {
+                resultFragment.setArguments(args);
+            }
+
+            //动画设置
+            animation(transaction);
 
             boolean needCommit = true;
             boolean isFragmentAdded = resultFragment.isAdded();
@@ -478,7 +624,10 @@ public class FragmentHelper {
                     transaction.hide(beforeFragments.get(i));
                     needCommit = true;
                 }
-            } else {
+            }
+
+            //不 hide 的Fragment, 也需要执行不可见的生命周期
+            if (hideBeforeIndex > 1) {
                 //如果不隐藏之前的Fragment, 那么onHiddenChanged不会触发.
                 //此时界面对用户不可见,需要手动调用setUserVisibleHint方法
                 Fragment lastFragment = getLastFragment(fragmentManager, fragmentContainerId, isFragmentAdded ? 1 : 0);

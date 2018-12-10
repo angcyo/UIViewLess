@@ -9,15 +9,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
-import com.angcyo.uiview.less.BuildConfig;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -37,17 +35,71 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     protected RxPermissions mRxPermissions;
 
+    //<editor-fold desc="生命周期, 系统的方法">
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (enableLayoutFull()) {
+            ActivityHelper.enableLayoutFullScreen(this, true);
+            ActivityHelper.setNoTitleNoActionBar(this);
+        }
+
         super.onCreate(savedInstanceState);
         viewHolder = new RBaseViewHolder(getWindow().getDecorView());
 
-        FragmentManager.enableDebugLogging(BuildConfig.DEBUG);
+        //系统Fragment操作日志输出
+        //FragmentManager.enableDebugLogging(BuildConfig.DEBUG);
 
         L.v("taskId:" + getTaskId());
-
         //ActivityHelper.setStatusBarColor(this, Color.YELLOW);
         //ActivityHelper.setStatusBarDrawable(this, getDrawableCompat(R.drawable.base_nav_shadow));
+    }
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            Debug.addDebugTextView(this);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        int fragmentParentLayoutId = getFragmentParentLayoutId();
+
+        if (fragmentParentLayoutId != -1) {
+            if (FragmentHelper.build(getSupportFragmentManager())
+                    .parentLayoutId(fragmentParentLayoutId)
+                    .defaultExitAnim()
+                    .back(this)) {
+                super.onBackPressed();
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Fragment所在的ViewGroup id
+     */
+    @IdRes
+    protected int getFragmentParentLayoutId() {
+        return -1;
+    }
+
+    //</editor-fold>
+
+    public void moveTaskToBack() {
+        moveTaskToBack(true);
+    }
+
+
+    /**
+     * 激活沉浸式, 5.0以下不支持.
+     */
+    protected boolean enableLayoutFull() {
+        return true;
     }
 
     /**
@@ -71,9 +123,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         }
     }
 
-    public void moveTaskToBack() {
-        moveTaskToBack(true);
-    }
+    //<editor-fold desc="权限相关方法">
 
     protected void checkPermissions() {
         checkPermissionsResult(needPermissions(), new Action1<String>() {
@@ -184,13 +234,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         };
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            Debug.addDebugTextView(this);
-        }
-    }
+    //</editor-fold>
 
     public Drawable getDrawableCompat(@DrawableRes int res) {
         return ContextCompat.getDrawable(this, res);
