@@ -4,6 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         app:r_content_layout_status="CONTENT_BOTTOM_OF_TITLE"
+        tools:ignore="MissingDefaultResource"
         android:layout_width="match_parent"
         app:r_title_view_index="1"
         android:layout_height="match_parent">

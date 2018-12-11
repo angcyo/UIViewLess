@@ -98,6 +98,11 @@ public class ActivityHelper {
         }
     }
 
+    /**
+     * 激活布局到状态栏中, 只要 WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS 属性, 就可以实现.
+     * <p>
+     * View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN 属性主要用来做检查判断.
+     */
     public static void enableLayoutFullScreen(Activity activity, boolean enable) {
         if (activity == null) {
             return;
