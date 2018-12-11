@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.base.helper.FragmentHelper;
+import com.angcyo.uiview.less.base.helper.TitleItemHelper;
+import com.angcyo.uiview.less.base.helper.ViewGroupHelper;
 import com.angcyo.uiview.less.iview.AffectUI;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.widget.ImageTextView;
@@ -155,6 +159,24 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      */
     public void onTitleBackClick(@NonNull View view) {
         //hideTitleBar();
+        backFragment();
+    }
+
+    /**
+     * 关闭Fragment
+     */
+    public void backFragment() {
+        FragmentManager fragmentManager = requireFragmentManager();
+//        if (getParentFragment() == null) {
+//            fragmentManager = requireFragmentManager();
+//        } else {
+//            fragmentManager = getChildFragmentManager();
+//        }
+
+        FragmentHelper.build(fragmentManager)
+                .parentLayoutId(this)
+                .defaultExitAnim()
+                .back(getActivity());
     }
 
     /**

@@ -1,17 +1,18 @@
-package com.angcyo.uiview.less.base;
+package com.angcyo.uiview.less.base.helper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.BuildConfig;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.base.IFragment;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -365,6 +366,13 @@ public class FragmentHelper {
             return this;
         }
 
+        /**
+         * 自动从Fragment中获取parentLayoutId
+         */
+        public Builder parentLayoutId(@NonNull Fragment fragment) {
+            return parentLayoutId(getFragmentContainerId(fragment));
+        }
+
         public Builder commitNow(boolean commitNow) {
             this.commitNow = commitNow;
             return this;
@@ -429,34 +437,38 @@ public class FragmentHelper {
             }
         }
 
+        private FragmentTransaction fragmentTransaction;
+
+        private void configTransaction() {
+            if (fragmentTransaction == null) {
+                fragmentTransaction = fragmentManager.beginTransaction();
+                //动画设置
+                animation(fragmentTransaction);
+            }
+        }
+
         /**
          * 用来在Activity里面按下返回键
          *
          * @return true 可以关闭Activity, false 不可以关闭Activity
          */
-        @Nullable
-        public boolean back(@NonNull AppCompatActivity activity) {
+        public boolean back(@Nullable Activity activity) {
             if (fragmentManager == null ||
-                    parentLayoutId == -1) {
+                    parentLayoutId == -1 ||
+                    activity == null) {
                 L.e("必要的参数不合法,请检查参数:"
                         + "\n1->fragmentManager:" + fragmentManager + (fragmentManager == null ? " ×" : " √")
-                        + "\n2->parentLayoutId:" + parentLayoutId + (parentLayoutId == -1 ? " ×" : " √"));
+                        + "\n2->parentLayoutId:" + parentLayoutId + (parentLayoutId == -1 ? " ×" : " √")
+                        + "\n3->activity:" + activity + (activity == null ? " ×" : " √")
+                );
                 return false;
             }
-
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
             List<Fragment> fragments = getFragmentList(fragmentManager, parentLayoutId);
             int size = fragments.size();
 
             boolean canBack = false;
             boolean needCommit = false;
-
-            //动画设置
-            animation(fragmentTransaction);
-
-//            fragmentTransaction.setCustomAnimations(R.anim.base_tran_to_top, R.anim.base_alpha_exit,
-//                    R.anim.base_tran_to_top, R.anim.base_alpha_exit);
 
             if (size <= 0) {
                 //当前parentLayoutId中,没有Fragment
@@ -477,6 +489,8 @@ public class FragmentHelper {
                         needCommit = true;
                         canBack = false;
 
+                        configTransaction();
+
                         //移除最顶上的Fragment
                         fragmentTransaction.remove(lastFragment);
 
@@ -485,6 +499,8 @@ public class FragmentHelper {
                         View view = preFragment.getView();
                         if (view != null) {
                             if (view.getVisibility() == View.GONE) {
+                                configTransaction();
+
                                 //显示次顶上的Fragment
                                 fragmentTransaction.show(preFragment);
                             } else {
@@ -530,7 +546,6 @@ public class FragmentHelper {
                 return showFragment;
             }
 
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
             Fragment resultFragment = showFragment;
             String fragmentTag;
             if (tag == null) {
@@ -554,9 +569,6 @@ public class FragmentHelper {
             if (args != null) {
                 resultFragment.setArguments(args);
             }
-
-            //动画设置
-            animation(transaction);
 
             boolean needCommit = true;
             boolean isFragmentAdded = resultFragment.isAdded();
@@ -583,7 +595,8 @@ public class FragmentHelper {
 
                 //已经存在
                 if (isFragmentHide && fragmentViewVisibility == View.GONE) {
-                    transaction.show(resultFragment);
+                    configTransaction();
+                    fragmentTransaction.show(resultFragment);
                 } else {
                     needCommit = false;
                     try {
@@ -603,7 +616,8 @@ public class FragmentHelper {
                 }
             } else {
                 //不存在
-                transaction.add(parentLayoutId, resultFragment, fragmentTag);
+                configTransaction();
+                fragmentTransaction.add(parentLayoutId, resultFragment, fragmentTag);
             }
 
             //设置lastFragment
@@ -611,7 +625,8 @@ public class FragmentHelper {
 
             //隐藏需要隐藏的Fragment
             if (hideFragment != null) {
-                transaction.hide(hideFragment);
+                configTransaction();
+                fragmentTransaction.hide(hideFragment);
                 needCommit = true;
             }
 
@@ -621,7 +636,8 @@ public class FragmentHelper {
                 List<Fragment> beforeFragments = getBeforeFragment(fragmentManager, resultFragment, fragmentContainerId, hideBeforeIndex);
 
                 for (int i = 0; i < beforeFragments.size(); i++) {
-                    transaction.hide(beforeFragments.get(i));
+                    configTransaction();
+                    fragmentTransaction.hide(beforeFragments.get(i));
                     needCommit = true;
                 }
             }
@@ -638,11 +654,11 @@ public class FragmentHelper {
             }
 
             //日志输出
-            logInner(transaction, needCommit);
+            logInner(fragmentTransaction, needCommit);
 
             //提交事务
             if (needCommit) {
-                commitInner(transaction);
+                commitInner(fragmentTransaction);
             }
             return resultFragment;
         }

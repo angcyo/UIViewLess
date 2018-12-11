@@ -1,15 +1,12 @@
-package com.angcyo.uiview.less.base;
+package com.angcyo.uiview.less.base.helper;
 
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.annotation.*;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.widget.ImageTextView;
 
 public class ViewGroupHelper {

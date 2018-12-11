@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.base.helper.ActivityHelper;
+import com.angcyo.uiview.less.base.helper.FragmentHelper;
 
 /**
  * Created by angcyo on 2018/12/03 23:17

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
-import com.angcyo.uiview.less.base.ActivityHelper;
+import com.angcyo.uiview.less.base.helper.ActivityHelper;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 
 /**
