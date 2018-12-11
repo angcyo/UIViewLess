@@ -94,8 +94,10 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         //设置标题
         setTitleString(getFragmentTitle());
 
-        //添加返回按钮
-        addLeftItem(createBackItem());
+        if (getParentFragment() == null) {
+            //添加返回按钮
+            addLeftItem(createBackItem());
+        }
     }
 
     /**
@@ -119,9 +121,9 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      */
     protected AffectUI createAffectUI() {
         return AffectUI.build(contentWrapperLayout)
-                .register(AffectUI.AFFECT_LOADING, R.layout.base_title_item_layout)
-                .register(AffectUI.AFFECT_ERROR, R.layout.base_title_item_layout)
-                .register(AffectUI.AFFECT_OTHER, R.layout.base_title_item_layout)
+                .register(AffectUI.AFFECT_LOADING, R.layout.base_affect_loading)
+                .register(AffectUI.AFFECT_ERROR, R.layout.base_affect_error)
+                .register(AffectUI.AFFECT_OTHER, R.layout.base_affect_other)
                 .setContentAffect(AffectUI.CONTENT_AFFECT_INVISIBLE)
                 .setAffectChangeListener(this)
                 .create();
@@ -131,8 +133,12 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      * 切换情感图
      */
     protected void switchAffectUI(int affect) {
+        switchAffectUI(affect, null);
+    }
+
+    protected void switchAffectUI(int affect, Object extraObj) {
         if (affectUI != null) {
-            affectUI.showAffect(affect);
+            affectUI.showAffect(affect, extraObj);
         }
     }
 
@@ -143,6 +149,23 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         TextView textView = baseViewHolder.tv(R.id.base_title_view);
         if (textView != null) {
             textView.setText(title);
+        }
+    }
+
+    /**
+     * 替换标题栏
+     */
+    public void replaceTitleBarLayout(@LayoutRes int layoutId) {
+        if (titleBarLayout != null) {
+            titleBarLayout.removeAllViews();
+            LayoutInflater.from(titleBarLayout.getContext()).inflate(layoutId, titleBarLayout, true);
+        }
+    }
+
+    public void replaceTitleBarLayout(@NonNull View view) {
+        if (titleBarLayout != null) {
+            titleBarLayout.removeAllViews();
+            titleBarLayout.addView(view);
         }
     }
 
@@ -268,17 +291,17 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     //<editor-fold desc="情感图回调方法">
 
     @Override
-    public void onAffectChangeBefore(AffectUI affectUI, int fromAffect, int toAffect) {
+    public void onAffectChangeBefore(@NonNull AffectUI affectUI, int fromAffect, int toAffect) {
 
     }
 
     @Override
-    public void onAffectChange(AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView) {
+    public void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView) {
 
     }
 
     @Override
-    public void onAffectInitLayout(AffectUI affectUI, int affect, @NonNull View rootView) {
+    public void onAffectInitLayout(@NonNull AffectUI affectUI, int affect, @NonNull View rootView) {
 
     }
 

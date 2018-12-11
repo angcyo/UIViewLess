@@ -68,6 +68,13 @@ public class AffectUI {
      */
     int contentAffect;
 
+    /**
+     * 可以临时保存, 切换到情感图需要附加的数据
+     * <p>
+     * 此数据会在切换之后, 自动清除
+     */
+    Object extraObj;
+
     public AffectUI(Builder builder) {
         this.builder = builder;
         contentAffect = builder.contentAffect;
@@ -92,9 +99,14 @@ public class AffectUI {
      * 显示情感图
      */
     public void showAffect(int affect) {
+        showAffect(affect, null);
+    }
+
+    public void showAffect(int affect, Object extraObj) {
         if (affectStatus == affect) {
             //相同情感
         } else {
+            this.extraObj = extraObj;
             switchAffect(affect);
         }
     }
@@ -181,6 +193,9 @@ public class AffectUI {
         if (builder.affectChangeListener != null) {
             builder.affectChangeListener.onAffectChange(this, oldAffect, affect, viewMap.get(oldAffect), viewMap.get(affect));
         }
+
+        //清除临时缓存
+        extraObj = null;
     }
 
     public void setContentAffect(int contentAffect) {
@@ -251,13 +266,14 @@ public class AffectUI {
      */
     public interface OnAffectListener {
 
-        void onAffectChangeBefore(AffectUI affectUI, int fromAffect, int toAffect);
+        void onAffectChangeBefore(@NonNull AffectUI affectUI, int fromAffect, int toAffect);
 
-        void onAffectChange(AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView);
+        void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect,
+                            @Nullable View fromView, @NonNull View toView);
 
         /**
          * 只在第一次inflate的时候, 会调用
          */
-        void onAffectInitLayout(AffectUI affectUI, int affect, @NonNull View rootView);
+        void onAffectInitLayout(@NonNull AffectUI affectUI, int affect, @NonNull View rootView);
     }
 }
