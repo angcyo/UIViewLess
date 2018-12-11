@@ -50,6 +50,10 @@
     <color name="default_base_bg_dark2_tran">#60F0F0F5</color>
     <color name="default_base_white">#ffffff</color>
     <color name="base_white">#ffffff</color>
+    <!--50%的不透明度-->
+    <color name="base_white_tran50">#b1ffffff</color>
+    <color name="base_white_tran30">#1effffff</color>
+    <color name="base_white_tran80">#cdffffff</color>
     <color name="base_white_tran">#19ffffff</color>
     <color name="base_white_tran2">#40ffffff</color>
     <color name="default_base_white_tran">#80ffffff</color>

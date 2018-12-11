@@ -10,11 +10,15 @@ import android.widget.TextView;
 import com.angcyo.uiview.less.widget.ImageTextView;
 
 public class ViewGroupHelper {
-    ViewGroup viewGroup;
+    View parentView;
     View selectorView;
 
-    public ViewGroupHelper(ViewGroup viewGroup) {
-        this.viewGroup = viewGroup;
+    public static ViewGroupHelper build(View parentView) {
+        return new ViewGroupHelper(parentView);
+    }
+
+    public ViewGroupHelper(View parentView) {
+        this.parentView = parentView;
     }
 
     public ViewGroupHelper addView(@NonNull View itemView) {
@@ -22,30 +26,30 @@ public class ViewGroupHelper {
     }
 
     public ViewGroupHelper addView(int index, @NonNull View itemView) {
-        if (viewGroup != null) {
-            viewGroup.addView(itemView, index);
+        if (parentView instanceof ViewGroup) {
+            ((ViewGroup) parentView).addView(itemView, index);
         }
         return this;
     }
 
     public ViewGroupHelper remove(int index) {
-        if (viewGroup != null) {
-            if (viewGroup.getChildCount() > index) {
-                viewGroup.removeViewAt(index);
+        if (parentView instanceof ViewGroup) {
+            if (((ViewGroup) parentView).getChildCount() > index) {
+                ((ViewGroup) parentView).removeViewAt(index);
             }
         }
         return this;
     }
 
     public ViewGroupHelper remove() {
-        if (viewGroup != null && selectorView != null) {
-            viewGroup.removeView(selectorView);
+        if (parentView instanceof ViewGroup && selectorView != null) {
+            ((ViewGroup) parentView).removeView(selectorView);
         }
         return this;
     }
 
     public ViewGroupHelper visible(int visibility) {
-        if (viewGroup != null && selectorView != null) {
+        if (parentView != null && selectorView != null) {
             if (selectorView.getVisibility() != visibility) {
                 selectorView.setVisibility(visibility);
             }
@@ -66,8 +70,8 @@ public class ViewGroupHelper {
     }
 
     public ViewGroupHelper selector(@IdRes int id) {
-        if (viewGroup != null) {
-            selectorView = viewGroup.findViewById(id);
+        if (parentView != null) {
+            selectorView = parentView.findViewById(id);
         }
         return this;
     }
@@ -121,10 +125,10 @@ public class ViewGroupHelper {
     }
 
     public ViewGroupHelper replace(int index, @NonNull View newView) {
-        if (viewGroup != null) {
-            if (viewGroup.getChildCount() > index) {
-                viewGroup.removeViewAt(index);
-                viewGroup.addView(newView, index);
+        if (parentView instanceof ViewGroup) {
+            if (((ViewGroup) parentView).getChildCount() > index) {
+                ((ViewGroup) parentView).removeViewAt(index);
+                ((ViewGroup) parentView).addView(newView, index);
             }
         }
         return this;
@@ -132,9 +136,9 @@ public class ViewGroupHelper {
 
     @Nullable
     public View getView(int index) {
-        if (viewGroup != null) {
-            if (viewGroup.getChildCount() > index) {
-                return viewGroup.getChildAt(index);
+        if (parentView instanceof ViewGroup) {
+            if (((ViewGroup) parentView).getChildCount() > index) {
+                return ((ViewGroup) parentView).getChildAt(index);
             }
         }
         return null;

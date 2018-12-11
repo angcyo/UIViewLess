@@ -303,6 +303,12 @@ public class ItemInfoLayout extends RRelativeLayout {
         return this;
     }
 
+    public ItemInfoLayout setItemTextColor(@ColorInt int color) {
+        this.itemTextColor = color;
+        mTextView.setTextColor(itemTextColor);
+        return this;
+    }
+
     public ItemInfoLayout setItemDarkTag(CharSequence darkTag) {
         itemDarkTag = darkTag;
         mDarkTextView.setTag(darkTag);

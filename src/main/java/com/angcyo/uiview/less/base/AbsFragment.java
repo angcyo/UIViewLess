@@ -100,7 +100,7 @@ public abstract class AbsFragment extends Fragment {
         }
         baseViewHolder = new RBaseViewHolder(rootView);
 
-        initBaseView(getArguments(), savedInstanceState);
+        initBaseView(baseViewHolder, getArguments(), savedInstanceState);
 
         return rootView;
     }
@@ -189,7 +189,9 @@ public abstract class AbsFragment extends Fragment {
         return -1;
     }
 
-    protected void initBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+    protected void initBaseView(@NonNull RBaseViewHolder viewHolder,
+                                @Nullable Bundle arguments,
+                                @Nullable Bundle savedInstanceState) {
 
     }
     //</editor-fold>

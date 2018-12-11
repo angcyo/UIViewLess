@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 
 /**
  * Created by angcyo on 2018/12/03 23:17
@@ -43,5 +44,20 @@ public abstract class BaseFragment extends AbsLifeCycleFragment {
      */
     protected void onPostCreateView(@Nullable ViewGroup container, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
 
+    }
+
+    @Override
+    protected void initBaseView(@NonNull RBaseViewHolder viewHolder, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        super.initBaseView(viewHolder, arguments, savedInstanceState);
+        if (interceptRootTouchEvent()) {
+            viewHolder.itemView.setClickable(true);
+        }
+    }
+
+    /**
+     * 拦截RootView的事件, 防止事件穿透到底下的Fragment
+     */
+    protected boolean interceptRootTouchEvent() {
+        return true;
     }
 }

@@ -15,8 +15,10 @@ import com.angcyo.uiview.less.base.helper.FragmentHelper;
 import com.angcyo.uiview.less.base.helper.TitleItemHelper;
 import com.angcyo.uiview.less.base.helper.ViewGroupHelper;
 import com.angcyo.uiview.less.iview.AffectUI;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.widget.ImageTextView;
+import com.angcyo.uiview.less.widget.group.FragmentContentWrapperLayout;
 import com.angcyo.uiview.less.widget.group.TitleBarLayout;
 
 /**
@@ -48,6 +50,8 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      */
     protected AffectUI affectUI;
 
+    protected FragmentContentWrapperLayout fragmentContentWrapperLayout;
+
     //<editor-fold desc="初始化方法">
 
     @NonNull
@@ -62,13 +66,15 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     }
 
     @Override
-    protected void initBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
-        super.initBaseView(arguments, savedInstanceState);
+    protected void initBaseView(@NonNull RBaseViewHolder viewHolder, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        super.initBaseView(viewHolder, arguments, savedInstanceState);
 
-        onInitBaseView(arguments, savedInstanceState);
+        onInitBaseView(viewHolder, arguments, savedInstanceState);
     }
 
-    protected void onInitBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+    protected void onInitBaseView(@NonNull RBaseViewHolder viewHolder, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        fragmentContentWrapperLayout = (FragmentContentWrapperLayout) viewHolder.itemView;
+
         contentWrapperLayout = baseViewHolder.v(R.id.base_content_wrapper_layout);
         titleBarLayout = baseViewHolder.v(R.id.base_title_bar_layout);
 
@@ -210,9 +216,11 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      * 隐藏标题栏
      */
     public void hideTitleBar() {
-        if (titleBarLayout != null) {
-            titleBarLayout.setVisibility(View.GONE);
-        }
+        ViewGroupHelper.build(baseViewHolder.itemView)
+                .selector(R.id.base_title_bar_layout)
+                .gone()
+                .selector(R.id.base_title_shadow_view)
+                .gone();
     }
 
     /**
@@ -230,11 +238,11 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     }
 
     public void hideTitleShadow() {
-        new ViewGroupHelper((ViewGroup) getView()).selector(R.id.base_title_shadow_view).gone();
+        ViewGroupHelper.build((ViewGroup) getView()).selector(R.id.base_title_shadow_view).gone();
     }
 
     public void removeTitleShadow() {
-        new ViewGroupHelper((ViewGroup) getView()).selector(R.id.base_title_shadow_view).remove();
+        ViewGroupHelper.build((ViewGroup) getView()).selector(R.id.base_title_shadow_view).remove();
     }
 
     //</editor-fold>

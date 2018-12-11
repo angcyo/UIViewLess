@@ -4,6 +4,7 @@ import android.support.annotation.DrawableRes;
 import android.view.View;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.resources.ResUtil;
 import com.angcyo.uiview.less.widget.group.ItemInfoLayout;
 import com.angcyo.uiview.view.RClickListener;
 import org.jetbrains.annotations.Nullable;
@@ -35,12 +36,16 @@ public class ItemInfoHelper {
         int rightRes = -1;
         int rightDrawPadding = 0;
 
+        int itemTextColor = -1;
+        int darkTextColor = -1;
+
         View.OnClickListener listener;
 
         public Builder(View infoLayout) {
             if (infoLayout instanceof ItemInfoLayout) {
                 this.infoLayout = (ItemInfoLayout) infoLayout;
             }
+            leftDrawPadding = ResUtil.getDimen(R.dimen.base_hdpi);
         }
 
         public Builder(ItemInfoLayout infoLayout) {
@@ -91,10 +96,27 @@ public class ItemInfoHelper {
             return this;
         }
 
+        public Builder setItemTextColor(int itemTextColor) {
+            this.itemTextColor = itemTextColor;
+            return this;
+        }
+
+        public Builder setDarkTextColor(int darkTextColor) {
+            this.darkTextColor = darkTextColor;
+            return this;
+        }
+
         public ItemInfoLayout doIt() {
             if (infoLayout != null) {
                 infoLayout.setItemText(itemText);
                 infoLayout.setItemDarkText(itemDarkText);
+
+                if (itemTextColor != -1) {
+                    infoLayout.setItemTextColor(itemTextColor);
+                }
+                if (darkTextColor != -1) {
+                    infoLayout.setItemDarkTextColor(darkTextColor);
+                }
 
                 infoLayout.setLeftDrawableRes(leftRes);
                 infoLayout.setLeftDrawPadding(leftDrawPadding);

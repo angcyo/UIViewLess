@@ -42,8 +42,8 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
     }
 
     @Override
-    protected void onInitBaseView(@Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
-        super.onInitBaseView(arguments, savedInstanceState);
+    protected void onInitBaseView(@NonNull RBaseViewHolder viewHolder, @Nullable Bundle arguments, @Nullable Bundle savedInstanceState) {
+        super.onInitBaseView(viewHolder, arguments, savedInstanceState);
 
         smartRefreshLayout = baseViewHolder.v(R.id.base_refresh_layout);
         recyclerView = baseViewHolder.v(R.id.base_recycler_view);
@@ -99,6 +99,18 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             baseAdapter = onCreateAdapter(new ArrayList<T>());
             recyclerView.setAdapter(baseAdapter);
             //recyclerView.setBackgroundColor(Color.GREEN);
+        }
+    }
+
+    /**
+     * 禁掉下拉刷新效果
+     */
+    public void disableRefreshAffect() {
+        if (smartRefreshLayout != null) {
+            smartRefreshLayout.setEnableRefresh(false);
+            smartRefreshLayout.setEnableLoadMore(false);
+            smartRefreshLayout.setEnableOverScrollDrag(false);
+            smartRefreshLayout.setEnablePureScrollMode(false);
         }
     }
 

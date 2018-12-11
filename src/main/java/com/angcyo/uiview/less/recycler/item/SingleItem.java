@@ -29,7 +29,8 @@ public abstract class SingleItem implements Item {
      */
     protected int topOffset = 0;
     protected int lineColor = 0;//-1是白色 0是透明
-    Type mType;
+    protected int leftLineColor = Color.WHITE;
+    Type mType = Type.TOP;
 
     String mTag = "";
 
@@ -59,6 +60,8 @@ public abstract class SingleItem implements Item {
                 this.leftOffset = RApplication.getApp().getResources().getDimensionPixelSize(R.dimen.base_xhdpi);
                 this.topOffset = RApplication.getApp().getResources().getDimensionPixelSize(R.dimen.base_line);
                 break;
+            default:
+                break;
         }
     }
 
@@ -81,6 +84,12 @@ public abstract class SingleItem implements Item {
         this.topOffset = topOffset;
     }
 
+    public SingleItem(int leftOffset, int topOffset, int lineColor) {
+        this.leftOffset = leftOffset;
+        this.topOffset = topOffset;
+        this.lineColor = lineColor;
+    }
+
     @Override
     public void setItemOffsets(Rect rect) {
         rect.top = topOffset;
@@ -99,7 +108,7 @@ public abstract class SingleItem implements Item {
             mDrawRect.set(itemView.getLeft(), itemView.getTop() - offsetRect.top, itemView.getRight(), itemView.getTop());
             canvas.drawRect(mDrawRect, paint);
         } else {
-            paint.setColor(Color.WHITE);
+            paint.setColor(leftLineColor);
             mDrawRect.set(itemView.getLeft(), itemView.getTop() - offsetRect.top,
                     itemView.getLeft() + leftOffset, itemView.getTop());
             canvas.drawRect(mDrawRect, paint);
