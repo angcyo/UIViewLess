@@ -2,6 +2,11 @@ package com.angcyo.uiview.less.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.resources.ResUtil;
 
 /**
  * Email:angcyo@126.com
@@ -99,6 +105,8 @@ public class RDialog {
 
         OnInitListener initListener;
 
+        Drawable dialogBgDrawable;
+
         public Builder(@NonNull Context context) {
             this.context = context;
         }
@@ -138,6 +146,64 @@ public class RDialog {
             return this;
         }
 
+        public Builder setDialogBgDrawable(@NonNull Drawable dialogBgDrawable) {
+            this.dialogBgDrawable = dialogBgDrawable;
+            return this;
+        }
+
+        public Builder setDialogBgColor(@ColorInt int color) {
+            return setDialogBgDrawable(new ColorDrawable(color));
+        }
+
+        public Builder setDialogBgResource(@DrawableRes int drawable) {
+            return setDialogBgDrawable(ResUtil.getDrawable(drawable));
+        }
+
+        //<editor-fold desc="系统默认3个按钮设置">
+
+        /**
+         * 系统默认3个按钮设置
+         */
+        CharSequence positiveButtonText;
+        CharSequence negativeButtonText;
+        CharSequence neutralButtonText;
+
+        DialogInterface.OnClickListener positiveButtonListener;
+        DialogInterface.OnClickListener negativeButtonListener;
+        DialogInterface.OnClickListener neutralButtonListener;
+
+        public Builder setPositiveButtonText(CharSequence positiveButtonText) {
+            this.positiveButtonText = positiveButtonText;
+            return this;
+        }
+
+        public Builder setNegativeButtonText(CharSequence negativeButtonText) {
+            this.negativeButtonText = negativeButtonText;
+            return this;
+        }
+
+        public Builder setNeutralButtonText(CharSequence neutralButtonText) {
+            this.neutralButtonText = neutralButtonText;
+            return this;
+        }
+
+        public Builder setPositiveButtonListener(DialogInterface.OnClickListener positiveButtonListener) {
+            this.positiveButtonListener = positiveButtonListener;
+            return this;
+        }
+
+        public Builder setNegativeButtonListener(DialogInterface.OnClickListener negativeButtonListener) {
+            this.negativeButtonListener = negativeButtonListener;
+            return this;
+        }
+
+        public Builder setNeutralButtonListener(DialogInterface.OnClickListener neutralButtonListener) {
+            this.neutralButtonListener = neutralButtonListener;
+            return this;
+        }
+
+        //</editor-fold>
+
         public AlertDialog showAlertDialog() {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setCancelable(cancelable);
@@ -157,26 +223,17 @@ public class RDialog {
             });
 
             //积极的按钮 DialogInterface.BUTTON_POSITIVE
-            builder.setPositiveButton("setPositiveButton", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    L.i(which);
-                }
-            });
+            if (!TextUtils.isEmpty(positiveButtonText)) {
+                builder.setPositiveButton(positiveButtonText, positiveButtonListener);
+            }
             //消极的按钮 DialogInterface.BUTTON_NEGATIVE
-            builder.setNegativeButton("setNegativeButton", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    L.i(which);
-                }
-            });
+            if (!TextUtils.isEmpty(negativeButtonText)) {
+                builder.setPositiveButton(negativeButtonText, negativeButtonListener);
+            }
             //中立的按钮 DialogInterface.BUTTON_NEUTRAL
-            builder.setNeutralButton("setNeutralButton", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    L.i(which);
-                }
-            });
+            if (!TextUtils.isEmpty(neutralButtonText)) {
+                builder.setPositiveButton(neutralButtonText, neutralButtonListener);
+            }
 
             if (contentView != null) {
                 builder.setView(contentView);
@@ -192,6 +249,11 @@ public class RDialog {
                 //window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
                 View decorView = window.getDecorView();
+
+                if (dialogBgDrawable != null) {
+                    window.setBackgroundDrawable(dialogBgDrawable);
+                }
+
                 if (initListener != null) {
                     initListener.onInitDialog(alertDialog, new RBaseViewHolder(decorView));
                 }
