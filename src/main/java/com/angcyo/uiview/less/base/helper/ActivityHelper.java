@@ -36,7 +36,10 @@ public class ActivityHelper {
     /**
      * 设置状态栏背景颜色
      */
-    public static void setStatusBarColor(@NonNull Activity activity, @ColorInt int color) {
+    public static void setStatusBarColor(Activity activity, @ColorInt int color) {
+        if (activity == null) {
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(color);
         }
@@ -45,7 +48,10 @@ public class ActivityHelper {
     /**
      * 设置状态栏背景
      */
-    public static void setStatusBarDrawable(@NonNull final Activity activity, final Drawable drawable) {
+    public static void setStatusBarDrawable(final Activity activity, final Drawable drawable) {
+        if (activity == null) {
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int identifier = activity.getResources().getIdentifier("statusBarBackground", "id", "android");
             View statusBarView = activity.getWindow().findViewById(identifier);
@@ -66,7 +72,10 @@ public class ActivityHelper {
     /**
      * 是否是白色状态栏. 如果是, 那么系统的状态栏字体会是灰色
      */
-    public static void lightStatusBar(@NonNull Activity activity, boolean light) {
+    public static void lightStatusBar(Activity activity, boolean light) {
+        if (activity == null) {
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int systemUiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
             if (light) {
@@ -119,7 +128,10 @@ public class ActivityHelper {
      * 请在 {@link Activity#setContentView(View)} 之前调用
      * 低版本系统, 可能需要在 {@link Activity#onCreate(Bundle)} 之前调用
      */
-    public static void setNoTitleNoActionBar(@NonNull Activity activity) {
+    public static void setNoTitleNoActionBar(Activity activity) {
+        if (activity == null) {
+            return;
+        }
         activity.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         if (activity instanceof AppCompatActivity) {
             ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
