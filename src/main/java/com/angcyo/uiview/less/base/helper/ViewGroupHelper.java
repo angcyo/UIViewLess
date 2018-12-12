@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.angcyo.uiview.less.resources.ResUtil;
 import com.angcyo.uiview.less.widget.ImageTextView;
 
 public class ViewGroupHelper {
@@ -76,6 +77,11 @@ public class ViewGroupHelper {
         return this;
     }
 
+    public ViewGroupHelper selector(@NonNull View view) {
+        selectorView = view;
+        return this;
+    }
+
     public ViewGroupHelper selectorByIndex(int index) {
         selectorView = getView(index);
         return this;
@@ -91,6 +97,92 @@ public class ViewGroupHelper {
         }
         return this;
     }
+
+    public ViewGroupHelper setTextColor(@ColorInt int color) {
+        if (selectorView != null) {
+            if (selectorView instanceof TextView) {
+                ((TextView) selectorView).setTextColor(color);
+            } else if (selectorView instanceof ImageTextView) {
+                ((ImageTextView) selectorView).setTextShowColor(color);
+            }
+        }
+        return this;
+    }
+
+    //<editor-fold desc="Drawable过滤颜色方法">
+
+    public ViewGroupHelper colorFilter(@ColorInt int color) {
+        if (selectorView != null) {
+            colorFilterView(selectorView, color);
+        }
+        return this;
+    }
+
+    public ViewGroupHelper colorFilter(@Nullable ViewGroup view, @ColorInt int color) {
+        if (view != null) {
+            for (int i = 0; i < view.getChildCount(); i++) {
+                View childAt = view.getChildAt(i);
+                if (childAt instanceof ViewGroup) {
+                    colorFilter((ViewGroup) childAt, color);
+                } else {
+                    colorFilterView(childAt, color);
+                }
+            }
+        }
+        return this;
+    }
+
+    public ViewGroupHelper colorFilterView(@Nullable View view, @ColorInt int color) {
+        if (view != null) {
+            if (view instanceof ViewGroup) {
+                colorFilter((ViewGroup) view, color);
+            } else if (view instanceof TextView) {
+                // ((TextView) view).setTextColor(color);
+            } else if (view instanceof ImageView) {
+                ((ImageView) view).setImageDrawable(ResUtil.filterDrawable(((ImageView) view).getDrawable(), color));
+            }
+        }
+        return this;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="文本过滤颜色的方法">
+
+    public ViewGroupHelper textColorFilter(@ColorInt int color) {
+        if (selectorView != null) {
+            textColorFilterView(selectorView, color);
+        }
+        return this;
+    }
+
+    public ViewGroupHelper textColorFilter(@Nullable ViewGroup view, @ColorInt int color) {
+        if (view != null) {
+            for (int i = 0; i < view.getChildCount(); i++) {
+                View childAt = view.getChildAt(i);
+                if (childAt instanceof ViewGroup) {
+                    textColorFilter((ViewGroup) childAt, color);
+                } else {
+                    textColorFilterView(childAt, color);
+                }
+            }
+        }
+        return this;
+    }
+
+    public ViewGroupHelper textColorFilterView(@Nullable View view, @ColorInt int color) {
+        if (view != null) {
+            if (view instanceof ViewGroup) {
+                textColorFilter((ViewGroup) view, color);
+            } else if (view instanceof TextView) {
+                ((TextView) view).setTextColor(color);
+            } else if (view instanceof ImageTextView) {
+                ((ImageTextView) view).setTextShowColor(color);
+            }
+        }
+        return this;
+    }
+
+    //</editor-fold>
 
     public ViewGroupHelper setBackgroundColor(@ColorInt int color) {
         if (selectorView != null) {

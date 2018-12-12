@@ -1,6 +1,8 @@
 package com.angcyo.uiview.less.base;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -154,6 +156,25 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         if (affectUI != null) {
             affectUI.showAffect(affect, extraObj);
         }
+    }
+
+    /**
+     * 浮动标题栏, 自动设置透明背景标题栏
+     */
+    public void floatTitleBar() {
+        if (fragmentContentWrapperLayout != null) {
+            fragmentContentWrapperLayout.setContentLayoutState(FragmentContentWrapperLayout.CONTENT_BACK_OF_TITLE);
+        }
+        setTitleBarLayoutColor(Color.TRANSPARENT);
+    }
+
+    /**
+     * 设置标题栏的背景颜色
+     */
+    public void setTitleBarLayoutColor(@ColorInt int color) {
+        titleControl()
+                .selector(R.id.base_title_bar_layout)
+                .setBackgroundColor(color);
     }
 
     /**

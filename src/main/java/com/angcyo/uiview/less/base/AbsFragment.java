@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.base.helper.FragmentHelper;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
 
@@ -71,8 +72,14 @@ public abstract class AbsFragment extends Fragment {
     @Override
     public void onAttachFragment(Fragment childFragment) {
         super.onAttachFragment(childFragment);
+        StringBuilder builder = new StringBuilder();
+        FragmentHelper.logFragment(childFragment, builder);
+        L.d(this.getClass().getSimpleName() + builder);
     }
 
+    /**
+     * OnAttach -> OnCreate -> OnCreateView -> OnActivityCreated -> OnViewStateRestored -> OnStart -> OnResume
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -141,6 +148,9 @@ public abstract class AbsFragment extends Fragment {
         L.d(this.getClass().getSimpleName() + " state:" + (savedInstanceState == null ? "×" : "√"));
     }
 
+    /**
+     * OnPause -> OnStop -> OnDestroyView -> OnDestroy -> OnDetach
+     */
     @Override
     public void onPause() {
         super.onPause();

@@ -11,9 +11,7 @@ import android.graphics.drawable.shapes.ArcShape;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
+import android.support.annotation.*;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
@@ -75,17 +73,28 @@ public class ResUtil {
     /**
      * 颜色过滤
      */
-    public static void colorFilter(Drawable drawable, int color) {
-        drawable.mutate().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    public static Drawable colorFilter(@NonNull Drawable drawable, @ColorInt int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(drawable).mutate();
+        wrappedDrawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+        return wrappedDrawable;
+
     }
 
     /**
      * tint颜色
      */
-    public static Drawable tintDrawable(Drawable drawable, int color) {
+    public static Drawable tintDrawable(@NonNull Drawable drawable, @ColorInt int color) {
         Drawable wrappedDrawable = DrawableCompat.wrap(drawable).mutate();
         DrawableCompat.setTint(wrappedDrawable, color);
         return wrappedDrawable;
+    }
+
+    public static Drawable filterDrawable(@NonNull Drawable drawable, @ColorInt int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return tintDrawable(drawable, color);
+        } else {
+            return colorFilter(drawable, color);
+        }
     }
 
     /**
