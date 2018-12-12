@@ -1,9 +1,10 @@
 package com.angcyo.uiview.less.recycler.item
 
 import android.content.Context
+import android.text.TextUtils
 import android.view.View
 import com.angcyo.uiview.less.recycler.RBaseViewHolder
-import com.angcyo.uiview.less.recycler.RExBaseAdapter
+import com.angcyo.uiview.less.recycler.adapter.RExBaseAdapter
 import com.angcyo.uiview.less.utils.RUtils
 
 /**
@@ -125,4 +126,41 @@ open class RExItemAdapter<ItemType, DataType> :
             }
         }
     }
+
+    /**
+     * 替换数据列表中, 相同类型的数据item, 如果不存在则, 添加.
+     *
+     * 日过找到多个相同的item,则只更新第一个
+     * */
+    fun replaceData(data: DataType) {
+        var oldIndex = -1
+        val targetItemType = itemFactory.getItemTypeFromData(data, oldIndex)
+
+        for (i in 0 until mAllDatas.size) {
+            val dataType = mAllDatas.get(i)
+            val typeFromData = itemFactory.getItemTypeFromData(dataType, i)
+
+            if (targetItemType is String) {
+                if (TextUtils.equals(targetItemType, typeFromData as String)) {
+                    oldIndex = i
+                    break
+                }
+            } else {
+                if (targetItemType == typeFromData) {
+                    oldIndex = i
+                    break
+                }
+            }
+        }
+
+        if (oldIndex != -1) {
+            //找到了旧的数据
+            mAllDatas[oldIndex] = data
+            notifyItemChanged(oldIndex)
+        } else {
+            //没有旧数据
+            addLastItem(data)
+        }
+    }
+
 }

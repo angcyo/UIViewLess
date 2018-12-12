@@ -39,6 +39,11 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
      */
     protected boolean isInViewPager = false;
 
+    /**
+     * 是否显示过第一次
+     */
+    protected boolean firstShowEnd = false;
+
     //<editor-fold desc="生命周期, 系统的方法">
 
     @Override
@@ -160,12 +165,33 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
                 " viewHolder:" + (baseViewHolder == null ? "×" : "√"));
     }
 
+
     @Override
     public void onFragmentShow(@Nullable Bundle bundle) {
         L.i(this.getClass().getSimpleName() +
                 " view:" + (getView() == null ? "×" : "√") +
                 " viewHolder:" + (baseViewHolder == null ? "×" : "√") +
-                " bundle:" + (bundle == null ? "×" : "√"));
+                " bundle:" + (bundle == null ? "×" : "√" +
+                " firstShowEnd:" + (firstShowEnd ? "√" : "×")));
+        if (getView() != null) {
+            if (firstShowEnd) {
+                onFragmentNotFirstShow(bundle);
+            } else {
+                firstShowEnd = true;
+                onFragmentFirstShow(bundle);
+            }
+        }
+    }
+
+    /**
+     * 从 onFragmentShow 分出来的周期事件
+     */
+    public void onFragmentFirstShow(@Nullable Bundle bundle) {
+
+    }
+
+    public void onFragmentNotFirstShow(@Nullable Bundle bundle) {
+
     }
 
     @Override

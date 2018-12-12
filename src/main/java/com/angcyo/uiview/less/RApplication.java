@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import com.angcyo.lib.L;
 import com.angcyo.okdownload.FDown;
+import com.angcyo.uiview.less.base.NetworkStateReceiver;
 import com.angcyo.uiview.less.manager.RNotifier;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.utils.*;
@@ -157,6 +158,8 @@ public class RApplication extends Application {
      */
     protected void onInit() {
         initDefaultNotificationChannel();
+
+        NetworkStateReceiver.init(this);//网络状态监听 api>=21
 
         SkinHelper.init(this);
         Utils.init(this);

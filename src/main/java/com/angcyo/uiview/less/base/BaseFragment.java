@@ -3,10 +3,16 @@ package com.angcyo.uiview.less.base;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.angcyo.http.HttpSubscriber;
+import com.angcyo.http.NonetException;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import rx.Subscription;
+import rx.observers.SafeSubscriber;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by angcyo on 2018/12/03 23:17
@@ -60,4 +66,69 @@ public abstract class BaseFragment extends AbsLifeCycleFragment {
     protected boolean interceptRootTouchEvent() {
         return true;
     }
+
+    @NonNull
+    public FragmentManager parentFragmentManager() {
+        if (getParentFragment() == null) {
+            return requireFragmentManager();
+        } else {
+            return getParentFragment().requireFragmentManager();
+        }
+    }
+
+    //<editor-fold desc="网络请求管理">
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        onCancelSubscriptions();
+    }
+
+    protected CompositeSubscription mSubscriptions;
+
+    public void onCancelSubscriptions() {
+        if (mSubscriptions != null) {
+            mSubscriptions.clear();
+        }
+    }
+
+    public void addSubscription(Subscription subscription) {
+        addSubscription(subscription, false);
+    }
+
+    public void addSubscription(Subscription subscription, boolean checkToken) {
+        addSubscription(mSubscriptions, subscription, checkToken, new Runnable() {
+            @Override
+            public void run() {
+                onCancelSubscriptions();
+            }
+        });
+    }
+
+    public static void addSubscription(CompositeSubscription subscriptions, Subscription subscription, boolean checkToken, Runnable onCancel) {
+        if (subscription == null) {
+            return;
+        }
+        if (subscriptions != null) {
+            subscriptions.add(subscription);
+        }
+        if (NetworkStateReceiver.getNetType().value() < 2) {
+            //2G网络以下, 取消网络请求
+            if (onCancel != null) {
+                onCancel.run();
+            }
+            try {
+                if (subscription instanceof SafeSubscriber) {
+                    if (((SafeSubscriber) subscription).getActual() instanceof HttpSubscriber) {
+                        ((SafeSubscriber) subscription).getActual().onError(new NonetException());
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    //</editor-fold">
+
 }

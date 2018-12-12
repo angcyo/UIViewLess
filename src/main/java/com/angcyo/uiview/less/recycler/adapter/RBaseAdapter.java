@@ -1,11 +1,10 @@
-package com.angcyo.uiview.less.recycler;
+package com.angcyo.uiview.less.recycler.adapter;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,14 +21,13 @@ import java.util.List;
 
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.recycler.RRecyclerView;
 import com.angcyo.uiview.less.recycler.widget.ILoadMore;
 import com.angcyo.uiview.less.recycler.widget.IShowState;
 import com.angcyo.uiview.less.recycler.widget.ItemShowStateLayout;
 import com.angcyo.uiview.less.utils.RUtils;
-import rx.Observer;
-import rx.functions.Action1;
 import rx.functions.Func2;
-import rx.observables.SyncOnSubscribe;
 
 /**
  * Created by angcyo on 16-01-18-018.
@@ -957,7 +955,7 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
     }
 
     public interface OnAdapterLoadMoreListener {
-        void onAdapterLodeMore(RBaseAdapter baseAdapter);
+        void onAdapterLodeMore(@NonNull RBaseAdapter baseAdapter);
     }
 
     public interface OnLocalRefresh {

@@ -79,6 +79,8 @@ public class TitleItemHelper {
          */
         int viewId = -1;
 
+        int visibility = View.VISIBLE;
+
         Object tag = null;
 
         /**
@@ -158,6 +160,11 @@ public class TitleItemHelper {
             return this;
         }
 
+        public Builder setVisibility(int visibility) {
+            this.visibility = visibility;
+            return this;
+        }
+
         public Builder setTag(Object tag) {
             this.tag = tag;
             return this;
@@ -187,6 +194,7 @@ public class TitleItemHelper {
             if (viewId != -1) {
                 view.setId(viewId);
             }
+            view.setVisibility(visibility);
             if (tag != null) {
                 view.setTag(tag);
             }
@@ -221,15 +229,15 @@ public class TitleItemHelper {
             if (minWidth != -1) {
                 view.setMinimumWidth(minWidth);
             }
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
             if (itemWidth != -100) {
-                ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
                 layoutParams.width = itemWidth;
-                if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-                    ((ViewGroup.MarginLayoutParams) layoutParams).leftMargin = leftMargin;
-                    ((ViewGroup.MarginLayoutParams) layoutParams).rightMargin = rightMargin;
-                }
-                view.setLayoutParams(layoutParams);
             }
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ((ViewGroup.MarginLayoutParams) layoutParams).leftMargin = leftMargin;
+                ((ViewGroup.MarginLayoutParams) layoutParams).rightMargin = rightMargin;
+            }
+            view.setLayoutParams(layoutParams);
             return view;
         }
     }

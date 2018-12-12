@@ -4,10 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.*;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -41,7 +38,7 @@ public class SimpleProgressBar extends View {
 
     int mProgress = 0;//当前的进度
 
-    int mProgressColor, mProgressBgColor, mProgressWidth, mProgressTextColor;
+    int mProgressColor = -1, mProgressBgColor, mProgressWidth, mProgressTextColor;
 
     float mProgressTextSize;
 
@@ -57,6 +54,12 @@ public class SimpleProgressBar extends View {
     int drawColor;
     private ValueAnimator mColorAnimator;
     private ValueAnimator animator;
+
+    /**
+     * 使用渐变进度, 只在 incertitudeProgress = true && mProgressStyle = STYLE_RECT 时, 有效
+     */
+    private boolean isGradientProgress = false;
+    private int gradientProgressStartColor = -1;
 
     public SimpleProgressBar(Context context) {
         this(context, null);
@@ -75,9 +78,12 @@ public class SimpleProgressBar extends View {
         mProgressWidth = typedArray.getDimensionPixelOffset(R.styleable.SimpleProgressBar_r_progress_width, mProgressWidth);
         mProgressTextSize = typedArray.getDimensionPixelOffset(R.styleable.SimpleProgressBar_r_progress_text_size, (int) mProgressTextSize);
         mProgressBgColor = typedArray.getColor(R.styleable.SimpleProgressBar_r_progress_bg_color, mProgressBgColor);
+        mProgressColor = typedArray.getColor(R.styleable.SimpleProgressBar_r_progress_color, mProgressColor);
+        gradientProgressStartColor = typedArray.getColor(R.styleable.SimpleProgressBar_r_progress_gradient_start_color, gradientProgressStartColor);
         mProgressTextColor = typedArray.getColor(R.styleable.SimpleProgressBar_r_progress_text_color, mProgressTextColor);
         setProgressStyle(typedArray.getInt(R.styleable.SimpleProgressBar_r_progress_style, STYLE_RECT));
         incertitudeProgress = typedArray.getBoolean(R.styleable.SimpleProgressBar_r_incertitude_progress, incertitudeProgress);
+        isGradientProgress = typedArray.getBoolean(R.styleable.SimpleProgressBar_r_progress_gradient, isGradientProgress);
 
         typedArray.recycle();
 
@@ -89,11 +95,21 @@ public class SimpleProgressBar extends View {
     }
 
     private void init() {
-        if (isInEditMode()) {
-            mProgressColor = Color.BLUE;
-            mProgress = 100;
-        } else {
-            mProgressColor = SkinHelper.getSkin().getThemeSubColor();//getResources().getColor(R.color.theme_color_accent);
+        if (mProgressColor == -1) {
+            if (isInEditMode()) {
+                mProgressColor = Color.BLUE;
+                mProgress = 100;
+            } else {
+                mProgressColor = SkinHelper.getSkin().getThemeSubColor();
+            }
+        }
+        if (gradientProgressStartColor == -1) {
+            if (isInEditMode()) {
+                gradientProgressStartColor = Color.GREEN;
+                mProgress = 100;
+            } else {
+                gradientProgressStartColor = SkinHelper.getSkin().getThemeColor();
+            }
         }
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mProgressColor);
@@ -110,7 +126,16 @@ public class SimpleProgressBar extends View {
         progress = Math.max(0, Math.min(100, progress));
         if (autoHide && (progress >= 100 || progress <= 0)) {
 //            setVisibility(GONE);
-            ViewCompat.animate(this).translationY(-getMeasuredHeight()).setDuration(300).start();
+            ViewCompat.animate(this)
+                    .translationY(-getMeasuredHeight())
+                    .setDuration(300)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgress = 0;
+                        }
+                    })
+                    .start();
         } else {
             if (getTranslationY() == -getMeasuredHeight()) {
                 ViewCompat.animate(this).translationY(0).setDuration(300).start();
@@ -199,7 +224,12 @@ public class SimpleProgressBar extends View {
                 canvas.drawRect(0, 0, mRect.width(), mRect.height(), mPaint);
             } else {
                 mPaint.setColor(mProgressColor);
-                canvas.drawRect(0, 0, mRect.width() * (mProgress / 100f), mRect.height(), mPaint);
+                float right = mRect.width() * (mProgress / 100f);
+                if (isGradientProgress) {
+                    mPaint.setShader(new LinearGradient(0f, 0f, right, 0,
+                            new int[]{gradientProgressStartColor, mProgressColor}, null, Shader.TileMode.CLAMP));
+                }
+                canvas.drawRect(0, 0, right, mRect.height(), mPaint);
             }
         } else {
             mPaint.setStyle(Paint.Style.STROKE);

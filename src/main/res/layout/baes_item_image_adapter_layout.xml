@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.angcyo.uiview.less.widget.GlideImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/base_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:background="@color/transparent_dark"
+        tools:src="@drawable/base_ico_load_fail"/>

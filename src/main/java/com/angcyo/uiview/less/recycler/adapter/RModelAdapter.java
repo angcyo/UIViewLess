@@ -1,4 +1,4 @@
-package com.angcyo.uiview.less.recycler;
+package com.angcyo.uiview.less.recycler.adapter;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.widget.CompoundButton;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.recycler.RRecyclerView;
 import com.angcyo.uiview.less.utils.Reflect;
 import com.angcyo.uiview.less.widget.group.RCheckGroup;
 

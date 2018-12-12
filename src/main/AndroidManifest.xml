@@ -121,6 +121,15 @@
                 <action android:name="com.angcyo.alarm"/>
             </intent-filter>
         </receiver>
+
+        <!--网络状态监听-->
+        <receiver
+                android:name=".base.NetworkStateReceiver"
+                android:label="NetworkStateReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

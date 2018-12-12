@@ -1,8 +1,9 @@
-package com.angcyo.uiview.less.recycler;
+package com.angcyo.uiview.less.recycler.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

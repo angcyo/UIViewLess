@@ -1,19 +1,17 @@
 package com.angcyo.uiview.less.base;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 import com.angcyo.uiview.less.R;
-import com.angcyo.uiview.less.recycler.RBaseAdapter;
+import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
 import com.angcyo.uiview.less.smart.MaterialHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
-import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
@@ -28,7 +26,7 @@ import java.util.List;
  * @author angcyo
  * @date 2018/12/08
  */
-public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implements OnRefreshListener, OnLoadMoreListener {
+public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implements OnRefreshListener, OnLoadMoreListener, RBaseAdapter.OnAdapterLoadMoreListener {
 
     protected SmartRefreshLayout smartRefreshLayout;
 
@@ -98,6 +96,10 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
         if (recyclerView != null) {
             baseAdapter = onCreateAdapter(new ArrayList<T>());
             recyclerView.setAdapter(baseAdapter);
+
+            if (baseAdapter instanceof RBaseAdapter) {
+                baseAdapter.setOnLoadMoreListener(this);
+            }
             //recyclerView.setBackgroundColor(Color.GREEN);
         }
     }
@@ -136,12 +138,6 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             @Override
             protected void onLoadMore() {
                 super.onLoadMore();
-                baseViewHolder.postDelay(2_000, new Runnable() {
-                    @Override
-                    public void run() {
-                        setNoMore(true);
-                    }
-                });
             }
         };
     }
@@ -160,6 +156,20 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
     @Override
     public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
         refreshLayout.finishLoadMore(2_000);
+    }
+
+    /**
+     * 适配器, 加载更多事件
+     */
+
+    @Override
+    public void onAdapterLodeMore(@NonNull final RBaseAdapter adapter) {
+        baseViewHolder.postDelay(2_000, new Runnable() {
+            @Override
+            public void run() {
+                adapter.setNoMore(true);
+            }
+        });
     }
 
     //</editor-fold>

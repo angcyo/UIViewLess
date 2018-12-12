@@ -10,6 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.recycler.LoopRecyclerView;
+import com.angcyo.uiview.less.recycler.RecyclerViewPager;
+import com.angcyo.uiview.less.recycler.manager.RPagerSnapHelper;
+import com.angcyo.uiview.less.widget.pager.RViewPager;
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -65,16 +69,16 @@ public class RDrawIndicator extends BaseDraw {
     }
 
 
-//    public void setupRecyclerViewPager(RecyclerViewPager recyclerViewPager) {
-//        recyclerViewPager.addOnViewPagerListener(new RecyclerViewPager.OnViewPagerListener() {
-//            @Override
-//            public void onViewPager(int index) {
-//                setCurrentPager(index);
-//            }
-//        });
-//        initPagerCount(recyclerViewPager.getPagerCount());
-//    }
-//
+    public void setupRecyclerViewPager(RecyclerViewPager recyclerViewPager) {
+        recyclerViewPager.addOnViewPagerListener(new RecyclerViewPager.OnViewPagerListener() {
+            @Override
+            public void onViewPager(int index) {
+                setCurrentPager(index);
+            }
+        });
+        initPagerCount(recyclerViewPager.getPagerCount());
+    }
+
 //    public void setupRLoopRecyclerView(RLoopRecyclerView recyclerView) {
 //        recyclerView.setOnPageListener(new RLoopRecyclerView.OnPageListener() {
 //            @Override
@@ -88,45 +92,45 @@ public class RDrawIndicator extends BaseDraw {
 //            initPagerCount(adapter.getItemRawCount());
 //        }
 //    }
-//
-//    public void setupRExLoopRecyclerView(RExLoopRecyclerView recyclerView) {
-//        recyclerView.setOnPageListener(new RPagerSnapHelper.OnPageListener() {
-//            @Override
-//            public void onPageSelector(int fromPosition, int toPosition) {
-//                super.onPageSelector(fromPosition, toPosition);
-//                setCurrentPager(toPosition);
-//            }
-//        });
-//        RecyclerView.Adapter adapter = recyclerView.getAdapter();
-//        if (adapter != null) {
-//            initPagerCount(adapter.getItemCount());
-//        }
-//    }
-//
-//    public void setCurrentPager(int index) {
-//        mCurrentPager = index;
-//        postInvalidate();
-//    }
-//
-//    public void setUpUIViewPager(RViewPager pager, int pagerCount) {
-//        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                setCurrentPager(position);
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
-//        initPagerCount(pagerCount);
-//    }
+
+    public void setupLoopRecyclerView(LoopRecyclerView recyclerView) {
+        recyclerView.setOnPageListener(new RPagerSnapHelper.OnPageListener() {
+            @Override
+            public void onPageSelector(int fromPosition, int toPosition) {
+                super.onPageSelector(fromPosition, toPosition);
+                setCurrentPager(toPosition);
+            }
+        });
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter != null) {
+            initPagerCount(adapter.getItemCount());
+        }
+    }
+
+    public void setCurrentPager(int index) {
+        mCurrentPager = index;
+        postInvalidate();
+    }
+
+    public void setUpUIViewPager(RViewPager pager, int pagerCount) {
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setCurrentPager(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        initPagerCount(pagerCount);
+    }
 
     public void initPagerCount(int pagerCount) {
         int old = mPagerCount;

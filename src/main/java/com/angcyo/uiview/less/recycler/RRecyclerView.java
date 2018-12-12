@@ -30,14 +30,13 @@ import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.draw.RDrawIndicator;
 import com.angcyo.uiview.less.kotlin.ViewExKt;
+import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.resources.AnimUtil;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.utils.Reflect;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 import com.angcyo.uiview.less.utils.UI;
 import com.angcyo.uiview.less.widget.CanScrollUpCallBack;
-
-import java.lang.reflect.Constructor;
 
 /**
  * 简单封装的RecyclerView

@@ -3,6 +3,7 @@ package com.angcyo.uiview.less.base.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -325,6 +326,11 @@ public class FragmentHelper {
         int enterAnim = -1;
         int exitAnim = -1;
 
+        /**
+         * 是否要确认允许返回, 如果false, 则不会回调 onBackPressed 方法
+         */
+        boolean checkBackPress = true;
+
         public Builder(@NonNull FragmentManager fragmentManager) {
             this.fragmentManager = fragmentManager;
         }
@@ -393,6 +399,22 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder setArgs(@Nullable String key, @Nullable String value) {
+            if (args == null) {
+                args = new Bundle();
+            }
+            args.putString(key, value);
+            return this;
+        }
+
+        public Builder setArgs(@Nullable String key, @Nullable Parcelable value) {
+            if (args == null) {
+                args = new Bundle();
+            }
+            args.putParcelable(key, value);
+            return this;
+        }
+
         public Builder enterAnim(@AnimRes int enterAnim) {
             this.enterAnim = enterAnim;
             return this;
@@ -412,6 +434,11 @@ public class FragmentHelper {
         public Builder defaultEnterAnim() {
             this.exitAnim = R.anim.base_alpha_exit;
             this.enterAnim = R.anim.base_tran_to_top;
+            return this;
+        }
+
+        public Builder setCheckBackPress(boolean checkBackPress) {
+            this.checkBackPress = checkBackPress;
             return this;
         }
 
@@ -476,14 +503,22 @@ public class FragmentHelper {
             } else if (size == 1) {
                 Fragment fragment = fragments.get(0);
                 if (fragment instanceof IFragment) {
-                    canBack = ((IFragment) fragment).onBackPressed(activity);
+                    if (checkBackPress) {
+                        canBack = ((IFragment) fragment).onBackPressed(activity);
+                    } else {
+                        canBack = true;
+                    }
                 } else {
                     canBack = true;
                 }
             } else {
                 Fragment lastFragment = fragments.get(size - 1);
                 if (lastFragment instanceof IFragment) {
-                    canBack = ((IFragment) lastFragment).onBackPressed(activity);
+                    if (checkBackPress) {
+                        canBack = ((IFragment) lastFragment).onBackPressed(activity);
+                    } else {
+                        canBack = true;
+                    }
 
                     if (canBack) {
                         needCommit = true;

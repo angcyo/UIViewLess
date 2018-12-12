@@ -80,6 +80,8 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
 
         initBaseTitleLayout(arguments);
         initContentLayout(arguments);
+        initLeftControlLayout();
+        initRightControlLayout();
     }
 
     /**
@@ -93,11 +95,23 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
 
         //设置标题
         setTitleString(getFragmentTitle());
+    }
 
+    /**
+     * 左边控制按钮初始化
+     */
+    protected void initLeftControlLayout() {
         if (getParentFragment() == null) {
             //添加返回按钮
             addLeftItem(createBackItem());
         }
+    }
+
+    /**
+     * 右边控制按钮初始化
+     */
+    protected void initRightControlLayout() {
+
     }
 
     /**
@@ -173,12 +187,13 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      * 创建返回按钮
      */
     protected View createBackItem() {
-        ImageTextView backItem = TitleItemHelper.createItem(mAttachContext, R.drawable.base_back, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTitleBackClick(v);
-            }
-        });
+        ImageTextView backItem = TitleItemHelper.createItem(mAttachContext, R.drawable.base_back,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onTitleBackClick(v);
+                    }
+                });
         backItem.setId(R.id.base_title_back_view);
         return backItem;
     }
@@ -195,6 +210,10 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      * 关闭Fragment
      */
     public void backFragment() {
+        backFragment(true);
+    }
+
+    public void backFragment(boolean checkBackPress) {
         FragmentManager fragmentManager = requireFragmentManager();
 //        if (getParentFragment() == null) {
 //            fragmentManager = requireFragmentManager();
@@ -205,6 +224,7 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         FragmentHelper.build(fragmentManager)
                 .parentLayoutId(this)
                 .defaultExitAnim()
+                .setCheckBackPress(checkBackPress)
                 .back(getActivity());
     }
 

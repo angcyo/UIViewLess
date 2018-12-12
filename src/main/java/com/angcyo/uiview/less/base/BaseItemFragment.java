@@ -9,12 +9,13 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
 import com.angcyo.uiview.less.recycler.*;
+import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
+import com.angcyo.uiview.less.recycler.adapter.RModelAdapter;
 import com.angcyo.uiview.less.recycler.item.RItemAdapter;
 import com.angcyo.uiview.less.recycler.item.SingleItem;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**

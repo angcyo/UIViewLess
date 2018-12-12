@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import com.angcyo.uiview.less.recycler.RBaseViewHolder
-import com.angcyo.uiview.less.recycler.RExBaseAdapter
+import com.angcyo.uiview.less.recycler.adapter.RExBaseAdapter
 
 
 /**

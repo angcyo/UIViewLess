@@ -21,7 +21,7 @@ import android.view.ViewParent;
 public class AffectUI {
 
     /**
-     * 情感图 内容, 此变量用来显示内容视图. 请勿用来注册
+     * 情感图 内容, 此变量用来切换显示内容视图. 请勿用来注册
      */
     public static final int AFFECT_CONTENT = 1;
     /**
@@ -161,7 +161,7 @@ public class AffectUI {
             builder.affectChangeListener.onAffectChangeBefore(this, oldAffect, affect);
         }
 
-        affectContentViewHandle(affect == AFFECT_CONTENT);
+        affectContentViewHandle(isContentAffect(affect));
         for (int i = 0; i < viewMap.size(); i++) {
             int key = viewMap.keyAt(i);
             View view = viewMap.get(key);
@@ -190,12 +190,32 @@ public class AffectUI {
             }
         }
 
+
         if (builder.affectChangeListener != null) {
-            builder.affectChangeListener.onAffectChange(this, oldAffect, affect, viewMap.get(oldAffect), viewMap.get(affect));
+            View fromView;
+            if (isContentAffect(oldAffect)) {
+                fromView = contentView;
+            } else {
+                fromView = viewMap.get(oldAffect);
+            }
+
+
+            View toView;
+            if (isContentAffect(affect)) {
+                toView = contentView;
+            } else {
+                toView = viewMap.get(affect);
+            }
+
+            builder.affectChangeListener.onAffectChange(this, oldAffect, affect, fromView, toView);
         }
 
         //清除临时缓存
         extraObj = null;
+    }
+
+    public boolean isContentAffect(int affect) {
+        return affect == AFFECT_CONTENT;
     }
 
     public void setContentAffect(int contentAffect) {
@@ -269,7 +289,7 @@ public class AffectUI {
         void onAffectChangeBefore(@NonNull AffectUI affectUI, int fromAffect, int toAffect);
 
         void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect,
-                            @Nullable View fromView, @NonNull View toView);
+                            @Nullable View fromView, @Nullable View toView);
 
         /**
          * 只在第一次inflate的时候, 会调用

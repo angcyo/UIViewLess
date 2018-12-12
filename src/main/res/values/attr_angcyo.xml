@@ -322,6 +322,9 @@
 
     <declare-styleable name="SimpleProgressBar">
         <attr name="r_progress_bg_color"/>
+        <attr name="r_progress_gradient_start_color" format="color"/>
+        <attr name="r_progress_gradient" format="boolean"/>
+        <attr name="r_progress_color"/>
         <attr name="r_progress_text_color"/>
         <attr name="r_progress_text_size"/>
         <attr name="r_progress_width"/>
