@@ -137,7 +137,7 @@ open class RExItemAdapter<ItemType, DataType> :
         val targetItemType = itemFactory.getItemTypeFromData(data, oldIndex)
 
         for (i in 0 until mAllDatas.size) {
-            val dataType = mAllDatas.get(i)
+            val dataType = mAllDatas[i]
             val typeFromData = itemFactory.getItemTypeFromData(dataType, i)
 
             if (targetItemType is String) {
@@ -161,6 +161,84 @@ open class RExItemAdapter<ItemType, DataType> :
             //没有旧数据
             addLastItem(data)
         }
+    }
+
+    /**
+     * 替换连续相同类型的数据List
+     *
+     * 需要保证数据是连续的
+     * */
+    fun replaceDataList(dataList: List<DataType>?) {
+        if (RUtils.isListEmpty(dataList)) {
+            return
+        }
+
+        dataList?.let { dataList ->
+            var oldStartIndex = -1
+            var oldSize = 0
+            val newSize = dataList.size
+
+            val targetItemType = itemFactory.getItemTypeFromData(dataList.first(), oldStartIndex)
+
+            for (i in 0 until mAllDatas.size) {
+                val dataType = mAllDatas[i]
+                val typeFromData = itemFactory.getItemTypeFromData(dataType, i)
+
+                if (targetItemType is String) {
+                    if (TextUtils.equals(targetItemType, typeFromData as String)) {
+                        if (oldStartIndex == -1) {
+                            oldStartIndex = i
+                        }
+                        oldSize++
+                    }
+                } else {
+                    if (targetItemType == typeFromData) {
+                        if (oldStartIndex == -1) {
+                            oldStartIndex = i
+                        }
+                        oldSize++
+                    }
+                }
+            }
+
+            if (oldStartIndex != -1) {
+                //找到了旧的数据
+                if (newSize > oldSize) {
+                    for (i in oldStartIndex until oldStartIndex + oldSize) {
+                        mAllDatas[i] = dataList[i - oldStartIndex]
+                    }
+                    notifyItemRangeChanged(oldStartIndex, oldSize)
+
+                    val lastIndex = oldStartIndex + oldSize
+                    for (i in lastIndex until newSize) {
+                        mAllDatas.add(i, dataList[i - oldStartIndex])
+                    }
+                    notifyItemRangeInserted(lastIndex, newSize - oldSize)
+                } else if (newSize == oldSize) {
+                    for (i in oldStartIndex until oldStartIndex + oldSize) {
+                        mAllDatas[i] = dataList[i - oldStartIndex]
+                    }
+                    notifyItemRangeChanged(oldStartIndex, oldSize)
+                } else {
+                    //newSize < oldSize
+                    for (i in oldStartIndex until oldStartIndex + newSize) {
+                        mAllDatas[i] = dataList[i - oldStartIndex]
+                    }
+                    notifyItemRangeChanged(oldStartIndex, newSize)
+
+                    for (i in oldSize - 1 downTo newSize) {
+                        mAllDatas.removeAt(i)
+                    }
+                    notifyItemRangeRemoved(oldStartIndex + newSize, oldSize - newSize)
+                }
+            } else {
+                //没有旧数据
+                appendAllData(dataList)
+            }
+
+        }
+
+
     }
 
 }
