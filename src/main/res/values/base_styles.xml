@@ -40,6 +40,13 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <style name="WindowNoAnim" parent="android:Animation" mce_bogus="1">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <item name="android:windowHideAnimation">@null</item>
+        <item name="android:windowShowAnimation">@null</item>
+    </style>
+
     <style name="BaseDialogBaseTextStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

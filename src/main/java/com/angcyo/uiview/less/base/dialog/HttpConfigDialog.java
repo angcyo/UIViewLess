@@ -26,6 +26,7 @@ import java.util.Map;
 public class HttpConfigDialog {
     public static void show(@NonNull Context context, final String baseUrl, @Nullable final OnHttpConfig onHttpConfig) {
         RDialog.build(context)
+                .setCanceledOnTouchOutside(false)
                 .setContentLayoutId(R.layout.base_http_config_layout)
                 .setInitListener(new RDialog.OnInitListener() {
                     @Override

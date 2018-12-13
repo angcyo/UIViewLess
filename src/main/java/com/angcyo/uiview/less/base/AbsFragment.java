@@ -1,6 +1,7 @@
 package com.angcyo.uiview.less.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -180,6 +181,12 @@ public abstract class AbsFragment extends Fragment {
         super.onDetach();
         L.d(this.getClass().getSimpleName());
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="自定义, 可以重写 的方法">

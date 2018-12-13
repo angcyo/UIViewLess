@@ -25,7 +25,11 @@ class QQFlowProgressView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        drawWidth = 0f
+        if (isInEditMode) {
+            drawWidth = (w * 0.5).toFloat()
+        } else {
+            drawWidth = 0f
+        }
     }
 
     var drawStep = 1.2f * density
@@ -49,11 +53,15 @@ class QQFlowProgressView(context: Context, attributeSet: AttributeSet? = null) :
 
         canvas.save()
         if (isDrawEnd) {
-            drawRect.set(measuredWidth - drawWidth + roundRadius + paddingLeft, paddingTop.toFloat(),
-                    measuredWidth.toFloat() - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom)
+            drawRect.set(
+                measuredWidth - drawWidth + roundRadius + paddingLeft, paddingTop.toFloat(),
+                measuredWidth.toFloat() - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom
+            )
         } else {
-            drawRect.set(roundRadius + paddingLeft, paddingTop.toFloat(),
-                    drawWidth - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom)
+            drawRect.set(
+                roundRadius + paddingLeft, paddingTop.toFloat(),
+                drawWidth - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom
+            )
         }
         canvas.drawRoundRect(drawRect, roundRadius, roundRadius, debugPaint)
         canvas.restore()

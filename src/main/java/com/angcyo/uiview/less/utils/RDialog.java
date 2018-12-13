@@ -1,19 +1,25 @@
 package com.angcyo.uiview.less.utils;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
+import android.support.annotation.*;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.WeakHashMap;
+
+import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
 
 /**
  * Email:angcyo@126.com
@@ -22,6 +28,8 @@ import com.angcyo.uiview.less.resources.ResUtil;
  * @date 2018/11/20
  */
 public class RDialog {
+
+    static WeakHashMap<Integer, List<Dialog>> dialogMap = new WeakHashMap<>();
 
     public static void tip(Context context,
                            String message) {
@@ -54,18 +62,61 @@ public class RDialog {
                 .showAlertDialog();
     }
 
-    //DialogInterface.BUTTON_POSITIVE
+    /**
+     * 加载中的对话框
+     */
+    public static synchronized void flow(Context context) {
+        flow(context, null);
+    }
+
+    public static synchronized void flow(Context context, DialogInterface.OnDismissListener dismissListener) {
+        AlertDialog alertDialog = build(context)
+                .setCancelable(false)
+                .setDialogWidth((int) ResUtil.dpToPx(56))
+                .setDimAmount(0f)
+                .setAnimStyleResId(R.style.WindowNoAnim)
+                .setDialogBgColor(Color.TRANSPARENT)
+                .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
+                .setOnDismissListener(dismissListener)
+                .showAlertDialog();
+        List<Dialog> dialogs = dialogMap.get(context.hashCode());
+        if (dialogs == null) {
+            dialogs = new ArrayList<>();
+            dialogMap.put(context.hashCode(), dialogs);
+        }
+        dialogs.add(alertDialog);
+    }
+
+    public static synchronized void hide(Context context) {
+        dismiss(dialogMap.get(context.hashCode()));
+        dialogMap.remove(context.hashCode());
+    }
+
+    public static synchronized void hide() {
+        for (WeakHashMap.Entry<Integer, List<Dialog>> entry : dialogMap.entrySet()) {
+            dismiss(entry.getValue());
+        }
+        dialogMap.clear();
+    }
+
+    private static synchronized void dismiss(List<Dialog> dialogs) {
+        if (!RUtils.isListEmpty(dialogs)) {
+            for (Dialog dialog : dialogs) {
+                dialog.dismiss();
+            }
+        }
+    }
 
     public static Builder build(Context context) {
         return new Builder(context);
     }
 
     public static class Builder {
+
         Context context;
 
-
         @LayoutRes
-        int layoutId;
+        int layoutId = -1;
 
         /**
          * 优先使用 contentView, 其次再使用 layoutId
@@ -86,6 +137,23 @@ public class RDialog {
 
         Drawable dialogBgDrawable;
 
+        int dialogWidth = NO_NUM;
+        int dialogHeight = NO_NUM;
+
+        /**
+         * 对话框变暗指数, [0,1]
+         * 0表示, 不变暗
+         * 1表示, 全暗
+         * NO_NUM, 默认
+         */
+        float amount = NO_NUM;
+
+        /**
+         * window动画资源
+         */
+        @StyleRes
+        int animStyleResId = NO_NUM;
+
         public Builder(@NonNull Context context) {
             this.context = context;
         }
@@ -102,6 +170,9 @@ public class RDialog {
 
         public Builder setCancelable(boolean cancelable) {
             this.cancelable = cancelable;
+            if (!cancelable) {
+                setCanceledOnTouchOutside(false);
+            }
             return this;
         }
 
@@ -125,6 +196,8 @@ public class RDialog {
             return this;
         }
 
+        //<editor-fold desc="window的配置">
+
         public Builder setDialogBgDrawable(@NonNull Drawable dialogBgDrawable) {
             this.dialogBgDrawable = dialogBgDrawable;
             return this;
@@ -137,6 +210,29 @@ public class RDialog {
         public Builder setDialogBgResource(@DrawableRes int drawable) {
             return setDialogBgDrawable(ResUtil.getDrawable(drawable));
         }
+
+
+        public Builder setDialogWidth(int dialogWidth) {
+            this.dialogWidth = dialogWidth;
+            return this;
+        }
+
+        public Builder setDialogHeight(int dialogHeight) {
+            this.dialogHeight = dialogHeight;
+            return this;
+        }
+
+        public Builder setDimAmount(@FloatRange(from = 0f, to = 1f) float amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public Builder setAnimStyleResId(@StyleRes int animStyleResId) {
+            this.animStyleResId = animStyleResId;
+            return this;
+        }
+
+        //</editor-fold>
 
         //<editor-fold desc="系统默认3个按钮设置">
 
@@ -224,27 +320,53 @@ public class RDialog {
                 builder.setView(layoutId);
             }
 
-            AlertDialog alertDialog = builder.show();
+            AlertDialog alertDialog = builder.create();
             alertDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
 
             Window window = alertDialog.getWindow();
+            View decorView;
+
             if (window != null) {
                 //window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-                View decorView = window.getDecorView();
 
                 if (dialogBgDrawable != null) {
                     window.setBackgroundDrawable(dialogBgDrawable);
                 }
 
-                if (initListener != null) {
-                    initListener.onInitDialog(alertDialog, new RBaseViewHolder(decorView));
+                if (amount != NO_NUM) {
+                    window.setDimAmount(amount);
+                }
+
+                if (animStyleResId != NO_NUM) {
+                    window.setWindowAnimations(animStyleResId);
                 }
             }
 
             //alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
             //alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
             //alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+
+            alertDialog.show();
+
+            if (window != null) {
+
+                // window的宽高设置
+                if (dialogWidth != NO_NUM && dialogHeight != NO_NUM) {
+                    window.setLayout(dialogWidth, dialogHeight);
+                } else {
+                    if (dialogHeight != NO_NUM) {
+                        window.setLayout(window.getAttributes().width, dialogHeight);
+                    }
+                    if (dialogWidth != NO_NUM) {
+                        window.setLayout(dialogWidth, window.getAttributes().height);
+                    }
+                }
+
+                decorView = window.getDecorView();
+                if (initListener != null) {
+                    initListener.onInitDialog(alertDialog, new RBaseViewHolder(decorView));
+                }
+            }
             return alertDialog;
         }
 

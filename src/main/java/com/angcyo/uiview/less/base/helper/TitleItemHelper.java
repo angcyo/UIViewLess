@@ -25,6 +25,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class TitleItemHelper {
 
+    /**
+     * 定义为不存在值
+     */
+    public static final int NO_NUM = -0xff;
+
     public static Builder build(@NonNull Context context) {
         return new Builder(context);
     }
@@ -64,7 +69,7 @@ public class TitleItemHelper {
         Drawable bgDrawable;
 
         int minWidth = -1;
-        int itemWidth = -100;
+        int itemWidth = NO_NUM;
 
         int textSize = -1;
         int textColor = -1;
@@ -230,7 +235,7 @@ public class TitleItemHelper {
                 view.setMinimumWidth(minWidth);
             }
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            if (itemWidth != -100) {
+            if (itemWidth != NO_NUM) {
                 layoutParams.width = itemWidth;
             }
             if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
