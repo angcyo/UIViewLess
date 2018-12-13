@@ -109,7 +109,7 @@ public abstract class BaseService extends Service implements Handler.Callback {
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
 //                PendingIntent.FLAG_UPDATE_CURRENT);
 //
-//        builder.setContentTitle("服务运行于前台")
+//        build.setContentTitle("服务运行于前台")
 //                .setContentText("service被设为前台进程")
 //                .setTicker("service正在后台运行...")
 //                .setPriority(NotificationCompat.PRIORITY_MAX)

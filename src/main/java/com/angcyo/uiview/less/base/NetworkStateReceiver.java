@@ -51,14 +51,26 @@ public class NetworkStateReceiver extends BroadcastReceiver {
                 @Override
                 public void onAvailable(Network network) {
                     super.onAvailable(network);
-                    L.w("NetworkStateReceiver: onAvailable([network])-> ");
+                    L.w("NetworkStateReceiver: onAvailable([network]) 网络已连接 -> " + network);
                     sNetworkWrapper.network = network;
+
+//                    if (sNetworkWrapper.network == null) {
+//                        oldType = NetworkUtils.NetworkType.NETWORK_NO;
+//                    } else {
+//                        oldType = NetworkUtils.NetworkType.NETWORK_UNKNOWN;
+//                    }
+//
+//                    synchronized (lock) {
+//                        for (NetworkStateListener listener : sListeners) {
+//                            listener.onNetworkChange(oldType, NetworkUtils.NetworkType.NETWORK_NO);
+//                        }
+//                    }
                 }
 
                 @Override
                 public void onLosing(Network network, int maxMsToLive) {
                     super.onLosing(network, maxMsToLive);
-                    L.i("NetworkStateReceiver: onLosing([network, maxMsToLive])-> ");
+                    L.i("NetworkStateReceiver: onLosing([network, maxMsToLive]) 正在断开 -> ");
                     //sNetworkWrapper.network = null;
                     //sNetworkWrapper.lostNetwork = network;
                 }
@@ -66,7 +78,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
                 @Override
                 public void onLost(Network network) {
                     super.onLost(network);
-                    L.w("NetworkStateReceiver: onLost([network])-> ");
+                    L.w("NetworkStateReceiver: onLost([network]) 网络断开-> " + network);
                     NetworkUtils.NetworkType oldType;
                     if (sNetworkWrapper.network == null) {
                         oldType = NetworkUtils.NetworkType.NETWORK_NO;
@@ -86,13 +98,13 @@ public class NetworkStateReceiver extends BroadcastReceiver {
                 @Override
                 public void onUnavailable() {
                     super.onUnavailable();
-                    L.i("NetworkStateReceiver: onUnavailable([])-> ");
+                    L.i("NetworkStateReceiver: onUnavailable([]) 无网络 -> ");
                 }
 
                 @Override
                 public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
                     super.onCapabilitiesChanged(network, networkCapabilities);
-                    L.i("NetworkStateReceiver: onCapabilitiesChanged([network, networkCapabilities])-> " + networkCapabilities.describeContents());
+                    L.d("NetworkStateReceiver: onCapabilitiesChanged([network, networkCapabilities])-> " + networkCapabilities.describeContents());
 
                     sNetworkWrapper.networkCapabilities = networkCapabilities;
                     sNetworkWrapper.network = network;

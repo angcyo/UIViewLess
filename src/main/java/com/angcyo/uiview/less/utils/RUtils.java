@@ -16,6 +16,7 @@ import android.location.Criteria;
 import android.location.LocationManager;
 import android.media.*;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
@@ -2808,6 +2809,50 @@ public class RUtils {
             }
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Wifi是否连接
+     */
+    public static boolean isWifiConnect(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        int type = ConnectivityManager.TYPE_DUMMY;
+        if (network != null) {
+            type = network.getType();
+        } else {
+
+        }
+
+        if (type == ConnectivityManager.TYPE_MOBILE) {
+            L.v("手机网络: " + network.isConnected());
+        } else if (type == ConnectivityManager.TYPE_WIFI) {
+            L.v("wifi网络: " + network.isConnected());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 是否是手机网络连接
+     */
+    public static boolean isMobileConnect(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        int type = ConnectivityManager.TYPE_DUMMY;
+        if (network != null) {
+            type = network.getType();
+        } else {
+
+        }
+
+        if (type == ConnectivityManager.TYPE_MOBILE) {
+            L.v("手机网络: " + network.isConnected());
+            return true;
+        } else if (type == ConnectivityManager.TYPE_WIFI) {
+            L.v("wifi网络: " + network.isConnected());
         }
         return false;
     }

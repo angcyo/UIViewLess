@@ -121,7 +121,7 @@ public class AffectUI {
 //                    }
 //
 //                    if (contentView.getParent() == null) {
-//                        builder.parent.addView(contentView, 0);
+//                        build.parent.addView(contentView, 0);
 //                    }
                     break;
                 case CONTENT_AFFECT_GONE:

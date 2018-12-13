@@ -3,6 +3,7 @@ package com.angcyo.uiview.less.recycler.item
 import android.content.Context
 import android.text.TextUtils
 import android.view.View
+import com.angcyo.lib.L
 import com.angcyo.uiview.less.recycler.RBaseViewHolder
 import com.angcyo.uiview.less.recycler.adapter.RExBaseAdapter
 import com.angcyo.uiview.less.utils.RUtils
@@ -164,80 +165,100 @@ open class RExItemAdapter<ItemType, DataType> :
     }
 
     /**
-     * 替换连续相同类型的数据List
+     * 替换连续相同类型的数据List, 如果是0大小的list, 那么会清除之前所有的item
      *
      * 需要保证数据是连续的
      * */
-    fun replaceDataList(dataList: List<DataType>?) {
-        if (RUtils.isListEmpty(dataList)) {
+    fun replaceDataList(
+        dataList: List<DataType>?,
+        itemType: ItemType? = null, //当 deleteAllOnListEmpty 为ture 时, 需要指定
+        deleteAllOnListEmpty: Boolean = true
+    ) {
+        if (dataList == null) {
             return
         }
 
-        dataList?.let { dataList ->
-            var oldStartIndex = -1
-            var oldSize = 0
-            val newSize = dataList.size
+        val isListEmpty = RUtils.isListEmpty(dataList)
 
-            val targetItemType = itemFactory.getItemTypeFromData(dataList.first(), oldStartIndex)
-
-            for (i in 0 until mAllDatas.size) {
-                val dataType = mAllDatas[i]
-                val typeFromData = itemFactory.getItemTypeFromData(dataType, i)
-
-                if (targetItemType is String) {
-                    if (TextUtils.equals(targetItemType, typeFromData as String)) {
-                        if (oldStartIndex == -1) {
-                            oldStartIndex = i
-                        }
-                        oldSize++
-                    }
-                } else {
-                    if (targetItemType == typeFromData) {
-                        if (oldStartIndex == -1) {
-                            oldStartIndex = i
-                        }
-                        oldSize++
-                    }
-                }
+        if (deleteAllOnListEmpty) {
+        } else {
+            if (isListEmpty) {
+                return
             }
-
-            if (oldStartIndex != -1) {
-                //找到了旧的数据
-                if (newSize > oldSize) {
-                    for (i in oldStartIndex until oldStartIndex + oldSize) {
-                        mAllDatas[i] = dataList[i - oldStartIndex]
-                    }
-                    notifyItemRangeChanged(oldStartIndex, oldSize)
-
-                    val lastIndex = oldStartIndex + oldSize
-                    for (i in lastIndex until newSize) {
-                        mAllDatas.add(i, dataList[i - oldStartIndex])
-                    }
-                    notifyItemRangeInserted(lastIndex, newSize - oldSize)
-                } else if (newSize == oldSize) {
-                    for (i in oldStartIndex until oldStartIndex + oldSize) {
-                        mAllDatas[i] = dataList[i - oldStartIndex]
-                    }
-                    notifyItemRangeChanged(oldStartIndex, oldSize)
-                } else {
-                    //newSize < oldSize
-                    for (i in oldStartIndex until oldStartIndex + newSize) {
-                        mAllDatas[i] = dataList[i - oldStartIndex]
-                    }
-                    notifyItemRangeChanged(oldStartIndex, newSize)
-
-                    for (i in oldSize - 1 downTo newSize) {
-                        mAllDatas.removeAt(i)
-                    }
-                    notifyItemRangeRemoved(oldStartIndex + newSize, oldSize - newSize)
-                }
-            } else {
-                //没有旧数据
-                appendAllData(dataList)
-            }
-
         }
 
+        var oldStartIndex = -1
+        var oldSize = 0
+        val newSize = dataList.size
+
+        val targetItemType = if (isListEmpty) {
+            itemType
+        } else {
+            itemFactory.getItemTypeFromData(dataList.first(), oldStartIndex)
+        }
+
+        if (targetItemType == null) {
+            L.e("未知的ItemType:$targetItemType")
+            return
+        }
+
+        for (i in 0 until mAllDatas.size) {
+            val dataType = mAllDatas[i]
+            val typeFromData = itemFactory.getItemTypeFromData(dataType, i)
+
+            if (targetItemType is String) {
+                if (TextUtils.equals(targetItemType, typeFromData as String)) {
+                    if (oldStartIndex == -1) {
+                        oldStartIndex = i
+                    }
+                    oldSize++
+                }
+            } else {
+                if (targetItemType == typeFromData) {
+                    if (oldStartIndex == -1) {
+                        oldStartIndex = i
+                    }
+                    oldSize++
+                }
+            }
+        }
+
+        if (oldStartIndex != -1) {
+            //找到了旧的数据
+            if (newSize > oldSize) {
+                for (i in oldStartIndex until oldStartIndex + oldSize) {
+                    mAllDatas[i] = dataList[i - oldStartIndex]
+                }
+                notifyItemRangeChanged(oldStartIndex, oldSize)
+
+                val lastIndex = oldStartIndex + oldSize
+                for (i in lastIndex until oldStartIndex + newSize) {
+                    mAllDatas.add(i, dataList[i - oldStartIndex])
+                }
+                notifyItemRangeInserted(lastIndex, newSize - oldSize)
+            } else if (newSize == oldSize) {
+                for (i in oldStartIndex until oldStartIndex + oldSize) {
+                    mAllDatas[i] = dataList[i - oldStartIndex]
+                }
+                notifyItemRangeChanged(oldStartIndex, oldSize)
+            } else {
+                //newSize < oldSize
+                for (i in oldStartIndex until oldStartIndex + newSize) {
+                    mAllDatas[i] = dataList[i - oldStartIndex]
+                }
+                if (newSize > 0) {
+                    notifyItemRangeChanged(oldStartIndex, newSize)
+                }
+
+                for (i in oldStartIndex + oldSize - 1 downTo oldStartIndex + newSize) {
+                    mAllDatas.removeAt(i)
+                }
+                notifyItemRangeRemoved(oldStartIndex + newSize, oldSize - newSize)
+            }
+        } else {
+            //没有旧数据
+            appendAllData(dataList)
+        }
 
     }
 

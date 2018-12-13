@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:padding="@dimen/base_xhdpi"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.angcyo.uiview.less.widget.ExEditText
+                android:id="@+id/host_edit"
+                android:hint="服务器Base地址"
+                android:inputType="textWebEmailAddress"
+                android:maxLines="1"
+                style="@style/BaseMainTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <CheckBox
+            android:id="@+id/map_box"
+            style="@style/BaseDarkTextStyle"
+            android:text="打开数据映射"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <com.angcyo.uiview.less.widget.Button
+            android:id="@+id/get_list"
+            android:layout_marginTop="@dimen/base_ldpi"
+            android:text="获取在线映射列表"
+            android:enabled="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <com.angcyo.uiview.less.widget.Button
+            android:layout_marginTop="@dimen/base_ldpi"
+            android:id="@+id/save_button"
+            android:text="保存"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+</LinearLayout>

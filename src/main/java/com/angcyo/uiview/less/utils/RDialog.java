@@ -2,7 +2,6 @@ package com.angcyo.uiview.less.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -13,8 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import com.angcyo.lib.L;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
 
@@ -49,37 +46,19 @@ public class RDialog {
                             String title,
                             String message,
                             String okText) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setCancelable(cancelable);
-        if (!TextUtils.isEmpty(title)) {
-            builder.setTitle(title);
-        }
-        if (!TextUtils.isEmpty(message)) {
-            builder.setMessage(message);
-        }
-
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-
-            }
-        });
-
-        builder.setPositiveButton(okText, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.show();
+        build(context)
+                .setCancelable(cancelable)
+                .setDialogTitle(title)
+                .setDialogMessage(message)
+                .setPositiveButtonText(okText)
+                .showAlertDialog();
     }
 
     //DialogInterface.BUTTON_POSITIVE
 
-    public static Builder builder(Context context) {
+    public static Builder build(Context context) {
         return new Builder(context);
     }
-
 
     public static class Builder {
         Context context;
@@ -172,6 +151,8 @@ public class RDialog {
         DialogInterface.OnClickListener negativeButtonListener;
         DialogInterface.OnClickListener neutralButtonListener;
 
+        DialogInterface.OnDismissListener onDismissListener;
+
         public Builder setPositiveButtonText(CharSequence positiveButtonText) {
             this.positiveButtonText = positiveButtonText;
             return this;
@@ -202,6 +183,11 @@ public class RDialog {
             return this;
         }
 
+        public Builder setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
+            this.onDismissListener = onDismissListener;
+            return this;
+        }
+
         //</editor-fold>
 
         public AlertDialog showAlertDialog() {
@@ -215,12 +201,9 @@ public class RDialog {
                 builder.setMessage(dialogMessage);
             }
 
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    L.i(dialog);
-                }
-            });
+            if (onDismissListener != null) {
+                builder.setOnDismissListener(onDismissListener);
+            }
 
             //积极的按钮 DialogInterface.BUTTON_POSITIVE
             if (!TextUtils.isEmpty(positiveButtonText)) {
@@ -258,6 +241,10 @@ public class RDialog {
                     initListener.onInitDialog(alertDialog, new RBaseViewHolder(decorView));
                 }
             }
+
+            //alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            //alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+            //alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
             return alertDialog;
         }
 

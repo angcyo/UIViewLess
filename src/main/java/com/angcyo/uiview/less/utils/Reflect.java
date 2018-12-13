@@ -294,7 +294,7 @@ public class Reflect {
         spanBuilder.append("):\n");
         logMembers(spanBuilder, object, methods, onlyPublic);
 
-        //return builder.toString();
+        //return build.toString();
         return spanBuilder.create();
     }
 

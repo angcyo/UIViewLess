@@ -13,12 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.angcyo.lib.L;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
@@ -28,6 +23,9 @@ import com.angcyo.uiview.less.recycler.widget.IShowState;
 import com.angcyo.uiview.less.recycler.widget.ItemShowStateLayout;
 import com.angcyo.uiview.less.utils.RUtils;
 import rx.functions.Func2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by angcyo on 16-01-18-018.
@@ -629,6 +627,20 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
      * 重置数据
      */
     public void resetData(List<T> datas) {
+        resetData(null, datas);
+    }
+
+    public void resetData(@Nullable final RecyclerView recyclerView, final List<T> datas) {
+        if (recyclerView != null && recyclerView.isComputingLayout()) {
+            recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    resetData(recyclerView, datas);
+                }
+            });
+            return;
+        }
+
         int oldSize = getListSize(mAllDatas);
         int newSize = getListSize(datas);
 
