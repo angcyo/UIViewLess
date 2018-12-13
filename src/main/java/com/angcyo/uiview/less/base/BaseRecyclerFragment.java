@@ -8,7 +8,9 @@ import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
+import com.angcyo.uiview.less.recycler.widget.ILoadMore;
 import com.angcyo.uiview.less.smart.MaterialHeader;
+import com.angcyo.uiview.less.widget.RSmartRefreshLayout;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -26,9 +28,10 @@ import java.util.List;
  * @author angcyo
  * @date 2018/12/08
  */
-public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implements OnRefreshListener, OnLoadMoreListener, RBaseAdapter.OnAdapterLoadMoreListener {
+public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
+        implements OnRefreshListener, OnLoadMoreListener, RBaseAdapter.OnAdapterLoadMoreListener<T> {
 
-    protected SmartRefreshLayout smartRefreshLayout;
+    protected RSmartRefreshLayout smartRefreshLayout;
 
     protected RRecyclerView recyclerView;
 
@@ -97,7 +100,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
             baseAdapter = onCreateAdapter(new ArrayList<T>());
             recyclerView.setAdapter(baseAdapter);
 
-            if (baseAdapter instanceof RBaseAdapter) {
+            if (baseAdapter != null) {
                 baseAdapter.setOnLoadMoreListener(this);
             }
             //recyclerView.setBackgroundColor(Color.GREEN);
@@ -116,6 +119,24 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
         }
     }
 
+    /**
+     * 重置刷新控件和Adapter状态
+     */
+    public void resetUIStatus() {
+        if (smartRefreshLayout != null) {
+            if (smartRefreshLayout.isEnableRefresh()) {
+                smartRefreshLayout.finishRefresh();
+            }
+            if (smartRefreshLayout.isEnableLoadMore()) {
+                smartRefreshLayout.finishLoadMore();
+            }
+        }
+        if (baseAdapter != null) {
+            if (baseAdapter.isEnableLoadMore()) {
+                baseAdapter.setLoadMoreEnd();
+            }
+        }
+    }
     //<editor-fold desc="事件回调">
 
     /**
@@ -147,7 +168,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
      */
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        refreshLayout.finishRefresh(2_000);
+        onBaseRefresh(refreshLayout);
     }
 
     /**
@@ -155,21 +176,44 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
      */
     @Override
     public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-        refreshLayout.finishLoadMore(2_000);
+        onBaseLoadMore(refreshLayout, null);
     }
 
     /**
      * 适配器, 加载更多事件
      */
-
     @Override
-    public void onAdapterLodeMore(@NonNull final RBaseAdapter adapter) {
-        baseViewHolder.postDelay(2_000, new Runnable() {
-            @Override
-            public void run() {
-                adapter.setNoMore(true);
-            }
-        });
+    public void onAdapterLodeMore(@NonNull final RBaseAdapter<T> adapter) {
+        onBaseLoadMore(null, adapter);
+    }
+
+    /**
+     * 分出来的刷新回调
+     */
+    public void onBaseRefresh(@Nullable RefreshLayout refreshLayout) {
+        if (refreshLayout != null) {
+            refreshLayout.finishRefresh(2_000);
+        }
+    }
+
+    /**
+     * 分出来的加载更多回调
+     */
+    public void onBaseLoadMore(@Nullable RefreshLayout refreshLayout,
+                               @Nullable final RBaseAdapter<T> adapter) {
+
+        if (refreshLayout != null) {
+            refreshLayout.finishLoadMore(2_000);
+        }
+
+        if (adapter != null) {
+            baseViewHolder.postDelay(2_000, new Runnable() {
+                @Override
+                public void run() {
+                    adapter.setNoMore(true);
+                }
+            });
+        }
     }
 
     //</editor-fold>

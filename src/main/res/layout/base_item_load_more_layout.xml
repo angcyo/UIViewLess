@@ -5,8 +5,7 @@
         android:id="@+id/base_load_more_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/base_chat_bg_color"
-        android:padding="@dimen/base_xhdpi">
+        android:background="@color/base_chat_bg_color">
 
     <!--正在加载更多-->
     <LinearLayout
@@ -15,9 +14,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center_vertical"
+            android:minHeight="@dimen/base_item_size"
             android:orientation="horizontal"
             android:tag="load_view"
-            android:visibility="visible"
+            android:visibility="gone"
             tools:visibility="gone">
 
         <com.angcyo.uiview.less.widget.LoadingImageView
@@ -36,17 +36,19 @@
     </LinearLayout>
 
     <!--我是有底线的-->
-    <RelativeLayout
+    <FrameLayout
             android:id="@+id/base_no_more_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="@dimen/base_item_size"
             android:layout_gravity="center"
             android:tag="no_more_view"
-            android:visibility="invisible"
+            android:visibility="gone"
             tools:visibility="visible">
 
         <View
                 android:layout_width="260dp"
+                android:layout_gravity="center"
                 android:layout_height="2dp"
                 android:layout_centerInParent="true"
                 android:background="#FFF"/>
@@ -55,7 +57,7 @@
                 android:id="@+id/base_no_more_tip_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_gravity="center"
                 android:background="@color/base_chat_bg_color"
                 android:paddingLeft="@dimen/base_xhdpi"
                 android:paddingRight="@dimen/base_xhdpi"
@@ -63,26 +65,28 @@
                 android:textColor="@color/base_text_color_dark"
                 android:textSize="@dimen/default_text_size"/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
     <!--网络异常-->
-    <RelativeLayout
+    <FrameLayout
             android:id="@+id/base_error_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="@dimen/base_item_size"
             android:layout_gravity="center"
             android:tag="error_view"
-            android:visibility="invisible">
+            tools:visibility="gone"
+            android:visibility="gone">
 
         <TextView
                 android:id="@+id/base_error_tip_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="网络异常, 请稍后重试"
+                android:layout_gravity="center"
+                android:text="加载失败, 点击重试"
                 android:textColor="@color/base_text_color_dark"
                 android:textSize="@dimen/default_text_size"/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
 </com.angcyo.uiview.less.recycler.widget.ItemLoadMoreLayout>

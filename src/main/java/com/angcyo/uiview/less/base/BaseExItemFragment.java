@@ -24,7 +24,7 @@ import java.util.List;
 public abstract class BaseExItemFragment extends BaseRecyclerFragment<IExStringDataType> {
     @Override
     protected RBaseAdapter<IExStringDataType> onCreateAdapter(@Nullable List<IExStringDataType> datas) {
-        RExItemAdapter<String, IExStringDataType> adapter = new RExItemAdapter<>(mAttachContext,
+        RExItemAdapter<String, IExStringDataType> adapter = new RExItemAdapter<String, IExStringDataType>(mAttachContext,
                 new RExItemFactory<String, IExStringDataType>() {
 
                     @Override
@@ -51,7 +51,26 @@ public abstract class BaseExItemFragment extends BaseRecyclerFragment<IExStringD
                         super.onCreateItemHolder(itemHolder);
                         BaseExItemFragment.this.onCreateItemHolder(itemHolder);
                     }
-                });
+                }) {
+
+            @Override
+            public void loadMoreEnd(List datas, int currentPage, int pageSize) {
+                super.loadMoreEnd(datas, currentPage, pageSize);
+                //BaseExItemFragment.this.loadMoreEnd(datas, currentPage, pageSize);
+            }
+
+            @Override
+            public void onFirstPageSetData(List<IExStringDataType> datas) {
+                //super.onFirstPageSetData(datas);
+                BaseExItemFragment.this.onFirstPageSetData(datas);
+            }
+
+            @Override
+            public void onOtherPageSetData(List<IExStringDataType> datas) {
+                //super.onOtherPageSetData(datas);
+                BaseExItemFragment.this.onOtherPageSetData(datas);
+            }
+        };
 
         //必须
         adapter.initItemFactory();
@@ -63,6 +82,21 @@ public abstract class BaseExItemFragment extends BaseRecyclerFragment<IExStringD
      */
     public void onCreateItemHolder(@NonNull RExItemHolder<IExStringDataType> itemHolder) {
 
+    }
+
+//    public void loadMoreEnd(List<IExStringDataType> datas, int currentPage, int pageSize) {
+//    }
+
+    public void onFirstPageSetData(List<IExStringDataType> datas) {
+        if (baseAdapter != null) {
+            baseAdapter.resetData(datas);
+        }
+    }
+
+    public void onOtherPageSetData(List<IExStringDataType> datas) {
+        if (baseAdapter != null) {
+            baseAdapter.appendData(datas);
+        }
     }
 
     /**

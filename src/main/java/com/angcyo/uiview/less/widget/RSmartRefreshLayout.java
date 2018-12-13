@@ -70,4 +70,12 @@ public class RSmartRefreshLayout extends SmartRefreshLayout {
         //setRefreshHeader(new ClassicsHeader(mAttachContext));
         setRefreshFooter(new ClassicsFooter(context));
     }
+
+    public boolean isEnableLoadMore() {
+        return mEnableLoadMore;
+    }
+
+    public boolean isEnableRefresh() {
+        return mEnableRefresh;
+    }
 }

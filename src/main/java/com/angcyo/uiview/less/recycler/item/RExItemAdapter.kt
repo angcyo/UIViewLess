@@ -7,6 +7,7 @@ import com.angcyo.lib.L
 import com.angcyo.uiview.less.recycler.RBaseViewHolder
 import com.angcyo.uiview.less.recycler.adapter.RExBaseAdapter
 import com.angcyo.uiview.less.utils.RUtils
+import java.util.ArrayList
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -259,7 +260,9 @@ open class RExItemAdapter<ItemType, DataType> :
             //没有旧数据
             appendAllData(dataList)
         }
-
     }
 
+    override fun loadMoreEnd(datas: List<DataType>?, currentPage: Int, pageSize: Int) {
+        super.loadMoreEnd(datas, currentPage, pageSize)
+    }
 }

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import com.angcyo.http.Rx;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
@@ -22,7 +23,10 @@ import com.angcyo.uiview.less.recycler.widget.ILoadMore;
 import com.angcyo.uiview.less.recycler.widget.IShowState;
 import com.angcyo.uiview.less.recycler.widget.ItemShowStateLayout;
 import com.angcyo.uiview.less.utils.RUtils;
+import rx.Observer;
+import rx.functions.Action1;
 import rx.functions.Func2;
+import rx.observables.SyncOnSubscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +58,7 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
     protected int mEnableLoadMoreWithLastIndex = -1;
 
     protected ILoadMore mLoadMoreView;
-    protected OnAdapterLoadMoreListener mLoadMoreListener;
+    protected OnAdapterLoadMoreListener<T> mLoadMoreListener;
     /**
      * 是否激活布局状态显示, 可以在Item中显示,空布局, 无网络布局, 加载中布局,和错误布局
      */
@@ -109,7 +113,7 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
         }
     }
 
-    public RBaseAdapter setOnLoadMoreListener(OnAdapterLoadMoreListener loadMoreListener) {
+    public RBaseAdapter<T> setOnLoadMoreListener(OnAdapterLoadMoreListener<T> loadMoreListener) {
         mLoadMoreListener = loadMoreListener;
         return this;
     }
@@ -167,12 +171,6 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
     @NonNull
     protected RBaseViewHolder createBaseViewHolder(int viewType, View itemView) {
         return new RBaseViewHolder(itemView, viewType);
-    }
-
-    @Override
-    final public void onBindViewHolder(RBaseViewHolder holder, int position, List<Object> payloads) {
-        super.onBindViewHolder(holder, position, payloads);
-        //L.e("call: onBindViewHolder([holder, position, payloads])-> " + position);
     }
 
     @Override
@@ -277,6 +275,12 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
         }
     }
 
+    @Override
+    final public void onBindViewHolder(RBaseViewHolder holder, int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+        //L.e("call: onBindViewHolder([holder, position, payloads])-> " + position);
+    }
+
     /**
      * 创建状态显示切换布局
      * View 需要实现 IShowState 接口
@@ -354,6 +358,14 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
 //            holder.tv(R.id.base_no_more_tip_view).setTextSize(12f);
 //            holder.tv(R.id.base_no_more_tip_view).setText("到底啦");
         }
+
+        //加载失败, 点击重试
+        holder.click(R.id.base_error_layout, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLoadMoreEnd();
+            }
+        });
     }
 
     private void updateLoadMoreView() {
@@ -410,6 +422,10 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
         if (refresh) {
             updateLoadMoreView();//不需要及时刷新
         }
+    }
+
+    public int getLoadState() {
+        return mLoadState;
     }
 
     public boolean isLast(int position) {
@@ -684,30 +700,30 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
             return;
         }
 
-//        Rx.create(new SyncOnSubscribe<Integer, DiffUtil.DiffResult>() {
-//            @Override
-//            protected Integer generateState() {
-//                return 1;
-//            }
-//
-//            @Override
-//            protected Integer next(Integer state, Observer<? super DiffUtil.DiffResult> observer) {
-//                if (state > 0) {
-//                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new RDiffCallback<>(mAllDatas, datas, diffCallback));
-//                    observer.onNext(diffResult);
-//                } else {
-//                    observer.onCompleted();
-//                }
-//                return 0;
-//            }
-//        }).compose(Rx.<DiffUtil.DiffResult>transformer())
-//                .subscribe(new Action1<DiffUtil.DiffResult>() {
-//                    @Override
-//                    public void call(DiffUtil.DiffResult diffResult) {
-//                        RBaseAdapter.this.mAllDatas = datas;
-//                        diffResult.dispatchUpdatesTo(RBaseAdapter.this);
-//                    }
-//                });
+        Rx.create(new SyncOnSubscribe<Integer, DiffUtil.DiffResult>() {
+            @Override
+            protected Integer generateState() {
+                return 1;
+            }
+
+            @Override
+            protected Integer next(Integer state, Observer<? super DiffUtil.DiffResult> observer) {
+                if (state > 0) {
+                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new RDiffCallback<>(mAllDatas, datas, diffCallback));
+                    observer.onNext(diffResult);
+                } else {
+                    observer.onCompleted();
+                }
+                return 0;
+            }
+        }).compose(Rx.<DiffUtil.DiffResult>transformer())
+                .subscribe(new Action1<DiffUtil.DiffResult>() {
+                    @Override
+                    public void call(DiffUtil.DiffResult diffResult) {
+                        RBaseAdapter.this.mAllDatas = datas;
+                        diffResult.dispatchUpdatesTo(RBaseAdapter.this);
+                    }
+                });
     }
 
     /**
@@ -760,21 +776,21 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
         if (mIShowState == null ||
                 oldState == IShowState.NORMAL ||
                 showState == IShowState.NORMAL) {
-//            if (mIShowState != null &&
-//                    mIShowState instanceof ItemShowStateLayout) {
-//                if (animToShowState) {
-//                    ((ItemShowStateLayout) mIShowState).animToHide(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            notifyDataSetChanged();
-//                        }
-//                    });
-//                } else {
-//                    notifyDataSetChanged();
-//                }
-//            } else {
-//                notifyDataSetChanged();
-//            }
+            if (mIShowState != null &&
+                    mIShowState instanceof ItemShowStateLayout) {
+                if (animToShowState) {
+                    ((ItemShowStateLayout) mIShowState).animToHide(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyDataSetChanged();
+                        }
+                    });
+                } else {
+                    notifyDataSetChanged();
+                }
+            } else {
+                notifyDataSetChanged();
+            }
         } else {
             mIShowState.setShowState(showState);
         }
@@ -966,8 +982,58 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
         notifyItemRangeChanged(0, getAllDataCount());
     }
 
-    public interface OnAdapterLoadMoreListener {
-        void onAdapterLodeMore(@NonNull RBaseAdapter baseAdapter);
+    /**
+     * 加载更多结束的处理
+     */
+    public void loadMoreEnd(List<T> datas /*当前返回的数据列表*/,
+                            int currentPage /*当前第几页*/,
+                            int pageSize /*每页加载最多多少数据*/) {
+        int listSize = RUtils.listSize(datas);
+        if (currentPage <= 1) {
+            //首页
+            if (listSize < pageSize) {
+                //数据不够, 关闭加载更多功能
+                setEnableLoadMore(false);
+                onFirstPageSetData(datas);
+            } else {
+                onFirstPageSetData(datas);
+                setEnableLoadMore(true);
+            }
+        } else {
+            //其他页
+            onOtherPageSetData(datas);
+
+            if (listSize < pageSize) {
+                //数据不够, 关闭加载更多功能
+                setNoMore(listSize == 0);
+            } else {
+                setLoadMoreEnd();
+            }
+        }
+    }
+
+    /**
+     * 加载更多失败
+     */
+    public void loadMoreError() {
+        if (isEnableLoadMore()) {
+            setLoadError();
+        }
+    }
+
+    /**
+     * 兼容ExItemAdatper
+     */
+    public void onFirstPageSetData(List<T> datas) {
+        resetData(datas);
+    }
+
+    public void onOtherPageSetData(List<T> datas) {
+        appendData(datas);
+    }
+
+    public interface OnAdapterLoadMoreListener<T> {
+        void onAdapterLodeMore(@NonNull RBaseAdapter<T> baseAdapter);
     }
 
     public interface OnLocalRefresh {
