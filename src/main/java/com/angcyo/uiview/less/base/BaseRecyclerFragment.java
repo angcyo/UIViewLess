@@ -74,7 +74,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment implemen
 
             //是否在刷新完成时滚动列表显示新的内容 1.0.5,
             smartRefreshLayout.setEnableScrollContentWhenRefreshed(true);
-            //是否在加载完成时滚动列表显示新的内容
+            // √ 是否在加载完成时滚动列表显示新的内容, RecyclerView会自动滚动 Footer的高度
             smartRefreshLayout.setEnableScrollContentWhenLoaded(true);
             // √ 是否下拉Header的时候向下平移列表或者内容, 内容是否跟手
             smartRefreshLayout.setEnableHeaderTranslationContent(true);
