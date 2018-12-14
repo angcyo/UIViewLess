@@ -239,6 +239,14 @@ public class AffectUI {
         return have;
     }
 
+    public Object getExtraObj() {
+        return extraObj;
+    }
+
+    public void setExtraObj(Object extraObj) {
+        this.extraObj = extraObj;
+    }
+
     public static class Builder {
         /**
          * 容器

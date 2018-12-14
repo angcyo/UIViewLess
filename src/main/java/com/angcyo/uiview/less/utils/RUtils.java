@@ -1303,7 +1303,14 @@ public class RUtils {
         return result;
     }
 
+    public static String formatFileSize(long size) {
+        return formatFileSize(RApplication.getApp(), size);
+    }
+
     public static String formatFileSize(Context context, long size) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+            return FileUtils.formatFileSize(size);
+        }
         return Formatter.formatFileSize(context, size);
     }
 

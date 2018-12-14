@@ -80,8 +80,8 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         contentWrapperLayout = baseViewHolder.v(R.id.base_content_wrapper_layout);
         titleBarLayout = baseViewHolder.v(R.id.base_title_bar_layout);
 
-        initBaseTitleLayout(arguments);
         initContentLayout(arguments);
+        initBaseTitleLayout(arguments);
         initLeftControlLayout();
         initRightControlLayout();
     }
@@ -181,10 +181,14 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
      * 设置显示的标题
      */
     public void setTitleString(@NonNull String title) {
-        TextView textView = baseViewHolder.tv(R.id.base_title_view);
-        if (textView != null) {
-            textView.setText(title);
-        }
+        titleControl().selector(R.id.base_title_view).setText(title);
+    }
+
+    /**
+     * 隐藏标题视图
+     */
+    public void hideTitleView() {
+        titleControl().selector(R.id.base_title_view).gone();
     }
 
     /**
@@ -337,8 +341,8 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     }
 
     @Override
-    public void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView) {
-
+    public void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect,
+                               @Nullable View fromView, @NonNull View toView) {
     }
 
     @Override

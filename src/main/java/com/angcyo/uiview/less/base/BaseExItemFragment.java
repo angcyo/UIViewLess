@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.view.View;
-import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.RExItemDecoration;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
+import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.item.*;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 

@@ -400,19 +400,27 @@ public class FragmentHelper {
         }
 
         public Builder setArgs(@Nullable String key, @Nullable String value) {
-            if (args == null) {
-                args = new Bundle();
-            }
+            ensureArgs();
             args.putString(key, value);
             return this;
         }
 
+        public Builder setArgs(@Nullable String key, @NonNull Boolean value) {
+            ensureArgs();
+            args.putBoolean(key, value);
+            return this;
+        }
+
         public Builder setArgs(@Nullable String key, @Nullable Parcelable value) {
+            ensureArgs();
+            args.putParcelable(key, value);
+            return this;
+        }
+
+        private void ensureArgs() {
             if (args == null) {
                 args = new Bundle();
             }
-            args.putParcelable(key, value);
-            return this;
         }
 
         public Builder enterAnim(@AnimRes int enterAnim) {

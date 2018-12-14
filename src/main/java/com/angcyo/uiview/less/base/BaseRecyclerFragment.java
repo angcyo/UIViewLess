@@ -3,12 +3,13 @@ package com.angcyo.uiview.less.base;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.TextView;
 import com.angcyo.uiview.less.R;
-import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
+import com.angcyo.uiview.less.iview.AffectUI;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
-import com.angcyo.uiview.less.recycler.widget.ILoadMore;
+import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.smart.MaterialHeader;
 import com.angcyo.uiview.less.widget.RSmartRefreshLayout;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -120,6 +121,23 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
     }
 
     /**
+     * 启用纯下拉刷新效果
+     */
+    public void enableRefreshAffect() {
+        if (smartRefreshLayout != null) {
+            //激活越界滚动
+            smartRefreshLayout.setEnableOverScrollDrag(true);
+            //纯滚动模式, 需要激活越界滚动才有效
+            smartRefreshLayout.setEnablePureScrollMode(true);
+
+            smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(true);
+            smartRefreshLayout.setEnableLoadMore(true);
+            smartRefreshLayout.setEnableFooterTranslationContent(true);
+            smartRefreshLayout.setEnableHeaderTranslationContent(true);
+        }
+    }
+
+    /**
      * 重置刷新控件和Adapter状态
      */
     public void resetUIStatus() {
@@ -136,6 +154,24 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
                 baseAdapter.setLoadMoreEnd();
             }
         }
+    }
+
+    /**
+     * 如果没有数据展示, 才切换到错误情感图
+     */
+    public void switchToError() {
+        if (baseAdapter != null) {
+            if (baseAdapter.getAllDataCount() <= 0) {
+                switchAffectUI(AffectUI.AFFECT_ERROR);
+            }
+        }
+    }
+
+    /**
+     * 显示内容
+     */
+    public void switchToContent() {
+        switchAffectUI(AffectUI.AFFECT_CONTENT);
     }
     //<editor-fold desc="事件回调">
 
@@ -161,6 +197,39 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
                 super.onLoadMore();
             }
         };
+    }
+
+    @Override
+    public void onAffectChange(@NonNull AffectUI affectUI, int fromAffect, int toAffect, @Nullable View fromView, @NonNull View toView) {
+        super.onAffectChange(affectUI, fromAffect, toAffect, fromView, toView);
+        if (toAffect == AffectUI.AFFECT_ERROR) {
+            //显示额外的错误信息
+            Object extraObj = affectUI.getExtraObj();
+            if (extraObj != null) {
+                if (extraObj instanceof String) {
+                    baseViewHolder.tv(R.id.base_error_tip_view).setText((CharSequence) extraObj);
+                } else if (extraObj instanceof Number) {
+
+                } else {
+                    baseViewHolder.tv(R.id.base_error_tip_view).setText(extraObj.toString());
+                }
+            }
+
+            baseViewHolder.click(R.id.base_retry_button, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchAffectUI(AffectUI.AFFECT_LOADING);
+                }
+            });
+        } else if (toAffect == AffectUI.AFFECT_LOADING) {
+            //切换到加载情感图, 调用刷新数据接口
+            baseViewHolder.post(new Runnable() {
+                @Override
+                public void run() {
+                    onBaseRefresh(null);
+                }
+            });
+        }
     }
 
     /**

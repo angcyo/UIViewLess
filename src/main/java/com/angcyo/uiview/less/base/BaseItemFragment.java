@@ -8,7 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.View;
-import com.angcyo.uiview.less.recycler.*;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.recycler.RExItemDecoration;
+import com.angcyo.uiview.less.recycler.RRecyclerView;
 import com.angcyo.uiview.less.recycler.adapter.RBaseAdapter;
 import com.angcyo.uiview.less.recycler.adapter.RModelAdapter;
 import com.angcyo.uiview.less.recycler.item.RItemAdapter;
@@ -35,17 +37,7 @@ public abstract class BaseItemFragment extends BaseRecyclerFragment<SingleItem> 
     @Override
     public void initRefreshRecyclerView(@Nullable SmartRefreshLayout smartRefreshLayout, @Nullable RRecyclerView recyclerView) {
         super.initRefreshRecyclerView(smartRefreshLayout, recyclerView);
-        if (smartRefreshLayout != null) {
-            //激活越界滚动
-            smartRefreshLayout.setEnableOverScrollDrag(true);
-            //纯滚动模式, 需要激活越界滚动才有效
-            smartRefreshLayout.setEnablePureScrollMode(true);
-
-            smartRefreshLayout.setEnableLoadMoreWhenContentNotFull(true);
-            smartRefreshLayout.setEnableLoadMore(true);
-            smartRefreshLayout.setEnableFooterTranslationContent(true);
-            smartRefreshLayout.setEnableHeaderTranslationContent(true);
-        }
+        enableRefreshAffect();
         if (recyclerView != null) {
             recyclerView.setHasFixedSize(true);
             recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);

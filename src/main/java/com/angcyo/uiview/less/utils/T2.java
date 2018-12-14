@@ -97,6 +97,8 @@ public class T2 {
                         imageView.setImageResource(R.drawable.base_failed_red);
                         rootLayout.setBackgroundResource(R.drawable.base_toast_shape_w);
                         break;
+                    default:
+                        break;
                 }
 
                 if (SHOW_TOAST_BG_COLOR) {
