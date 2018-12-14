@@ -12,11 +12,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.*;
 import android.os.Process;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.View;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.utils.RDialog;
 import com.angcyo.uiview.less.utils.RUtils;
 import com.angcyo.uiview.less.utils.Root;
+import com.angcyo.uiview.less.utils.utilcode.utils.ClipboardUtils;
+import com.angcyo.uiview.less.utils.utilcode.utils.FileUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.*;
@@ -45,6 +52,7 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
     public static final String KEY_IS_CRASH = "is_crash";
     public static final String KEY_CRASH_FILE = "crash_file";
     public static final String KEY_CRASH_MESSAGE = "crash_message";
+    public static final String KEY_CRASH_TIME = "crash_time";
     private static final String DEFAULT_LOG_DIR = "crash";
     // log文件的后缀名
     public static final String FILE_NAME_SUFFIX = ".log";
@@ -500,56 +508,73 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
         return "";
     }
 
-//    public static void checkCrash(final ILayout iLayout) {
-//        if (isLastCrash(true)) {
-//            ClipboardUtils.copyText(FileUtils.readFile2String(Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-"), "utf8"));
-//
-//            //异常退出了
-//            UIDialog.build()
-//                    .setDialogTitle("发生了什么啊^_^")
-//                    .setDialogContent(Hawk.get(RCrashHandler.KEY_CRASH_MESSAGE, "-"))
-//                    .setOkText("粘贴给作者?")
-//                    .setCancelText("加入QQ群")
-//                    .setContentListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            RUtils.openFile(iLayout.getLayout().getContext(),
-//                                    new File(Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-")));
-//                        }
-//                    })
-//                    .setCancelListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            RUtils.joinQQGroup(iLayout.getLayout().getContext(), QQ_GROUP_KEY);
-//                        }
-//                    })
-//                    .setOkListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            RUtils.chatQQ(iLayout.getLayout().getContext(), QQ);
-//                        }
-//                    })
-//                    .setViewConfig(new UIViewConfig() {
-//                        @Override
-//                        public void initOnShowContentLayout(UIIViewImpl uiview, RBaseViewHolder viewHolder) {
-//                            super.initOnShowContentLayout(uiview, viewHolder);
-//                            viewHolder.text(R.id.base_dialog_ex_view, "分享文件", new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    try {
-//                                        RUtils.shareFile(((Activity) iLayout.getLayout().getContext()),
-//                                                Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-"));
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                }
-//                            });
-//
-//                        }
-//                    })
-//                    .showDialog(iLayout);
-//        }
-//    }
+    /**
+     * 检查最后一次是否有异常未处理
+     */
+    public static void checkCrash(final Context context) {
+        if (isLastCrash(true)) {
+            ClipboardUtils.copyText(FileUtils.readFile2String(Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-"), "utf8"));
+
+            //异常退出了
+            RDialog.build(context)
+                    .setContentLayoutId(R.layout.base_crash_dialog_layout)
+                    .setCanceledOnTouchOutside(false)
+                    .setInitListener(new RDialog.OnInitListener() {
+                        @Override
+                        public void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
+                            super.onInitDialog(dialog, dialogViewHolder);
+                            dialogViewHolder.tv(R.id.base_dialog_title_view).setText("发生了什么啊^_^");
+                            dialogViewHolder.visible(R.id.base_dialog_top_content_view, true)
+                                    .tv(R.id.base_dialog_top_content_view)
+                                    .setText(Hawk.get(RCrashHandler.KEY_CRASH_TIME, "-"));
+
+                            dialogViewHolder.text(R.id.base_dialog_content_view,
+                                    Hawk.get(RCrashHandler.KEY_CRASH_MESSAGE, "-"),
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            RUtils.openFile(context,
+                                                    new File(Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-")));
+                                        }
+                                    });
+
+                            dialogViewHolder.text(R.id.base_dialog_ok_view,
+                                    "粘贴给作者?",
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            RUtils.chatQQ(context, QQ);
+                                        }
+                                    });
+
+                            dialogViewHolder.text(R.id.base_dialog_cancel_view,
+                                    "加入QQ群",
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            RUtils.joinQQGroup(context, QQ_GROUP_KEY);
+                                        }
+                                    });
+
+                            dialogViewHolder.text(R.id.base_dialog_ex_view,
+                                    "分享文件",
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            try {
+                                                RUtils.shareFile(context,
+                                                        Hawk.get(RCrashHandler.KEY_CRASH_FILE, "-"));
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+
+                        }
+                    })
+                    .showAlertDialog();
+        }
+    }
 
 
     public static void resetStartActivity(Context context, Throwable ex) {
@@ -643,9 +668,14 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
         String dataTime = getDataTime("yyyy-MM-dd_HH-mm-ss-SSS");
         File file = new File(saveFolder, dataTime + FILE_NAME_SUFFIX);
 
-        Hawk.put(KEY_IS_CRASH, true);//异常退出
-        Hawk.put(KEY_CRASH_FILE, file.getAbsolutePath());//异常文件
+        //异常退出
+        Hawk.put(KEY_IS_CRASH, true);
+        //异常文件
+        Hawk.put(KEY_CRASH_FILE, file.getAbsolutePath());
+        //异常概述
         Hawk.put(KEY_CRASH_MESSAGE, ex.getMessage());
+        //异常时间
+        Hawk.put(KEY_CRASH_TIME, dataTime);
 
         PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
         // 导出发生异常的时间
