@@ -4,9 +4,11 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.graphics.Canvas
 import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import com.angcyo.uiview.less.R
 import com.angcyo.uiview.less.resources.RAnimListener
@@ -26,9 +28,9 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
     companion object {
         //无样式
         const val INDICATOR_TYPE_NONE = 0
-        //底部一根线
+        //底部一根线, 会在childView的前面绘制
         const val INDICATOR_TYPE_BOTTOM_LINE = 1
-        //圆角矩形块状
+        //圆角矩形块状, 会在childView的后面绘制
         const val INDICATOR_TYPE_ROUND_RECT_BLOCK = 2
     }
 
@@ -58,6 +60,13 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
 
     /**激活动画的差值器*/
     var enableOvershoot = true
+
+
+    /**使用Drawable的大小, 设置r_indicator_width, r_indicator_height*/
+    var useIndicatorDrawableSize = false
+
+    /**使用tab Item 中的哪一个child index, 作为定位的靶子, -1使用顶级item*/
+    var useChildViewIndex = -1
 
     init {
         initAttribute(attributeSet)
@@ -89,7 +98,19 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
         enableOvershoot =
                 typedArray.getBoolean(R.styleable.RTabIndicator_r_indicator_enable_anim_overshoot, enableOvershoot)
 
+        useIndicatorDrawableSize =
+                typedArray.getBoolean(R.styleable.RTabIndicator_r_use_indicator_drawable_size, useIndicatorDrawableSize)
+
+        useChildViewIndex = typedArray.getInt(R.styleable.RTabLayout_r_use_child_view_index, useChildViewIndex)
+
         indicatorDrawable = typedArray.getDrawable(R.styleable.RTabIndicator_r_indicator_drawable)
+        if (useIndicatorDrawableSize) {
+            indicatorDrawable?.let {
+                indicatorWidth = it.intrinsicWidth
+                indicatorHeight = it.intrinsicHeight
+            }
+        }
+
         typedArray.recycle()
     }
 
@@ -177,9 +198,18 @@ class RTabIndicator(view: View, attributeSet: AttributeSet? = null) : BaseDraw(v
 
     private fun getChildCenter(index: Int): Int {
         if (index in 0..(childCount - 1)) {
-            val curChildView = getChildAt(index)
+            var curChildView = getChildAt(index)
+
+            var pLeft = 0
+            if (useChildViewIndex >= 0) {
+                if (curChildView is ViewGroup) {
+                    pLeft = curChildView.left
+                    curChildView = curChildView.getChildAt(useChildViewIndex)
+                }
+            }
+
             //child横向中心x坐标
-            return curChildView.left + curChildView.paddingLeft +
+            return pLeft + curChildView.left + curChildView.paddingLeft +
                     (curChildView.measuredWidth - curChildView.paddingLeft - curChildView.paddingRight) / 2
         }
         //返回上一次结束的x坐标

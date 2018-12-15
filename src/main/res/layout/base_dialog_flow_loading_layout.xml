@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.angcyo.uiview.less.widget.group.RLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/base_progress_root_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -8,7 +10,10 @@
         android:background="@drawable/base_dark2_solid_round_shape"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="@dimen/base_hdpi">
+        app:r_width_height_ratio="wh"
+        tools:background="@color/base_dark_red"
+        android:padding="@dimen/base_hdpi"
+        tools:ignore="MissingDefaultResource">
 
     <!--<ImageView-->
     <!--android:id="@+id/base_load_image_view"-->
@@ -33,4 +38,4 @@
             android:layout_height="4dp"
             android:tag="60"/>
 
-</LinearLayout>
+</com.angcyo.uiview.less.widget.group.RLinearLayout>

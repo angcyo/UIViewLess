@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.BuildConfig;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.base.IFragment;
 
 import java.lang.reflect.Field;
@@ -345,6 +346,10 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder showFragment(Class<? extends Fragment> showFragment) {
+            return showFragment(RApplication.getApp(), showFragment);
+        }
+
         public Builder showFragment(Context context, Class<? extends Fragment> showFragment) {
             this.showFragment = Fragment.instantiate(context, showFragment.getName());
             //关闭从恢复模式获取Fragment
@@ -399,19 +404,19 @@ public class FragmentHelper {
             return this;
         }
 
-        public Builder setArgs(@Nullable String key, @Nullable String value) {
+        public Builder setArgs(@NonNull String key, @Nullable String value) {
             ensureArgs();
             args.putString(key, value);
             return this;
         }
 
-        public Builder setArgs(@Nullable String key, @NonNull Boolean value) {
+        public Builder setArgs(@NonNull String key, @NonNull Boolean value) {
             ensureArgs();
             args.putBoolean(key, value);
             return this;
         }
 
-        public Builder setArgs(@Nullable String key, @Nullable Parcelable value) {
+        public Builder setArgs(@NonNull String key, @Nullable Parcelable value) {
             ensureArgs();
             args.putParcelable(key, value);
             return this;

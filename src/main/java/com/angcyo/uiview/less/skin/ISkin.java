@@ -20,14 +20,29 @@ public interface ISkin {
      */
     String skinName();
 
+    /**
+     * 主题颜色
+     */
     int getThemeColor();
 
+    /**
+     * 副色
+     */
     int getThemeSubColor();
 
+    /**
+     * 暗色
+     */
     int getThemeDarkColor();
 
+    /**
+     * 禁用的颜色
+     */
     int getThemeDisableColor();
 
+    /**
+     * 主题透明颜色
+     */
     int getThemeTranColor(int alpha);
 
     /**

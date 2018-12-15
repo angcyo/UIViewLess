@@ -28,6 +28,10 @@
     <!--<attr name="r_border_width" format="dimension" />-->
     <attr name="r_border_round_size" format="dimension"/>
 
+    <!--使用Drawable的大小, 设置r_indicator_width, r_indicator_height-->
+    <attr name="r_use_indicator_drawable_size" format="boolean"/>
+    <attr name="r_use_child_view_index" format="integer"/>
+
     <declare-styleable name="RDrawBorder">
         <attr name="r_border_show"/>
         <attr name="r_border_width"/>
@@ -39,6 +43,8 @@
     <declare-styleable name="RTabIndicator">
         <attr name="r_indicator_type"/>
         <attr name="r_indicator_drawable"/>
+        <attr name="r_use_child_view_index"/>
+        <attr name="r_use_indicator_drawable_size"/>
         <attr name="r_indicator_color"/>
         <attr name="r_indicator_width"/>
         <attr name="r_indicator_height"/>
@@ -56,6 +62,8 @@
         <attr name="r_item_equ_width"/>
         <attr name="r_current_item" format="integer"/>
 
+        <attr name="r_use_child_view_index"/>
+        <attr name="r_use_indicator_drawable_size"/>
         <attr name="r_indicator_drawable"/>
         <attr name="r_indicator_type"/>
         <attr name="r_indicator_color"/>

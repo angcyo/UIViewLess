@@ -641,3 +641,17 @@ public fun EditText.setFilter(filter: InputFilter) {
     newFilters[0] = filter
     filters = newFilters
 }
+
+/**
+ * 竖直方向上的padding
+ */
+public fun View.getPaddingVertical(): Int {
+    return paddingTop + paddingBottom
+}
+
+/**
+ * 水平方向上的padding
+ */
+public fun View.getPaddingHorizontal(): Int {
+    return paddingLeft + paddingRight
+}

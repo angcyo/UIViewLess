@@ -62,10 +62,16 @@ public abstract class RPagerAdapter extends PagerAdapter implements ViewPager.On
         return view;
     }
 
+    /**
+     * 重写获取对应的布局
+     */
     protected int getLayoutId(int position, int itemType) {
         return -1;
     }
 
+    /**
+     * 也可以用代码创建item布局
+     */
     @Deprecated
     protected View createView(Context context, int position) {
         return null;
@@ -75,6 +81,9 @@ public abstract class RPagerAdapter extends PagerAdapter implements ViewPager.On
         return createView(context, position);
     }
 
+    /**
+     * 重写初始化布局
+     */
     protected void initItemView(@NonNull View rootView, int position, int itemType) {
 
     }
@@ -88,6 +97,9 @@ public abstract class RPagerAdapter extends PagerAdapter implements ViewPager.On
         mViewCache.put(position, new WeakReference<>((View) object));
     }
 
+    /**
+     * 重写销毁布局回调
+     */
     protected void onItemDestroy(@NonNull View rootView, int itemType) {
 
     }

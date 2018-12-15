@@ -418,7 +418,7 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         return true
     }
 
-    fun maxScrollX() = childMaxWidth - measuredWidth + paddingLeft + paddingRight
+    fun maxScrollX() = Math.max(childMaxWidth + paddingLeft + paddingRight - measuredWidth, 0)
 
     override fun scrollTo(x: Int, y: Int) {
         //L.e("call: scrollTo -> $x")

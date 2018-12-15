@@ -8,6 +8,7 @@ import com.angcyo.uiview.less.skin.BaseSkin
  * Created by angcyo on 2017-07-23.
  */
 class MainSkin(context: Context) : BaseSkin(context) {
+
     override fun getThemeColor(): Int {
         return ResUtil.getThemeColor(mContext, "colorPrimary")
     }

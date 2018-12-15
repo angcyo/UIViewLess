@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import com.angcyo.lib.L;
@@ -28,6 +29,8 @@ public class RViewPager extends ViewPager {
     private GestureDetectorCompat mGestureDetectorCompat;
 
     private OnPagerEndListener mOnPagerEndListener;
+
+    private int heightMeauseMode = MeasureSpec.EXACTLY;
 
     public RViewPager(Context context) {
         this(context, null);
@@ -60,6 +63,25 @@ public class RViewPager extends ViewPager {
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
         });
+
+        addOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                if (heightMeauseMode != MeasureSpec.EXACTLY) {
+                    requestLayout();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
     }
 
     public void setOnPagerEndListener(OnPagerEndListener onPagerEndListener) {
@@ -89,6 +111,38 @@ public class RViewPager extends ViewPager {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
+        int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+
+        heightMeauseMode = heightMode;
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (heightMode == MeasureSpec.EXACTLY) {
+        } else {
+            //支持高度的wrap_content
+            if (getChildCount() > getCurrentItem()) {
+                View childAt = getChildAt(getCurrentItem());
+                measureChild(childAt, widthMeasureSpec, heightMeasureSpec);
+                setMeasuredDimension(widthSize, childAt.getMeasuredHeight() + getPaddingLeft() + getPaddingRight());
+            }
+        }
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (!isInEditMode()) {
+            ensureGlow(this, SkinHelper.getSkin().getThemeSubColor());
+        }
+    }
+
+
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         try {
             if (mOrientation == LinearLayout.VERTICAL) {
@@ -103,13 +157,6 @@ public class RViewPager extends ViewPager {
         return false;
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (!isInEditMode()) {
-            ensureGlow(this, SkinHelper.getSkin().getThemeSubColor());
-        }
-    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
