@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.*;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -14,6 +16,7 @@ import android.view.Window;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
+import com.angcyo.uiview.less.widget.group.RSoftInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,7 @@ import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
 public class RDialog {
 
     static WeakHashMap<Integer, List<Dialog>> dialogMap = new WeakHashMap<>();
+    static Handler mainHandle = new Handler(Looper.getMainLooper());
 
     public static void tip(Context context,
                            String message) {
@@ -65,41 +69,60 @@ public class RDialog {
     /**
      * 加载中的对话框
      */
-    public static synchronized void flow(Context context) {
+    public static void flow(Context context) {
         flow(context, null);
     }
 
-    public static synchronized void flow(Context context, DialogInterface.OnDismissListener dismissListener) {
-        AlertDialog alertDialog = build(context)
-                .setCancelable(false)
-                .setDialogWidth((int) ResUtil.dpToPx(56))
-                .setDimAmount(0f)
-                .setAnimStyleResId(R.style.WindowNoAnim)
-                .setDialogBgColor(Color.TRANSPARENT)
-                .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
-                .setOnDismissListener(dismissListener)
-                .showAlertDialog();
-        List<Dialog> dialogs = dialogMap.get(context.hashCode());
-        if (dialogs == null) {
-            dialogs = new ArrayList<>();
-            dialogMap.put(context.hashCode(), dialogs);
-        }
-        dialogs.add(alertDialog);
+    public static void flow(final Context context, final DialogInterface.OnDismissListener dismissListener) {
+        mainHandle.post(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog alertDialog = build(context)
+                        .setCancelable(false)
+                        .setDialogWidth((int) ResUtil.dpToPx(56))
+                        .setDimAmount(0f)
+                        .setAnimStyleResId(R.style.WindowNoAnim)
+                        .setDialogBgColor(Color.TRANSPARENT)
+                        .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
+                        .setOnDismissListener(dismissListener)
+                        .showAlertDialog();
+                List<Dialog> dialogs = dialogMap.get(context.hashCode());
+                if (dialogs == null) {
+                    dialogs = new ArrayList<>();
+                    dialogMap.put(context.hashCode(), dialogs);
+                }
+                dialogs.add(alertDialog);
+
+//                if (alertDialog.getWindow() != null) {
+//                    RSoftInputLayout.hideSoftInput(alertDialog.getWindow().getDecorView());
+//                }
+            }
+        });
     }
 
-    public static synchronized void hide(Context context) {
-        dismiss(dialogMap.get(context.hashCode()));
-        dialogMap.remove(context.hashCode());
+    public static void hide(final Context context) {
+        mainHandle.post(new Runnable() {
+            @Override
+            public void run() {
+                dismiss(dialogMap.get(context.hashCode()));
+                dialogMap.remove(context.hashCode());
+            }
+        });
     }
 
-    public static synchronized void hide() {
-        for (WeakHashMap.Entry<Integer, List<Dialog>> entry : dialogMap.entrySet()) {
-            dismiss(entry.getValue());
-        }
-        dialogMap.clear();
+    public static void hide() {
+        mainHandle.post(new Runnable() {
+            @Override
+            public void run() {
+                for (WeakHashMap.Entry<Integer, List<Dialog>> entry : dialogMap.entrySet()) {
+                    dismiss(entry.getValue());
+                }
+                dialogMap.clear();
+            }
+        });
     }
 
-    private static synchronized void dismiss(List<Dialog> dialogs) {
+    private static void dismiss(List<Dialog> dialogs) {
         if (!RUtils.isListEmpty(dialogs)) {
             for (Dialog dialog : dialogs) {
                 dialog.dismiss();

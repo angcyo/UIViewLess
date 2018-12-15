@@ -270,6 +270,11 @@ public class FragmentHelper {
         Fragment hideFragment;
 
         /**
+         * 需要移除的Fragment List
+         */
+        List<Fragment> removeFragmentList = new ArrayList<>();
+
+        /**
          * 需要显示的Fragment, 如果没有add, 会替换成add操作
          */
         Fragment showFragment;
@@ -341,6 +346,11 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder hideFragment(String tag) {
+            this.hideFragment = fragmentManager.findFragmentByTag(tag);
+            return this;
+        }
+
         public Builder showFragment(Fragment showFragment) {
             this.showFragment = showFragment;
             return this;
@@ -354,6 +364,21 @@ public class FragmentHelper {
             this.showFragment = Fragment.instantiate(context, showFragment.getName());
             //关闭从恢复模式获取Fragment
             isFromCreate = false;
+            return this;
+        }
+
+        public Builder remove(String tag) {
+            remove(fragmentManager.findFragmentByTag(tag));
+            return this;
+        }
+
+        public Builder remove(@Nullable Fragment fragment) {
+            if (fragment == null) {
+                return this;
+            }
+            if (!removeFragmentList.contains(fragment)) {
+                removeFragmentList.add(fragment);
+            }
             return this;
         }
 
@@ -699,6 +724,11 @@ public class FragmentHelper {
                 if (lastFragment != null) {
                     lastFragment.setUserVisibleHint(false);
                 }
+            }
+
+            for (Fragment removeFragment : removeFragmentList) {
+                needCommit = true;
+                fragmentTransaction.remove(removeFragment);
             }
 
             //日志输出

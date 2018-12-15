@@ -108,6 +108,8 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         }
     }
 
+    fun getCurrentItem() = currentItem
+
     /**ViewPager 滚动监听*/
     fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if (!isClickScrollPager) {

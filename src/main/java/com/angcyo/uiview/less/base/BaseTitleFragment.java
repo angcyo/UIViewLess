@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.angcyo.uiview.less.R;
@@ -21,6 +22,7 @@ import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.skin.SkinHelper;
 import com.angcyo.uiview.less.widget.ImageTextView;
 import com.angcyo.uiview.less.widget.group.FragmentContentWrapperLayout;
+import com.angcyo.uiview.less.widget.group.RSoftInputLayout;
 import com.angcyo.uiview.less.widget.group.TitleBarLayout;
 
 /**
@@ -226,8 +228,9 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     /**
      * 标题栏默认的返回按钮点击事件
      */
-    public void onTitleBackClick(@NonNull View view) {
+    public void onTitleBackClick(@Nullable View view) {
         //hideTitleBar();
+        hideSoftInput();
         backFragment();
     }
 
@@ -251,6 +254,19 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
                 .defaultExitAnim()
                 .setCheckBackPress(checkBackPress)
                 .back(getActivity());
+    }
+
+    /**
+     * 隐藏键盘
+     */
+    public void hideSoftInput() {
+        View fragmentRootView = getView();
+        if (fragmentRootView != null) {
+            View focus = fragmentRootView.findFocus();
+            if (focus instanceof EditText) {
+                RSoftInputLayout.hideSoftInput(focus);
+            }
+        }
     }
 
     /**

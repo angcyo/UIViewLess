@@ -46,6 +46,7 @@ import com.angcyo.uiview.less.utils.rsa.Base64Utils;
 import com.angcyo.uiview.less.utils.utilcode.utils.AppUtils;
 import com.angcyo.uiview.less.utils.utilcode.utils.ClipboardUtils;
 import com.angcyo.uiview.less.utils.utilcode.utils.FileUtils;
+import com.angcyo.uiview.less.utils.utilcode.utils.MD5;
 import com.angcyo.uiview.less.widget.ExEditText;
 import com.angcyo.uiview.less.widget.RExTextView;
 
@@ -2978,4 +2979,9 @@ public class RUtils {
     public static void installApp(Context context, File apkFile) {
         AppUtils.installApp(context, apkFile);
     }
+
+    public static String md5(String string) {
+        return MD5.getStringMD5(string);
+    }
+
 }

@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ public class RSoftInputLayout extends FrameLayout implements ILifecycle {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public static void hideSoftInput(View view) {
+    public static void hideSoftInput(@NonNull View view) {
         InputMethodManager manager = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }

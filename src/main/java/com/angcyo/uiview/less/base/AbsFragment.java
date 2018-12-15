@@ -168,6 +168,9 @@ public abstract class AbsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         L.d(this.getClass().getSimpleName());
+        if (baseViewHolder != null) {
+            baseViewHolder.clear();
+        }
     }
 
     @Override
