@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import com.angcyo.uiview.less.kotlin.ViewExKt;
 import com.angcyo.uiview.less.skin.SkinHelper;
 
 /**
@@ -39,10 +40,14 @@ public class VerifyButton extends Button implements View.OnClickListener, Runnab
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int measuredWidth = getMeasuredWidth();
-        maxWidth = Math.max(measuredWidth, maxWidth);
-        setMeasuredDimension(maxWidth, getMeasuredHeight());
+        if (isCountDownStart) {
+            super.onMeasure(ViewExKt.exactlyMeasure(this, maxWidth), heightMeasureSpec);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            int measuredWidth = getMeasuredWidth();
+            maxWidth = Math.max(measuredWidth, maxWidth);
+            setMeasuredDimension(maxWidth, getMeasuredHeight());
+        }
     }
 
 //    @Override
@@ -77,9 +82,8 @@ public class VerifyButton extends Button implements View.OnClickListener, Runnab
      */
     public void startCountDown() {
         isCountDownStart = true;
-        countDown--;
         setEnabled(false);
-        postDelayed(this, 1000);
+        run();
     }
 
     public void endCountDown() {
@@ -95,12 +99,12 @@ public class VerifyButton extends Button implements View.OnClickListener, Runnab
         setText(countDown + "s");
         setGravity(Gravity.CENTER);
 
-        if (countDown <= 0) {
+        countDown--;
+        if (countDown < 0) {
             endCountDown();
         } else {
-            startCountDown();
+            postDelayed(this, 1000);
         }
-
     }
 
     @Override

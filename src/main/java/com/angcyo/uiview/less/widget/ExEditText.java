@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import com.angcyo.lib.Anim;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.RApplication;
@@ -1338,7 +1339,7 @@ public class ExEditText extends AppCompatEditText {
      * 错误提示
      */
     public void error() {
-        //Anim.band(this);
+        Anim.band(this);
     }
 
     /**

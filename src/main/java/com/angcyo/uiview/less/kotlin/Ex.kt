@@ -11,6 +11,7 @@ import android.text.TextUtils
 import android.util.Base64
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import com.angcyo.http.Http
 import com.angcyo.http.Json
 import com.angcyo.uiview.less.skin.SkinHelper
 import com.angcyo.uiview.less.utils.RUtils
@@ -53,6 +54,8 @@ public inline fun <T> T.nextInt(from: Int /*包含*/, to: Int /*不包含*/) = R
 public inline fun <T> T.toJson() = Json.to(this)
 public inline fun <T> String.fromJson(type: Class<T>) = Json.from<T>(this, type)
 public inline fun <T> String.fromJsonList(type: Class<T>) = Json.fromList<T>(this, type)
+
+public inline fun <T> T.toBody() = Http.getJsonBody(toJson())
 
 /**文本的高度*/
 public fun Paint.textHeight(): Float = descent() - ascent()

@@ -73,7 +73,12 @@ public class RViewPager extends ViewPager {
             @Override
             public void onPageSelected(int i) {
                 if (heightMeauseMode != MeasureSpec.EXACTLY) {
-                    requestLayout();
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            requestLayout();
+                        }
+                    });
                 }
             }
 
