@@ -176,6 +176,8 @@ public class RApplication extends Application {
         isHighDevice = isHighDevice();
 
         FDown.init(this);
+
+        L.init(BuildConfig.DEBUG, "angcyo_" + hashCode());
     }
 
     @Override

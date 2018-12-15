@@ -74,52 +74,40 @@ public class RDialog {
     }
 
     public static void flow(final Context context, final DialogInterface.OnDismissListener dismissListener) {
-        mainHandle.post(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog alertDialog = build(context)
-                        .setCancelable(false)
-                        .setDialogWidth((int) ResUtil.dpToPx(56))
-                        .setDimAmount(0f)
-                        .setAnimStyleResId(R.style.WindowNoAnim)
-                        .setDialogBgColor(Color.TRANSPARENT)
-                        .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
-                        .setOnDismissListener(dismissListener)
-                        .showAlertDialog();
-                List<Dialog> dialogs = dialogMap.get(context.hashCode());
-                if (dialogs == null) {
-                    dialogs = new ArrayList<>();
-                    dialogMap.put(context.hashCode(), dialogs);
-                }
-                dialogs.add(alertDialog);
-
-//                if (alertDialog.getWindow() != null) {
-//                    RSoftInputLayout.hideSoftInput(alertDialog.getWindow().getDecorView());
-//                }
-            }
-        });
+        AlertDialog alertDialog = build(context)
+                .setCancelable(false)
+                .setDialogWidth((int) ResUtil.dpToPx(56))
+                .setDimAmount(0f)
+                .setAnimStyleResId(R.style.WindowNoAnim)
+                .setDialogBgColor(Color.TRANSPARENT)
+                .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
+                .setOnDismissListener(dismissListener)
+                .showAlertDialog();
+        List<Dialog> dialogs = dialogMap.get(context.hashCode());
+        if (dialogs == null) {
+            dialogs = new ArrayList<>();
+            dialogMap.put(context.hashCode(), dialogs);
+        }
+        dialogs.add(alertDialog);
     }
 
     public static void hide(final Context context) {
         mainHandle.post(new Runnable() {
             @Override
             public void run() {
-                dismiss(dialogMap.get(context.hashCode()));
-                dialogMap.remove(context.hashCode());
+                dismiss(dialogMap.remove(context.hashCode()));
             }
         });
     }
 
     public static void hide() {
-        mainHandle.post(new Runnable() {
-            @Override
-            public void run() {
-                for (WeakHashMap.Entry<Integer, List<Dialog>> entry : dialogMap.entrySet()) {
-                    dismiss(entry.getValue());
-                }
-                dialogMap.clear();
-            }
-        });
+        final WeakHashMap<Integer, List<Dialog>> hashMap = new WeakHashMap<>(RDialog.dialogMap);
+        RDialog.dialogMap.clear();
+
+        for (WeakHashMap.Entry<Integer, List<Dialog>> entry : hashMap.entrySet()) {
+            dismiss(entry.getValue());
+        }
+        hashMap.clear();
     }
 
     private static void dismiss(List<Dialog> dialogs) {
@@ -330,11 +318,11 @@ public class RDialog {
             }
             //消极的按钮 DialogInterface.BUTTON_NEGATIVE
             if (!TextUtils.isEmpty(negativeButtonText)) {
-                builder.setPositiveButton(negativeButtonText, negativeButtonListener);
+                builder.setNegativeButton(negativeButtonText, negativeButtonListener);
             }
             //中立的按钮 DialogInterface.BUTTON_NEUTRAL
             if (!TextUtils.isEmpty(neutralButtonText)) {
-                builder.setPositiveButton(neutralButtonText, neutralButtonListener);
+                builder.setNeutralButton(neutralButtonText, neutralButtonListener);
             }
 
             if (contentView != null) {
@@ -396,8 +384,6 @@ public class RDialog {
     }
 
     public static abstract class OnInitListener {
-        public void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
-
-        }
+        public abstract void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder);
     }
 }

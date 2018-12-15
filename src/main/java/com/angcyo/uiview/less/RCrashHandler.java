@@ -522,7 +522,6 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
                     .setInitListener(new RDialog.OnInitListener() {
                         @Override
                         public void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
-                            super.onInitDialog(dialog, dialogViewHolder);
                             dialogViewHolder.tv(R.id.base_dialog_title_view).setText("发生了什么啊^_^");
                             dialogViewHolder.visible(R.id.base_dialog_top_content_view, true)
                                     .tv(R.id.base_dialog_top_content_view)

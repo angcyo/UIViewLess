@@ -31,7 +31,6 @@ public class HttpConfigDialog {
                 .setInitListener(new RDialog.OnInitListener() {
                     @Override
                     public void onInitDialog(@NonNull final AlertDialog dialog, @NonNull final RBaseViewHolder dialogViewHolder) {
-                        super.onInitDialog(dialog, dialogViewHolder);
                         dialogViewHolder.exV(R.id.host_edit).setInputText(baseUrl);
 
                         dialogViewHolder.cb(R.id.map_box, RetrofitServiceMapping.enableMapping, new CompoundButton.OnCheckedChangeListener() {
