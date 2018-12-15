@@ -1352,6 +1352,8 @@ public class ExEditText extends AppCompatEditText {
 
     /**
      * 返回结果表示是否为空
+     *
+     * @return true 为空, 或者格式错误
      */
     public boolean checkEmpty(boolean checkPhone) {
         if (isEmpty()) {

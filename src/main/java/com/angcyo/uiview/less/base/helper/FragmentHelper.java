@@ -53,6 +53,15 @@ public class FragmentHelper {
                 .doIt();
     }
 
+    /**
+     * 查找或创建新的Fragment
+     */
+    public static List<Fragment> restore(@NonNull Context context,
+                                         @NonNull FragmentManager fragmentManager,
+                                         Class<? extends Fragment>... cls) {
+        return ActivityHelper.restore(context, fragmentManager, cls);
+    }
+
     public static Builder build(@NonNull FragmentManager fragmentManager) {
         return new Builder(fragmentManager);
     }
@@ -317,12 +326,17 @@ public class FragmentHelper {
         @IdRes
         int parentLayoutId = -1;
 
+        /**
+         * 需要为showFragment指定的tag, 默认为类名
+         */
         String tag = null;
 
         /**
          * 是否优先使用已经保存过的Fragment, 比如恢复模式下, 就需要设置为true
+         * <p>
+         * 决定是否需要使用
          */
-        boolean isFromCreate = true;
+        boolean isFromCreate = false;
 
         /**
          * Fragment的参数
@@ -351,6 +365,11 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder showFragment(String tag) {
+            showFragment(fragmentManager.findFragmentByTag(tag));
+            return this;
+        }
+
         public Builder showFragment(Fragment showFragment) {
             this.showFragment = showFragment;
             return this;
@@ -364,6 +383,11 @@ public class FragmentHelper {
             this.showFragment = Fragment.instantiate(context, showFragment.getName());
             //关闭从恢复模式获取Fragment
             isFromCreate = false;
+            return this;
+        }
+
+        public Builder remove(@NonNull Class cls) {
+            remove(cls.getSimpleName());
             return this;
         }
 
@@ -432,6 +456,12 @@ public class FragmentHelper {
         public Builder setArgs(@NonNull String key, @Nullable String value) {
             ensureArgs();
             args.putString(key, value);
+            return this;
+        }
+
+        public Builder setArgs(@NonNull String key, int value) {
+            ensureArgs();
+            args.putInt(key, value);
             return this;
         }
 
@@ -610,87 +640,104 @@ public class FragmentHelper {
         @Nullable
         public Fragment doIt() {
             if (fragmentManager == null ||
-                    showFragment == null ||
-                    parentLayoutId == -1) {
-                L.e("必要的参数不合法,请检查参数:"
-                        + "\n1->fragmentManager:" + fragmentManager + (fragmentManager == null ? " ×" : " √")
-                        + "\n2->showFragment:" + showFragment + (showFragment == null ? " ×" : " √")
-                        + "\n3->parentLayoutId:" + parentLayoutId + (parentLayoutId == -1 ? " ×" : " √"));
+                    (showFragment == null && hideFragment == null && removeFragmentList.isEmpty())
+                    || parentLayoutId == -1) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("必要的参数不合法,请检查参数:");
+                builder.append("\n1->fragmentManager:");
+                builder.append(fragmentManager);
+                builder.append((fragmentManager == null ? " ×" : " √"));
+
+                if (showFragment == null) {
+                    builder.append("\n2->showFragment:");
+                    builder.append(showFragment);
+                    builder.append((showFragment == null ? " ×" : " √"));
+                } else if (hideFragment == null) {
+                    builder.append("\n2->hideFragment:");
+                    builder.append(hideFragment);
+                    builder.append((hideFragment == null ? " ×" : " √"));
+                } else if (removeFragmentList.isEmpty()) {
+                    builder.append("\n2->removeFragmentList:");
+                    builder.append(removeFragmentList);
+                    builder.append((removeFragmentList.isEmpty() ? " ×" : " √"));
+                }
+
+                builder.append("\n3->parentLayoutId:");
+                builder.append(parentLayoutId);
+                builder.append((parentLayoutId == -1 ? " ×" : " √"));
+
+                L.e(builder.toString());
                 return showFragment;
             }
 
-            Fragment resultFragment = showFragment;
-            String fragmentTag;
-            if (tag == null) {
-                fragmentTag = showFragment.getClass().getSimpleName();
-            } else {
-                fragmentTag = tag;
-            }
-
-            //如果是恢复模式, 可以拿到系统恢复的对象
-            Fragment fragmentByTag;
+            Fragment resultFragment;
             if (isFromCreate) {
-                fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
+                //需要从恢复模式中获取Fragment
+                resultFragment = restoreFragment();
             } else {
-                fragmentByTag = showFragment;
+                resultFragment = showFragment;
             }
 
-            if (fragmentByTag != null) {
-                resultFragment = fragmentByTag;
-            }
-
-            if (args != null) {
-                resultFragment.setArguments(args);
-            }
-
-            boolean needCommit = true;
-            boolean isFragmentAdded = resultFragment.isAdded();
-            boolean isFragmentHide = false;
-            int fragmentViewVisibility = View.VISIBLE;
-
-            if (resultFragment instanceof IFragment) {
-                isFragmentHide = ((IFragment) resultFragment).isFragmentHide();
-            } else {
-                isFragmentHide = resultFragment.isHidden() || !resultFragment.getUserVisibleHint();
-            }
-
-            //需要显示的Fragment所在的view的id
+            boolean isFragmentAdded = false;
+            boolean needCommit = false;
             int fragmentContainerId = parentLayoutId;
 
-            //显示或者添加Fragment
-            if (isFragmentAdded) {
-                fragmentContainerId = getFragmentContainerId(resultFragment);
+            if (resultFragment == null) {
+                //没有需要显示的Fragment, 可能需要hide或者remove Fragment
 
-                View fragmentView = resultFragment.getView();
-                if (fragmentView != null) {
-                    fragmentViewVisibility = fragmentView.getVisibility();
-                }
-
-                //已经存在
-                if (isFragmentHide && fragmentViewVisibility == View.GONE) {
-                    configTransaction();
-                    fragmentTransaction.show(resultFragment);
-                } else {
-                    needCommit = false;
-                    try {
-                        resultFragment.setUserVisibleHint(true);
-
-                        if (fragmentView != null) {
-                            if (fragmentViewVisibility != View.VISIBLE) {
-                                fragmentView.setVisibility(View.VISIBLE);
-                            }
-                            fragmentView.bringToFront();
-                        } else {
-                            L.e("警告:" + resultFragment + " 没有视图.");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
             } else {
-                //不存在
-                configTransaction();
-                fragmentTransaction.add(parentLayoutId, resultFragment, fragmentTag);
+                boolean isFragmentHide;
+
+                if (args != null) {
+                    resultFragment.setArguments(args);
+                }
+                isFragmentAdded = resultFragment.isAdded();
+
+                if (resultFragment instanceof IFragment) {
+                    isFragmentHide = ((IFragment) resultFragment).isFragmentHide();
+                } else {
+                    isFragmentHide = resultFragment.isHidden() || !resultFragment.getUserVisibleHint();
+                }
+
+                //需要显示的Fragment所在的view的id
+                int fragmentViewVisibility = View.VISIBLE;
+
+                //显示或者添加Fragment
+                if (isFragmentAdded) {
+                    fragmentContainerId = getFragmentContainerId(resultFragment);
+
+                    View fragmentView = resultFragment.getView();
+                    if (fragmentView != null) {
+                        fragmentViewVisibility = fragmentView.getVisibility();
+                    }
+
+                    //已经存在
+                    if (isFragmentHide && fragmentViewVisibility == View.GONE) {
+                        configTransaction();
+                        needCommit = true;
+                        fragmentTransaction.show(resultFragment);
+                    } else {
+                        try {
+                            resultFragment.setUserVisibleHint(true);
+
+                            if (fragmentView != null) {
+                                if (fragmentViewVisibility != View.VISIBLE) {
+                                    fragmentView.setVisibility(View.VISIBLE);
+                                }
+                                fragmentView.bringToFront();
+                            } else {
+                                L.e("警告:" + resultFragment + " 没有视图.");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    needCommit = true;
+                    //不存在
+                    configTransaction();
+                    fragmentTransaction.add(parentLayoutId, resultFragment, getShowFragmentTag(true));
+                }
             }
 
             //设置lastFragment
@@ -739,6 +786,48 @@ public class FragmentHelper {
                 commitInner(fragmentTransaction);
             }
             return resultFragment;
+        }
+
+        private String getShowFragmentTag(boolean checkExist /*检查是否已经存在*/) {
+            String fragmentTag;
+            //是否指定了tag, 用来从恢复模式中拿到Fragment
+            if (tag == null) {
+                if (showFragment == null) {
+                    fragmentTag = null;
+                } else {
+                    fragmentTag = showFragment.getClass().getSimpleName();
+                }
+            } else {
+                fragmentTag = tag;
+            }
+
+            if (showFragment != null) {
+                if (checkExist) {
+                    Fragment fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
+                    if (fragmentByTag != null) {
+                        //找到了相同的tag fragment, 那么用hashCode 重命名tag
+                        fragmentTag = fragmentTag + showFragment.hashCode();
+                    }
+                }
+            }
+
+            return fragmentTag;
+        }
+
+        /**
+         * 从恢复模式中获取已经存在的Fragment, 如果有
+         */
+        private Fragment restoreFragment() {
+            String fragmentTag = getShowFragmentTag(false);
+
+            if (fragmentTag == null) {
+                return null;
+            }
+
+            //如果是恢复模式, 可以拿到系统恢复的对象
+            Fragment fragmentByTag;
+            fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
+            return fragmentByTag;
         }
 
         private void logInner(FragmentTransaction transaction, boolean needCommit) {
