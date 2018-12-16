@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.base.helper.ActivityHelper;
 import com.angcyo.uiview.less.base.helper.FragmentHelper;
+import com.angcyo.uiview.less.picture.RPicture;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -57,6 +58,10 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         //ActivityHelper.setStatusBarDrawable(this, getDrawableCompat(R.drawable.base_nav_shadow));
     }
 
+    @Override
+    public boolean isImmersive() {
+        return enableLayoutFull();
+    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -252,5 +257,15 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     public Fragment showFragment(@NonNull Fragment fragment, @Nullable Fragment hideFragment, int parentLayout, boolean stateLoss) {
         return FragmentHelper.showFragment(getSupportFragmentManager(), fragment, hideFragment, parentLayout, stateLoss);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Fragment lastFragment = FragmentHelper.getLastFragment(getSupportFragmentManager(), getFragmentParentLayoutId(), 0);
+        if (lastFragment != null) {
+            lastFragment.onActivityResult(requestCode, resultCode, data);
+        }
+        RPicture.onActivityResult(requestCode, resultCode, data);
     }
 }

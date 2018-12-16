@@ -1,6 +1,7 @@
 package com.angcyo.uiview.less.base;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -250,6 +251,16 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
     @Override
     public boolean onBackPressed(@NonNull Activity activity) {
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (iLastFragment != null) {
+            if (iLastFragment instanceof Fragment) {
+                ((Fragment) iLastFragment).onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     /**

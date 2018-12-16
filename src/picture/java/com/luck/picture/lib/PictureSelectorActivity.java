@@ -26,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.picture.RPicture;
 import com.luck.picture.lib.adapter.PictureAlbumDirectoryAdapter;
 import com.luck.picture.lib.adapter.PictureImageGridAdapter;
 import com.luck.picture.lib.config.PictureConfig;
@@ -104,6 +105,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 case DISMISS_DIALOG:
                     dismissDialog();
                     break;
+                default:
+                    break;
             }
         }
     };
@@ -137,6 +140,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                         onResult(medias);
                     }
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -361,6 +366,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     // 录音
                     startOpenCameraAudio();
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -485,7 +492,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             bundle.putBoolean(PictureConfig.EXTRA_BOTTOM_PREVIEW, true);
             startActivity(PicturePreviewActivity.class, bundle,
                     config.selectionMode == PictureConfig.SINGLE ? UCrop.REQUEST_CROP : UCropMulti.REQUEST_MULTI_CROP);
-            overridePendingTransition(R.anim.a5, 0);
+            RPicture.baseEnterAnim(this);
         }
 
         if (id == R.id.id_ll_ok) {
@@ -804,7 +811,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 bundle.putInt(PictureConfig.EXTRA_POSITION, position);
                 startActivity(PicturePreviewActivity.class, bundle,
                         config.selectionMode == PictureConfig.SINGLE ? UCrop.REQUEST_CROP : UCropMulti.REQUEST_MULTI_CROP);
-                overridePendingTransition(R.anim.a5, 0);
+                RPicture.baseEnterAnim(this);
                 break;
             case PictureConfig.TYPE_VIDEO:
                 // video
@@ -814,6 +821,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 } else {
                     bundle.putString("video_path", media.getPath());
                     startActivity(PictureVideoPlayActivity.class, bundle);
+                    RPicture.baseEnterAnim(this);
                 }
                 break;
             case PictureConfig.TYPE_AUDIO:
@@ -824,6 +832,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 } else {
                     audioDialog(media.getPath());
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -1021,6 +1031,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                         }
                     }
                     break;
+                default:
+                    break;
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (config.camera) {
@@ -1108,6 +1120,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             case 1:
                 // 录视频
                 startOpenCameraVideo();
+                break;
+            default:
                 break;
         }
     }

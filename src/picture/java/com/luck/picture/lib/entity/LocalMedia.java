@@ -3,6 +3,8 @@ package com.luck.picture.lib.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
 
 /**
  * author：luck
@@ -142,6 +144,33 @@ public class LocalMedia implements Parcelable {
         this.mimeType = mimeType;
     }
 
+    public String getSelectorType() {
+        switch (mimeType) {
+            case PictureConfig.TYPE_ALL:
+                return "All";
+            case PictureConfig.TYPE_IMAGE:
+                return "Image";
+            case PictureConfig.TYPE_VIDEO:
+                return "Video";
+            case PictureConfig.TYPE_AUDIO:
+                return "Audio";
+            default:
+                return "";
+        }
+    }
+
+    public boolean isImageType() {
+        return mimeType == PictureMimeType.ofImage();
+    }
+
+    public boolean isVideoType() {
+        return mimeType == PictureMimeType.ofVideo();
+    }
+
+    public boolean isAudioType() {
+        return mimeType == PictureMimeType.ofAudio();
+    }
+
     public boolean isCompressed() {
         return compressed;
     }
@@ -164,6 +193,19 @@ public class LocalMedia implements Parcelable {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    /**
+     * 返回最终的文件路径
+     */
+    public String getFilePath() {
+        if (isCompressed()) {
+            return getCompressPath();
+        }
+        if (isCut()) {
+            return getCutPath();
+        }
+        return getPath();
     }
 
     @Override

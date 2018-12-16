@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.picture.RPicture;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
@@ -149,7 +149,7 @@ public final class PictureSelector {
             intent.putExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST, (Serializable) medias);
             intent.putExtra(PictureConfig.EXTRA_POSITION, position);
             getActivity().startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.a5, 0);
+            RPicture.baseEnterAnim(getActivity());
         }
     }
 
@@ -167,7 +167,7 @@ public final class PictureSelector {
             intent.putExtra(PictureConfig.EXTRA_POSITION, position);
             intent.putExtra(PictureConfig.DIRECTORY_PATH, directory_path);
             getActivity().startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.a5, 0);
+            RPicture.baseEnterAnim(getActivity());
         }
     }
 
@@ -181,6 +181,7 @@ public final class PictureSelector {
             Intent intent = new Intent(getActivity(), PictureVideoPlayActivity.class);
             intent.putExtra("video_path", path);
             getActivity().startActivity(intent);
+            RPicture.baseEnterAnim(getActivity());
         }
     }
 
@@ -194,7 +195,7 @@ public final class PictureSelector {
             Intent intent = new Intent(getActivity(), PicturePlayAudioActivity.class);
             intent.putExtra("audio_path", path);
             getActivity().startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.a5, 0);
+            RPicture.baseEnterAnim(getActivity());
         }
     }
 

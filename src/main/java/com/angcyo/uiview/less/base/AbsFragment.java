@@ -188,6 +188,7 @@ public abstract class AbsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        L.i(this.getClass().getSimpleName() + " request:" + requestCode + " result:" + resultCode + " " + data);
     }
 
     //</editor-fold>

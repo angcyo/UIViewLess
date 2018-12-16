@@ -112,8 +112,55 @@ public class ActivityHelper {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             //window.setStatusBarColor(Color.TRANSPARENT);
+
+            //https://blog.csdn.net/xiaonaihe/article/details/54929504
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE /*沉浸式, 用户显示状态, 不会清楚原来的状态*/
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
+
+    /**
+     * @param checkSdk true 表示只在高版本的SDK上使用.
+     */
+    public static void fullscreen(@NonNull final Activity activity, final boolean enable, boolean checkSdk) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final View decorView = activity.getWindow().getDecorView();
+                int uiOptions = decorView.getSystemUiVisibility();
+                int enableUiOptions = uiOptions;
+                int noenableUiOptions = uiOptions;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                }
+
+                if (enable) {
+                    decorView.setSystemUiVisibility(enableUiOptions);
+                } else {
+                    decorView.setSystemUiVisibility(noenableUiOptions);
+                }
+            }
+        };
+
+        if (checkSdk) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                runnable.run();
+            }
+        } else {
+            runnable.run();
         }
     }
 

@@ -21,6 +21,7 @@ public class PictureDialog extends Dialog {
     }
 
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.picture_alert_dialog);

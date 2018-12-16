@@ -11,10 +11,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.base.BaseAppCompatActivity;
+import com.angcyo.uiview.less.base.Debug;
+import com.angcyo.uiview.less.picture.RPicture;
 import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.compress.OnCompressListener;
 import com.luck.picture.lib.config.PictureConfig;
@@ -39,6 +44,9 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -201,13 +209,23 @@ public class PictureBaseActivity extends FragmentActivity {
     }
 
 
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    public void addDisposable(@NonNull Disposable disposable) {
+        compositeDisposable.add(disposable);
+    }
+
+    public void cancelDisposable() {
+        compositeDisposable.dispose();
+    }
+
     /**
      * compressImage
      */
     protected void compressImage(final List<LocalMedia> result) {
         showCompressDialog();
         if (config.synOrAsy) {
-            Flowable.just(result)
+            addDisposable(Flowable.just(result)
                     .observeOn(Schedulers.io())
                     .map(new Function<List<LocalMedia>, List<File>>() {
                         @Override
@@ -228,7 +246,7 @@ public class PictureBaseActivity extends FragmentActivity {
                         public void accept(@NonNull List<File> files) throws Exception {
                             handleCompressCallBack(result, files);
                         }
-                    });
+                    }));
         } else {
             Luban.with(this)
                     .loadLocalMedia(result)
@@ -449,7 +467,7 @@ public class PictureBaseActivity extends FragmentActivity {
         if (config.camera) {
             overridePendingTransition(0, R.anim.fade_out);
         } else {
-            overridePendingTransition(0, R.anim.a3);
+            RPicture.baseExitAnim(this);
         }
     }
 
@@ -458,6 +476,7 @@ public class PictureBaseActivity extends FragmentActivity {
         super.onDestroy();
         dismissCompressDialog();
         dismissDialog();
+        cancelDisposable();
     }
 
 
@@ -563,5 +582,19 @@ public class PictureBaseActivity extends FragmentActivity {
             e.printStackTrace();
         }
         return path;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        closeActivity();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            Debug.addDebugTextView(this);
+        }
     }
 }

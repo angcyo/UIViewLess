@@ -7,13 +7,12 @@ import android.support.annotation.IntRange;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
 
-import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.picture.RPicture;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureSelectionConfig;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.DoubleUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -334,6 +333,11 @@ public class PictureSelectionModel {
         return this;
     }
 
+    public PictureSelectionModel mimeType(int mimeType) {
+        selectionConfig.mimeType = mimeType;
+        return this;
+    }
+
     /**
      * @param outputCameraPath Camera save path
      * @return
@@ -399,6 +403,10 @@ public class PictureSelectionModel {
         return this;
     }
 
+    public void forResult() {
+        forResult(PictureConfig.CHOOSE_REQUEST);
+    }
+
     /**
      * Start to select media and wait for result.
      *
@@ -417,7 +425,7 @@ public class PictureSelectionModel {
             } else {
                 activity.startActivityForResult(intent, requestCode);
             }
-            activity.overridePendingTransition(R.anim.a5, 0);
+            RPicture.baseEnterAnim(activity);
         }
     }
 

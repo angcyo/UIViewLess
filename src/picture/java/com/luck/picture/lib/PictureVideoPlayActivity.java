@@ -12,7 +12,8 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 import com.angcyo.uiview.less.R;
 
-public class PictureVideoPlayActivity extends PictureBaseActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, View.OnClickListener {
+public class PictureVideoPlayActivity extends PictureBaseActivity implements MediaPlayer.OnErrorListener,
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, View.OnClickListener {
     private String video_path = "";
     private ImageView picture_left_back;
     private MediaController mMediaController;

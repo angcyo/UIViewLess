@@ -75,12 +75,13 @@
         <item name="picture.title.textColor">@color/white</item>
         <!--标题栏右边文字-->
         <item name="picture.right.textColor">@color/white</item>
-        <!--图片列表勾选样式-->
-        <item name="picture.checked.style">@drawable/picture_checkbox_selector</item>
+        <!-- √ 图片列表勾选样式-->
+        <!--<item name="picture.checked.style">@drawable/picture_checkbox_selector</item>-->
+        <item name="picture.checked.style">@drawable/checkbox_num_selector</item>
         <!-- √ 开启图片列表勾选数字模式, 数字会和bg 叠加显示.-->
         <item name="picture.style.checkNumMode">true</item>
         <!--选择图片样式0/9-->
-        <item name="picture.style.numComplete">false</item>
+        <item name="picture.style.numComplete">true</item>
         <!--图片列表底部背景色-->
         <item name="picture.bottom.bg">@color/color_fa</item>
         <!--图片列表预览文字颜色-->
