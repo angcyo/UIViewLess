@@ -181,7 +181,7 @@ public class RPicture {
                     // 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                     .withAspectRatio(1, 1)
                     // 是否显示uCrop工具栏，默认不显示
-                    .hideBottomControls(false)
+                    .hideBottomControls(true)
                     // 是否显示gif图片
                     .isGif(true)
                     // 裁剪框是否可拖拽
