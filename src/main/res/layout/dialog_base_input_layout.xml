@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/base_chat_bg_color">
+
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
+
+        <com.angcyo.uiview.less.widget.RTextView
+                android:id="@+id/base_input_tip_view"
+                style="@style/BaseDarkTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/base_xhdpi"
+                android:layout_gravity="left|center_vertical"
+                android:visibility="gone"
+                tools:text="测试文本"
+                tools:visibility="visible"/>
+
+        <com.angcyo.uiview.less.widget.Button
+                android:id="@+id/base_save_button"
+                android:text="确定"
+                android:layout_marginRight="@dimen/base_xhdpi"
+                android:layout_marginBottom="@dimen/base_hdpi"
+                android:layout_marginTop="@dimen/base_hdpi"
+                android:layout_gravity="right|center_vertical"
+                style="@style/BaseSkinButtonLittleStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+    <com.angcyo.uiview.less.widget.ExEditText
+            android:id="@+id/base_edit_text_view"
+            style="@style/BaseMainTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/base_white"
+            android:imeOptions="actionDone"
+            android:minHeight="@dimen/base_item_size"
+            android:maxHeight="200dp"
+            android:padding="@dimen/base_xhdpi"
+            android:textColor="@color/base_text_color"
+            android:textColorHint="@color/base_text_color_dark"
+            tools:layout_height="300dp"/>
+
+    <com.angcyo.uiview.less.widget.pager.TextIndicator
+            android:id="@+id/base_single_text_indicator_view"
+            style="@style/BaseDarkTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/base_xhdpi"
+            android:layout_marginTop="@dimen/base_ldpi"
+            android:textSize="@dimen/default_text_little_size"
+            android:visibility="invisible"
+            tools:text="100/100"
+            tools:visibility="visible"/>
+
+</LinearLayout>

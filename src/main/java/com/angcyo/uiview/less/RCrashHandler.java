@@ -1,9 +1,6 @@
 package com.angcyo.uiview.less;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -13,7 +10,6 @@ import android.content.pm.ResolveInfo;
 import android.os.*;
 import android.os.Process;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
@@ -521,7 +517,7 @@ public class RCrashHandler implements Thread.UncaughtExceptionHandler {
                     .setCanceledOnTouchOutside(false)
                     .setInitListener(new RDialog.OnInitListener() {
                         @Override
-                        public void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
+                        public void onInitDialog(@NonNull Dialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
                             dialogViewHolder.tv(R.id.base_dialog_title_view).setText("发生了什么啊^_^");
                             dialogViewHolder.visible(R.id.base_dialog_top_content_view, true)
                                     .tv(R.id.base_dialog_top_content_view)

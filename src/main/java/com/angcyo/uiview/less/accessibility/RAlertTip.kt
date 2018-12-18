@@ -45,7 +45,7 @@ class RAlertTip {
 
     fun hide() {
         dialog?.let {
-            it.dismiss()
+            it.cancel()
         }
     }
 

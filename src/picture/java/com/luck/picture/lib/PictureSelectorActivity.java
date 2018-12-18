@@ -587,7 +587,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 try {
                     if (audioDialog != null
                             && audioDialog.isShowing()) {
-                        audioDialog.dismiss();
+                        audioDialog.cancel();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -667,7 +667,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 try {
                     if (audioDialog != null
                             && audioDialog.isShowing()) {
-                        audioDialog.dismiss();
+                        audioDialog.cancel();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

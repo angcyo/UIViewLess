@@ -445,4 +445,5 @@
         <item name="android:paddingStart">@dimen/base_xhdpi</item>
         <item name="android:paddingTop">@dimen/base_hdpi</item>
     </style>
+
 </resources>

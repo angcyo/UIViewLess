@@ -6,17 +6,25 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.*;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.kotlin.ViewExKt;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.resources.ResUtil;
+import com.angcyo.uiview.less.widget.ExEditText;
 import com.angcyo.uiview.less.widget.group.RSoftInputLayout;
+import com.angcyo.uiview.less.widget.pager.TextIndicator;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +41,6 @@ import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
 public class RDialog {
 
     static WeakHashMap<Integer, List<Dialog>> dialogMap = new WeakHashMap<>();
-    static Handler mainHandle = new Handler(Looper.getMainLooper());
 
     public static void tip(Context context,
                            String message) {
@@ -66,6 +73,10 @@ public class RDialog {
                 .showAlertDialog();
     }
 
+    public static InputBuilder input(@NonNull Context context) {
+        return new InputBuilder(context);
+    }
+
     /**
      * 加载中的对话框
      */
@@ -92,12 +103,7 @@ public class RDialog {
     }
 
     public static void hide(final Context context) {
-        mainHandle.post(new Runnable() {
-            @Override
-            public void run() {
-                dismiss(dialogMap.remove(context.hashCode()));
-            }
-        });
+        cancel(dialogMap.remove(context.hashCode()));
     }
 
     public static void hide() {
@@ -105,15 +111,15 @@ public class RDialog {
         RDialog.dialogMap.clear();
 
         for (WeakHashMap.Entry<Integer, List<Dialog>> entry : hashMap.entrySet()) {
-            dismiss(entry.getValue());
+            cancel(entry.getValue());
         }
         hashMap.clear();
     }
 
-    private static void dismiss(List<Dialog> dialogs) {
+    private static void cancel(List<Dialog> dialogs) {
         if (!RUtils.isListEmpty(dialogs)) {
             for (Dialog dialog : dialogs) {
-                dialog.dismiss();
+                dialog.cancel();
             }
         }
     }
@@ -150,6 +156,7 @@ public class RDialog {
 
         int dialogWidth = NO_NUM;
         int dialogHeight = NO_NUM;
+        int dialogGravity = NO_NUM;
 
         /**
          * 对话框变暗指数, [0,1]
@@ -243,6 +250,11 @@ public class RDialog {
             return this;
         }
 
+        public Builder setDialogGravity(int dialogGravity) {
+            this.dialogGravity = dialogGravity;
+            return this;
+        }
+
         //</editor-fold>
 
         //<editor-fold desc="系统默认3个按钮设置">
@@ -259,6 +271,7 @@ public class RDialog {
         DialogInterface.OnClickListener neutralButtonListener;
 
         DialogInterface.OnDismissListener onDismissListener;
+        DialogInterface.OnCancelListener onCancelListener;
 
         public Builder setPositiveButtonText(CharSequence positiveButtonText) {
             this.positiveButtonText = positiveButtonText;
@@ -295,21 +308,115 @@ public class RDialog {
             return this;
         }
 
+        public Builder setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
+            this.onCancelListener = onCancelListener;
+            return this;
+        }
+
         //</editor-fold>
 
-        public AlertDialog showAlertDialog() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setCancelable(cancelable);
+        /**
+         * 配置window特性, 需要在setContentView之前调用
+         */
+        private void configWindow(@NonNull Dialog dialog) {
+            Window window = dialog.getWindow();
+
+            if (window != null) {
+
+                if (dialog instanceof AlertDialog) {
+                } else {
+                    //window.requestFeature(Window.FEATURE_NO_TITLE);
+                    //window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        window.setNavigationBarColor(SkinHelper.getSkin().getThemeColor());
+//                    }
+                }
+
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+                if (dialogBgDrawable != null) {
+                    window.setBackgroundDrawable(dialogBgDrawable);
+                }
+
+                if (amount != NO_NUM) {
+                    window.setDimAmount(amount);
+                }
+
+                if (animStyleResId != NO_NUM) {
+                    window.setWindowAnimations(animStyleResId);
+                }
+            }
+        }
+
+        private void configDialog(@NonNull Dialog dialog) {
+            dialog.setCancelable(cancelable);
 
             if (!TextUtils.isEmpty(dialogTitle)) {
-                builder.setTitle(dialogTitle);
-            }
-            if (!TextUtils.isEmpty(dialogMessage)) {
-                builder.setMessage(dialogMessage);
+                dialog.setTitle(dialogTitle);
             }
 
             if (onDismissListener != null) {
-                builder.setOnDismissListener(onDismissListener);
+                dialog.setOnDismissListener(onDismissListener);
+            }
+
+            if (onCancelListener != null) {
+                dialog.setOnCancelListener(onCancelListener);
+            }
+
+            dialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
+
+
+            Window window = dialog.getWindow();
+            View decorView;
+
+            configWindow(dialog);
+
+            if (dialog instanceof AlertDialog) {
+
+            } else {
+                if (contentView != null) {
+                    dialog.setContentView(contentView);
+                } else if (layoutId != -1) {
+                    dialog.setContentView(layoutId);
+                }
+            }
+
+            //显示对话框
+            dialog.show();
+
+            if (window != null) {
+                WindowManager.LayoutParams attributes = window.getAttributes();
+
+                // window的宽高设置
+                if (dialogWidth != NO_NUM && dialogHeight != NO_NUM) {
+                    window.setLayout(dialogWidth, dialogHeight);
+                } else {
+                    if (dialogHeight != NO_NUM) {
+                        window.setLayout(attributes.width, dialogHeight);
+                    }
+                    if (dialogWidth != NO_NUM) {
+                        window.setLayout(dialogWidth, attributes.height);
+                    }
+                }
+
+                if (dialogGravity != NO_NUM) {
+                    attributes.gravity = dialogGravity;
+                    window.setAttributes(attributes);
+                }
+
+                decorView = window.getDecorView();
+                if (initListener != null) {
+                    initListener.onInitDialog(dialog, new RBaseViewHolder(decorView));
+                }
+            }
+
+        }
+
+        public AlertDialog showAlertDialog() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            if (!TextUtils.isEmpty(dialogMessage)) {
+                builder.setMessage(dialogMessage);
             }
 
             //积极的按钮 DialogInterface.BUTTON_POSITIVE
@@ -332,58 +439,227 @@ public class RDialog {
             }
 
             AlertDialog alertDialog = builder.create();
-            alertDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-
-            Window window = alertDialog.getWindow();
-            View decorView;
-
-            if (window != null) {
-                //window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-                if (dialogBgDrawable != null) {
-                    window.setBackgroundDrawable(dialogBgDrawable);
-                }
-
-                if (amount != NO_NUM) {
-                    window.setDimAmount(amount);
-                }
-
-                if (animStyleResId != NO_NUM) {
-                    window.setWindowAnimations(animStyleResId);
-                }
-            }
+            configDialog(alertDialog);
 
             //alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
             //alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
             //alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-
-            alertDialog.show();
-
-            if (window != null) {
-
-                // window的宽高设置
-                if (dialogWidth != NO_NUM && dialogHeight != NO_NUM) {
-                    window.setLayout(dialogWidth, dialogHeight);
-                } else {
-                    if (dialogHeight != NO_NUM) {
-                        window.setLayout(window.getAttributes().width, dialogHeight);
-                    }
-                    if (dialogWidth != NO_NUM) {
-                        window.setLayout(dialogWidth, window.getAttributes().height);
-                    }
-                }
-
-                decorView = window.getDecorView();
-                if (initListener != null) {
-                    initListener.onInitDialog(alertDialog, new RBaseViewHolder(decorView));
-                }
-            }
             return alertDialog;
         }
 
+        public BottomSheetDialog showSheetDialog() {
+            BottomSheetDialog sheetDialog = new BottomSheetDialog(context);
+            configDialog(sheetDialog);
+            return sheetDialog;
+        }
+
+        public AppCompatDialog showCompatDialog() {
+            AppCompatDialog dialog = new AppCompatDialog(context);
+            dialog.requestWindowFeature(0);
+            configDialog(dialog);
+            return dialog;
+        }
+    }
+
+    public static class InputBuilder {
+        @NonNull
+        Context context;
+        int maxInputLength = 0;
+        int inputViewHeight = -1;
+
+        /**
+         * 文本框hint文本
+         */
+        String hintInputString = "请输入...";
+
+        /**
+         * 左上角标题提示
+         */
+        String tipInputString = "";
+        /**
+         * 缺省的文本框内容
+         */
+        String defaultInputString = "";
+
+        String saveButtonText = null;
+
+        boolean showSoftInput = false;
+
+        /**
+         * 是否允许输入为空
+         */
+        boolean canInputEmpty = true;
+
+        boolean useCharLengthFilter = false;
+
+        OnInputListener inputListener;
+
+        OnInitListener initListener;
+
+        public InputBuilder setMaxInputLength(int maxInputLength) {
+            this.maxInputLength = maxInputLength;
+            return this;
+        }
+
+        public InputBuilder setInputViewHeight(int inputViewHeight) {
+            this.inputViewHeight = inputViewHeight;
+            return this;
+        }
+
+        public InputBuilder setHintInputString(String hintInputString) {
+            this.hintInputString = hintInputString;
+            return this;
+        }
+
+        public InputBuilder setTipInputString(String tipInputString) {
+            this.tipInputString = tipInputString;
+            return this;
+        }
+
+        public InputBuilder setDefaultInputString(String defaultInputString) {
+            this.defaultInputString = defaultInputString;
+            return this;
+        }
+
+        public InputBuilder setShowSoftInput(boolean showSoftInput) {
+            this.showSoftInput = showSoftInput;
+            return this;
+        }
+
+        public InputBuilder setInputListener(OnInputListener inputListener) {
+            this.inputListener = inputListener;
+            return this;
+        }
+
+        public InputBuilder setInitListener(OnInitListener initListener) {
+            this.initListener = initListener;
+            return this;
+        }
+
+        public InputBuilder setCanInputEmpty(boolean canInputEmpty) {
+            this.canInputEmpty = canInputEmpty;
+            return this;
+        }
+
+        public InputBuilder setUseCharLengthFilter(boolean useCharLengthFilter) {
+            this.useCharLengthFilter = useCharLengthFilter;
+            return this;
+        }
+
+        public InputBuilder setSaveButtonText(String saveButtonText) {
+            this.saveButtonText = saveButtonText;
+            return this;
+        }
+
+        public InputBuilder(@NonNull Context context) {
+            this.context = context;
+        }
+
+        public void doIt() {
+            RDialog.build(context)
+                    .setContentLayoutId(R.layout.dialog_base_input_layout)
+                    .setCanceledOnTouchOutside(false)
+                    .setDialogWidth(-1)
+                    .setDialogHeight(-2)
+                    .setDialogBgColor(Color.TRANSPARENT)
+                    .setDialogGravity(Gravity.BOTTOM)
+                    .setInitListener(new OnInitListener() {
+                        @Override
+                        public void onInitDialog(@NonNull final Dialog dialog, @NonNull final RBaseViewHolder dialogViewHolder) {
+                            final ExEditText editView = dialogViewHolder.v(R.id.base_edit_text_view);
+                            TextIndicator indicatorView = dialogViewHolder.v(R.id.base_single_text_indicator_view);
+
+                            TextView tipView = dialogViewHolder.v(R.id.base_input_tip_view);
+                            if (!TextUtils.isEmpty(tipInputString)) {
+                                tipView.setVisibility(View.VISIBLE);
+                                tipView.setText(tipInputString);
+                            }
+
+                            if (!canInputEmpty) {
+                                ViewExKt.onEmptyText(editView, new Function1<Boolean, Unit>() {
+                                    @Override
+                                    public Unit invoke(Boolean aBoolean) {
+                                        dialogViewHolder.enable(R.id.base_save_button, !aBoolean);
+                                        return null;
+                                    }
+                                });
+                                dialogViewHolder.enable(R.id.base_save_button, !TextUtils.isEmpty(defaultInputString));
+                            }
+
+                            if (useCharLengthFilter) {
+                                editView.setUseCharLengthFilter(useCharLengthFilter);
+                            }
+
+                            if (maxInputLength >= 0) {
+                                editView.setMaxLength(maxInputLength);
+                                indicatorView.setVisibility(View.VISIBLE);
+                                indicatorView.initIndicator(maxInputLength, editView);
+                            }
+
+                            if (inputViewHeight > 0) {
+                                UI.setViewHeight(editView, inputViewHeight);
+                                editView.setGravity(Gravity.TOP);
+                            } else {
+                                editView.setGravity(Gravity.CENTER_VERTICAL);
+                                editView.setSingleLine(true);
+                                editView.setMaxLines(1);
+                            }
+
+                            editView.setHint(hintInputString);
+                            editView.setInputText(defaultInputString);
+
+                            if (saveButtonText != null) {
+                                dialogViewHolder.tv(R.id.base_save_button).setText(saveButtonText);
+                            }
+                            dialogViewHolder.click(R.id.base_save_button, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    boolean canCancel = true;
+                                    if (inputListener != null) {
+                                        canCancel = !inputListener.onSaveClick(dialogViewHolder, editView, editView.string());
+                                    }
+
+                                    if (canCancel) {
+                                        if (inputListener != null) {
+                                            inputListener.onInputString(editView.string());
+                                        }
+                                        dialog.cancel();
+                                    }
+                                }
+                            });
+
+                            if (showSoftInput) {
+                                dialogViewHolder.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showSoftInput(editView);
+                                    }
+                                });
+                            }
+
+                            if (initListener != null) {
+                                initListener.onInitDialog(dialog, dialogViewHolder);
+                            }
+                        }
+                    })
+                    .showCompatDialog();
+        }
+
+        private void showSoftInput(View view) {
+            RSoftInputLayout.showSoftInput(view);
+        }
     }
 
     public static abstract class OnInitListener {
-        public abstract void onInitDialog(@NonNull AlertDialog dialog, @NonNull RBaseViewHolder dialogViewHolder);
+        public abstract void onInitDialog(@NonNull Dialog dialog, @NonNull RBaseViewHolder dialogViewHolder);
+    }
+
+    public static abstract class OnInputListener {
+        public boolean onSaveClick(@NonNull RBaseViewHolder dialogViewHolder, @NonNull ExEditText editView, @NonNull String input) {
+            return false;
+        }
+
+        @NonNull
+        public abstract void onInputString(@NonNull String input);
     }
 }

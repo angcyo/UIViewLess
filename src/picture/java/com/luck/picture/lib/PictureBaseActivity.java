@@ -11,13 +11,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-
 import com.angcyo.uiview.less.R;
-import com.angcyo.uiview.less.base.BaseAppCompatActivity;
 import com.angcyo.uiview.less.base.Debug;
 import com.angcyo.uiview.less.picture.RPicture;
 import com.luck.picture.lib.compress.Luban;
@@ -37,19 +33,17 @@ import com.luck.picture.lib.tools.DoubleUtils;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropMulti;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author：luck
@@ -174,7 +168,7 @@ public class PictureBaseActivity extends FragmentActivity {
     protected void dismissDialog() {
         try {
             if (dialog != null && dialog.isShowing()) {
-                dialog.dismiss();
+                dialog.cancel();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +195,7 @@ public class PictureBaseActivity extends FragmentActivity {
             if (!isFinishing()
                     && compressDialog != null
                     && compressDialog.isShowing()) {
-                compressDialog.dismiss();
+                compressDialog.cancel();
             }
         } catch (Exception e) {
             e.printStackTrace();

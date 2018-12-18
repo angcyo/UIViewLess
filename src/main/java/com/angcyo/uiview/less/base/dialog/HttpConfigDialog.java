@@ -1,9 +1,9 @@
 package com.angcyo.uiview.less.base.dialog;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.CompoundButton;
 import com.angcyo.http.Http;
@@ -30,7 +30,7 @@ public class HttpConfigDialog {
                 .setContentLayoutId(R.layout.base_http_config_layout)
                 .setInitListener(new RDialog.OnInitListener() {
                     @Override
-                    public void onInitDialog(@NonNull final AlertDialog dialog, @NonNull final RBaseViewHolder dialogViewHolder) {
+                    public void onInitDialog(@NonNull final Dialog dialog, @NonNull final RBaseViewHolder dialogViewHolder) {
                         dialogViewHolder.exV(R.id.host_edit).setInputText(baseUrl);
 
                         dialogViewHolder.cb(R.id.map_box, RetrofitServiceMapping.enableMapping, new CompoundButton.OnCheckedChangeListener() {
@@ -70,7 +70,7 @@ public class HttpConfigDialog {
                                     onHttpConfig.onSaveBaseUrl(dialogViewHolder.exV(R.id.host_edit).string());
                                 }
 
-                                dialog.dismiss();
+                                dialog.cancel();
                             }
                         });
                     }

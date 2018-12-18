@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.picture.RPicture;
 import com.bumptech.glide.Glide;
@@ -44,6 +43,8 @@ import com.luck.picture.lib.widget.PreviewViewPager;
 import com.luck.picture.lib.widget.longimage.ImageSource;
 import com.luck.picture.lib.widget.longimage.ImageViewState;
 import com.luck.picture.lib.widget.longimage.SubsamplingScaleImageView;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -52,9 +53,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 /**
  * author：luck
@@ -302,7 +300,7 @@ public class PictureExternalPreviewActivity extends PictureBaseActivity implemen
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
+                dialog.cancel();
             }
         });
         btn_commit.setOnClickListener(new View.OnClickListener() {
@@ -327,7 +325,7 @@ public class PictureExternalPreviewActivity extends PictureBaseActivity implemen
                         e.printStackTrace();
                     }
                 }
-                dialog.dismiss();
+                dialog.cancel();
             }
         });
         dialog.show();

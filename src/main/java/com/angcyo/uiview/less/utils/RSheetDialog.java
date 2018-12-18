@@ -2,7 +2,6 @@ package com.angcyo.uiview.less.utils;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
@@ -112,7 +111,7 @@ public class RSheetDialog {
             mCancelView.setOnClickListener(new RClickListener() {
                 @Override
                 public void onRClick(@Nullable View view) {
-                    dialog.dismiss();
+                    dialog.cancel();
                     if (cancelButtonClickListener != null) {
                         cancelButtonClickListener.onClick(view);
                     }
@@ -171,7 +170,7 @@ public class RSheetDialog {
                 @Override
                 public void onRClick(final View view) {
                     if (info.autoCloseDialog) {
-                        dialog.dismiss();
+                        dialog.cancel();
                     }
                     if (info.mClickListener != null) {
                         info.mClickListener.onClick(view);

@@ -168,7 +168,7 @@ public class RPicture {
                     //.imageFormat(PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
                     //.setOutputCameraPath("/CustomPath")// 自定义拍照保存路径
                     // 是否裁剪
-                    .enableCrop(true)
+                    .enableCrop(false)
                     // 是否压缩
                     .compress(true)
                     //同步true或异步false 压缩 默认同步
