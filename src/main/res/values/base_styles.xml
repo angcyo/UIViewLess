@@ -446,4 +446,9 @@
         <item name="android:paddingTop">@dimen/base_hdpi</item>
     </style>
 
+    <style name="BaseDialogTranAnim" parent="Animation.Design.BottomSheetDialog">
+        <!--<item name="android:windowEnterAnimation">@anim/base_tran_to_bottom_enter</item>-->
+        <!--<item name="android:windowExitAnimation">@anim/base_tran_to_bottom_exit</item>-->
+    </style>
+
 </resources>

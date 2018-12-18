@@ -15,8 +15,16 @@ android {
         main {
             //manifest.srcFile 'src/main/AndroidManifest.xml'
             //manifest.(['src/main/AndroidManifest.xml'])
-            java.srcDirs = ['src/main/java', 'src/picture/java', 'src/ucrop/java']
-            res.srcDirs = ['src/main/res', 'src/picture/res', 'src/ucrop/res']
+            assets.srcDirs = ['src/main/assets',
+                              'src/github/assets']
+            java.srcDirs = ['src/main/java',
+                            'src/picture/java',
+                            'src/ucrop/java',
+                            'src/github/java']
+            res.srcDirs = ['src/main/res',
+                           'src/picture/res',
+                           'src/ucrop/res',
+                           'src/github/res']
         }
     }
 }

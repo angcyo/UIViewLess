@@ -15,7 +15,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.angcyo.http.HttpSubscriber;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.kotlin.ViewExKt;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
@@ -23,12 +25,20 @@ import com.angcyo.uiview.less.resources.ResUtil;
 import com.angcyo.uiview.less.widget.ExEditText;
 import com.angcyo.uiview.less.widget.group.RSoftInputLayout;
 import com.angcyo.uiview.less.widget.pager.TextIndicator;
+import com.bigkoo.pickerview.City;
+import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.ISelectTimeCallback;
+import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.WheelOptions;
+import com.bigkoo.pickerview.view.WheelTime;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
 
@@ -128,6 +138,38 @@ public class RDialog {
         return new Builder(context);
     }
 
+    public static TimeBuilder timeBuild(@NonNull Context context) {
+        return new TimeBuilder(context);
+    }
+
+    public static OptionsBuilder optionBuild(@NonNull Context context) {
+        return new OptionsBuilder(context);
+    }
+
+    public static Calendar getCalendar(@NonNull String time, @NonNull String pattern) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, Locale.CHINA);
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTimeInMillis(dateFormat.parse(time).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar;
+    }
+
+    public static Calendar getCalendar() {
+        return getCalendar(System.currentTimeMillis());
+    }
+
+    public static Calendar getCalendar(long millis /*时间的毫秒*/) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar;
+    }
+
+    /**
+     * 标准对话框
+     */
     public static class Builder {
 
         Context context;
@@ -174,6 +216,7 @@ public class RDialog {
 
         public Builder(@NonNull Context context) {
             this.context = context;
+            setAnimStyleResId(R.style.BaseDialogTranAnim);
         }
 
         public Builder setContentView(@NonNull View view) {
@@ -461,6 +504,9 @@ public class RDialog {
         }
     }
 
+    /**
+     * 文本输入对话框
+     */
     public static class InputBuilder {
         @NonNull
         Context context;
@@ -647,6 +693,456 @@ public class RDialog {
 
         private void showSoftInput(View view) {
             RSoftInputLayout.showSoftInput(view);
+        }
+    }
+
+    /**
+     * 时间选择器
+     */
+    public static class TimeBuilder extends TimePickerBuilder {
+
+        public static final String DEFAULT_PATTERN = "yyyy-MM-dd";
+        public static final SimpleDateFormat DF = new SimpleDateFormat(DEFAULT_PATTERN, Locale.CHINA);
+
+        public TimeBuilder(Context context) {
+            super(context);
+            //setHMS();
+            setRangDate(getCalendar("1970-01-01", DEFAULT_PATTERN), getCalendar());
+            setDate(getCalendar());
+        }
+
+        private WheelTime wheelTime; //自定义控件
+
+        /**
+         * 设置可以选择的时间范围, 要在setTime之前调用才有效果
+         */
+        private void setRange() {
+            wheelTime.setStartYear(mPickerOptions.startYear);
+            wheelTime.setEndYear(mPickerOptions.endYear);
+        }
+
+        /**
+         * 设置可以选择的时间范围, 要在setTime之前调用才有效果
+         */
+        private void setRangDate() {
+            wheelTime.setRangDate(mPickerOptions.startDate, mPickerOptions.endDate);
+            initDefaultSelectedDate();
+        }
+
+        private void initDefaultSelectedDate() {
+            //如果手动设置了时间范围
+            if (mPickerOptions.startDate != null && mPickerOptions.endDate != null) {
+                //若默认时间未设置，或者设置的默认时间越界了，则设置默认选中时间为开始时间。
+                if (mPickerOptions.date == null || mPickerOptions.date.getTimeInMillis() < mPickerOptions.startDate.getTimeInMillis()
+                        || mPickerOptions.date.getTimeInMillis() > mPickerOptions.endDate.getTimeInMillis()) {
+                    mPickerOptions.date = mPickerOptions.startDate;
+                }
+            } else if (mPickerOptions.startDate != null) {
+                //没有设置默认选中时间,那就拿开始时间当默认时间
+                mPickerOptions.date = mPickerOptions.startDate;
+            } else if (mPickerOptions.endDate != null) {
+                mPickerOptions.date = mPickerOptions.endDate;
+            }
+        }
+
+        /**
+         * 设置选中时间,默认选中当前时间
+         */
+        private void setTime() {
+            int year, month, day, hours, minute, seconds;
+            Calendar calendar = Calendar.getInstance();
+
+            if (mPickerOptions.date == null) {
+                calendar.setTimeInMillis(System.currentTimeMillis());
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                hours = calendar.get(Calendar.HOUR_OF_DAY);
+                minute = calendar.get(Calendar.MINUTE);
+                seconds = calendar.get(Calendar.SECOND);
+            } else {
+                year = mPickerOptions.date.get(Calendar.YEAR);
+                month = mPickerOptions.date.get(Calendar.MONTH);
+                day = mPickerOptions.date.get(Calendar.DAY_OF_MONTH);
+                hours = mPickerOptions.date.get(Calendar.HOUR_OF_DAY);
+                minute = mPickerOptions.date.get(Calendar.MINUTE);
+                seconds = mPickerOptions.date.get(Calendar.SECOND);
+            }
+
+            wheelTime.setPicker(year, month, day, hours, minute, seconds);
+        }
+
+        private void initWheelTime(LinearLayout timePickerView) {
+
+            wheelTime = new WheelTime(timePickerView, mPickerOptions.type, mPickerOptions.textGravity, mPickerOptions.textSizeContent);
+            if (mPickerOptions.timeSelectChangeListener != null) {
+                wheelTime.setSelectChangeCallback(new ISelectTimeCallback() {
+                    @Override
+                    public void onTimeSelectChanged() {
+                        try {
+                            Date date = WheelTime.dateFormat.parse(wheelTime.getTime());
+                            mPickerOptions.timeSelectChangeListener.onTimeSelectChanged(date);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            wheelTime.setLunarMode(mPickerOptions.isLunarCalendar);
+
+            if (mPickerOptions.startYear != 0 && mPickerOptions.endYear != 0
+                    && mPickerOptions.startYear <= mPickerOptions.endYear) {
+                setRange();
+            }
+
+            //若手动设置了时间范围限制
+            if (mPickerOptions.startDate != null && mPickerOptions.endDate != null) {
+                if (mPickerOptions.startDate.getTimeInMillis() > mPickerOptions.endDate.getTimeInMillis()) {
+                    throw new IllegalArgumentException("startDate can't be later than endDate");
+                } else {
+                    setRangDate();
+                }
+            } else if (mPickerOptions.startDate != null) {
+                if (mPickerOptions.startDate.get(Calendar.YEAR) < 1900) {
+                    throw new IllegalArgumentException("The startDate can not as early as 1900");
+                } else {
+                    setRangDate();
+                }
+            } else if (mPickerOptions.endDate != null) {
+                if (mPickerOptions.endDate.get(Calendar.YEAR) > 2100) {
+                    throw new IllegalArgumentException("The endDate should not be later than 2100");
+                } else {
+                    setRangDate();
+                }
+            } else {//没有设置时间范围限制，则会使用默认范围。
+                setRangDate();
+            }
+
+            setTime();
+            wheelTime.setLabels(mPickerOptions.label_year, mPickerOptions.label_month, mPickerOptions.label_day
+                    , mPickerOptions.label_hours, mPickerOptions.label_minutes, mPickerOptions.label_seconds);
+            wheelTime.setTextXOffset(mPickerOptions.x_offset_year, mPickerOptions.x_offset_month, mPickerOptions.x_offset_day,
+                    mPickerOptions.x_offset_hours, mPickerOptions.x_offset_minutes, mPickerOptions.x_offset_seconds);
+
+            setOutSideCancelable(mPickerOptions.cancelable);
+            wheelTime.setCyclic(mPickerOptions.cyclic);
+            wheelTime.setDividerColor(mPickerOptions.dividerColor);
+            wheelTime.setDividerType(mPickerOptions.dividerType);
+            wheelTime.setLineSpacingMultiplier(mPickerOptions.lineSpacingMultiplier);
+            wheelTime.setTextColorOut(mPickerOptions.textColorOut);
+            wheelTime.setTextColorCenter(mPickerOptions.textColorCenter);
+            wheelTime.isCenterLabel(mPickerOptions.isCenterLabel);
+        }
+
+        private void returnData(View clickView) {
+            if (mPickerOptions.timeSelectListener != null) {
+                try {
+                    Date date = WheelTime.dateFormat.parse(wheelTime.getTime());
+                    mPickerOptions.timeSelectListener.onTimeSelect(date, clickView);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /**
+         * 只显示年月日
+         */
+        public TimeBuilder setYMD() {
+            return setType(new boolean[]{true, true, true, false, false, false});
+        }
+
+        /**
+         * 只显示时分秒
+         */
+        public TimeBuilder setHMS() {
+            return setType(new boolean[]{false, false, false, true, true, true});
+        }
+
+        public TimeBuilder setDate(@NonNull String time, @NonNull String pattern) {
+            return setDate(getCalendar(time, pattern));
+        }
+
+        public TimeBuilder setDate(long millis /*时间的毫秒*/) {
+            return setDate(getCalendar(millis));
+        }
+
+        /**
+         * 设置当前默认的时间
+         */
+        @Override
+        public TimeBuilder setDate(Calendar date) {
+            super.setDate(date);
+            return this;
+        }
+
+        /**
+         * 设置 最小-最大时间
+         */
+        @Override
+        public TimeBuilder setRangDate(Calendar startDate, Calendar endDate) {
+            super.setRangDate(startDate, endDate);
+            return this;
+        }
+
+        /**
+         * 指定显示样式 YYYY-MM-dd HH-MM-SS
+         */
+        @Override
+        public TimeBuilder setType(boolean[] type) {
+            super.setType(type);
+            return this;
+        }
+
+        /**
+         * 事件监听
+         */
+        public TimeBuilder setTimeSelectListener(OnTimeSelectListener listener) {
+            timeSelectListener(listener);
+            return this;
+        }
+
+        public void doIt() {
+            //时间选择器
+            RDialog.build(mPickerOptions.context)
+                    .setContentLayoutId(R.layout.pickerview_time)
+                    .setDialogBgColor(Color.TRANSPARENT)
+                    .setDialogGravity(Gravity.BOTTOM)
+                    .setDialogWidth(-1)
+                    .setInitListener(new OnInitListener() {
+                        @Override
+                        public void onInitDialog(@NonNull final Dialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
+                            initWheelTime((LinearLayout) dialogViewHolder.v(R.id.timepicker));
+
+                            //标题
+                            //dialogViewHolder.tv(R.id.tvTitle)
+
+                            //取消
+                            dialogViewHolder.click(R.id.btnCancel, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            //确定
+                            dialogViewHolder.click(R.id.btnSubmit, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    returnData(v);
+                                    dialog.cancel();
+                                }
+                            });
+                        }
+                    })
+                    .showAlertDialog();
+        }
+    }
+
+    /**
+     * 城市选择, 自定义选择
+     */
+    public static class OptionsBuilder extends OptionsPickerBuilder {
+
+        /**
+         * 省市区, 是否显示区, 只在city选择对话框中有效
+         */
+        boolean showDistrict = true;
+
+        /**
+         * 默认选中的省市区
+         */
+        String province;
+        String city;
+        String district;
+
+        public OptionsBuilder(@NonNull Context context) {
+            super(context);
+        }
+
+        private WheelOptions wheelOptions;
+
+        private void initWheelOptions(LinearLayout optionsPicker) {
+            wheelOptions = new WheelOptions(optionsPicker, mPickerOptions.isRestoreItem);
+
+            wheelOptions.setTextContentSize(mPickerOptions.textSizeContent);
+            wheelOptions.setLabels(mPickerOptions.label1, mPickerOptions.label2, mPickerOptions.label3);
+            wheelOptions.setTextXOffset(mPickerOptions.x_offset_one, mPickerOptions.x_offset_two, mPickerOptions.x_offset_three);
+            wheelOptions.setCyclic(mPickerOptions.cyclic1, mPickerOptions.cyclic2, mPickerOptions.cyclic3);
+            wheelOptions.setTypeface(mPickerOptions.font);
+
+            setOutSideCancelable(mPickerOptions.cancelable);
+
+            wheelOptions.setDividerColor(mPickerOptions.dividerColor);
+            wheelOptions.setDividerType(mPickerOptions.dividerType);
+            wheelOptions.setLineSpacingMultiplier(mPickerOptions.lineSpacingMultiplier);
+            wheelOptions.setTextColorOut(mPickerOptions.textColorOut);
+            wheelOptions.setTextColorCenter(mPickerOptions.textColorCenter);
+            wheelOptions.isCenterLabel(mPickerOptions.isCenterLabel);
+        }
+
+        //抽离接口回调的方法
+        private void returnData(View clickView) {
+            if (mPickerOptions.optionsSelectListener != null) {
+                int[] optionsCurrentItems = wheelOptions.getCurrentItems();
+                mPickerOptions.optionsSelectListener.onOptionsSelect(optionsCurrentItems[0], optionsCurrentItems[1], optionsCurrentItems[2], clickView);
+            }
+        }
+
+        public OptionsBuilder setOptionsSelectListener(OnOptionsSelectListener listener) {
+            optionsSelectListener(listener);
+            return this;
+        }
+
+        @Override
+        public OptionsBuilder setSelectOptions(int option1) {
+            super.setSelectOptions(option1);
+            return this;
+        }
+
+        @Override
+        public OptionsBuilder setSelectOptions(int option1, int option2) {
+            super.setSelectOptions(option1, option2);
+            return this;
+        }
+
+        @Override
+        public OptionsBuilder setSelectOptions(int option1, int option2, int option3) {
+            super.setSelectOptions(option1, option2, option3);
+            return this;
+        }
+
+        private void reSetCurrentItems() {
+            if (wheelOptions != null) {
+                wheelOptions.setCurrentItems(mPickerOptions.option1, mPickerOptions.option2, mPickerOptions.option3);
+            }
+        }
+
+        /**
+         * 设置选项
+         */
+        public OptionsBuilder setPicker(List optionsItems) {
+            this.setPicker(optionsItems, null, null);
+            return this;
+        }
+
+        public OptionsBuilder setPicker(List options1Items, List<List> options2Items) {
+            this.setPicker(options1Items, options2Items, null);
+            return this;
+        }
+
+        List options1Items = new ArrayList();
+        List<List> options2Items;
+        List<List<List>> options3Items;
+
+        public OptionsBuilder setPicker(List options1Items,
+                                        List<List> options2Items,
+                                        List<List<List>> options3Items) {
+            this.options1Items = options1Items;
+            this.options2Items = options2Items;
+            this.options3Items = options3Items;
+            return this;
+        }
+
+        //不联动情况下调用
+        private void setNPicker(List options1Items,
+                                List options2Items,
+                                List options3Items) {
+            wheelOptions.setLinkage(false);
+            wheelOptions.setNPicker(options1Items, options2Items, options3Items);
+            reSetCurrentItems();
+        }
+
+        public OptionsBuilder setShowDistrict(boolean showDistrict) {
+            this.showDistrict = showDistrict;
+            return this;
+        }
+
+        public OptionsBuilder setProvinceCityDistrict(String province, String city, String district) {
+            this.province = province;
+            this.city = city;
+            this.district = district;
+            return this;
+        }
+
+        /**
+         * 城市信息选择
+         */
+        public void city() {
+            City.initJson()
+                    .subscribe(new HttpSubscriber<Boolean>() {
+                        @Override
+                        public void onEnd(@Nullable Boolean data, @Nullable Throwable error) {
+                            super.onEnd(data, error);
+                            if (data != null && data) {
+                                if (showDistrict) {
+                                    setPicker(City.options1Items, City.options2Items, City.options3Items);
+                                } else {
+                                    setPicker(City.options1Items, City.options2Items, null);
+                                }
+
+                                int index1 = 0, index2 = 0, index3 = 0;
+                                if (!TextUtils.isEmpty(province)) {
+                                    index1 = City.getProvinceIndex(province);
+
+                                    if (!TextUtils.isEmpty(city)) {
+                                        index2 = City.getCityIndex(province, city);
+
+                                        if (!TextUtils.isEmpty(district)) {
+                                            index3 = City.getDistrictIndex(province, city, district);
+                                        }
+                                    }
+                                }
+
+                                setSelectOptions(index1, index2, index3);
+
+                                doIt();
+                            }
+                        }
+                    });
+        }
+
+        /**
+         * 默认选项选择器
+         */
+        public void doIt() {
+            //时间选择器
+            RDialog.build(mPickerOptions.context)
+                    .setContentLayoutId(R.layout.pickerview_options)
+                    .setDialogBgColor(Color.TRANSPARENT)
+                    .setDialogGravity(Gravity.BOTTOM)
+                    .setDialogWidth(-1)
+                    .setInitListener(new OnInitListener() {
+                        @Override
+                        public void onInitDialog(@NonNull final Dialog dialog, @NonNull RBaseViewHolder dialogViewHolder) {
+                            initWheelOptions((LinearLayout) dialogViewHolder.v(R.id.optionspicker));
+
+                            wheelOptions.setPicker(options1Items, options2Items, options3Items);
+                            reSetCurrentItems();
+
+                            //标题
+                            //dialogViewHolder.tv(R.id.tvTitle)
+
+                            //取消
+                            dialogViewHolder.click(R.id.btnCancel, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            //确定
+                            dialogViewHolder.click(R.id.btnSubmit, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    returnData(v);
+                                    dialog.cancel();
+                                }
+                            });
+                        }
+                    })
+                    .showAlertDialog();
         }
     }
 
