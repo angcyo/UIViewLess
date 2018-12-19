@@ -941,14 +941,14 @@ public class RUtils {
         return connect(list, ",");
     }
 
-    public static <T> String connect(List<T> list, String regex) {
-        if (list == null) {
+    public static <T> String connect(List<T> list, String divide) {
+        if (isListEmpty(list)) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
         for (T bean : list) {
             builder.append(bean.toString());
-            builder.append(regex);
+            builder.append(divide);
         }
         return safe(builder);
     }

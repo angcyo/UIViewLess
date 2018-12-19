@@ -168,6 +168,16 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
             fragmentContentWrapperLayout.setContentLayoutState(FragmentContentWrapperLayout.CONTENT_BACK_OF_TITLE);
         }
         setTitleBarLayoutColor(Color.TRANSPARENT);
+        hideTitleShadow();
+    }
+
+    /**
+     * 隐藏默认的装饰
+     */
+    public void hideBaseStyle() {
+        hideTitleView();
+        hideTitleShadow();
+        hideBackView();
     }
 
     /**

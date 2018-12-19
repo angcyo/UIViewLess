@@ -9,6 +9,8 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 /**
+ * 此布局会占满RecycleView第一屏的底部所有空间
+ * <p>
  * Email:angcyo@126.com
  *
  * @author angcyo

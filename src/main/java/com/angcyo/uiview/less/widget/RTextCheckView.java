@@ -115,8 +115,6 @@ public class RTextCheckView extends AppCompatTextView implements View.OnClickLis
 
         mChecked = checked;
 
-        refreshDrawableState();
-
         if (mOnCheckedChangeListener != null && notifyChanged) {
             mOnCheckedChangeListener.onCheckedChanged(this, mChecked);
         }

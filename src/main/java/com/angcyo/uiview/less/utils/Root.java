@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.RApplication;
@@ -286,24 +287,69 @@ public class Root {
     }
 
     /**
-     * 伪造一个自己的Imei
+     * 伪造一个自己的Imei,
+     * 在内部和外部都创建一个相同id的文件, 防止重装后重新分配.
+     * <p>
+     * 重装后, 没有sd卡权限, 所有只能用来简单统计应用重装次数
+     * <p>
+     * 038d4833-5fa1-47a0-8c43-3ef3b8a9d103
      */
     public static String initImei() {
         String imeiPath = getAppInternalDir("card");
-        File imeiFile = new File(imeiPath);
+        String sdUUIDPath = getAppExternalFolder(".card");
 
-        String uuid = UUID.randomUUID().toString();
-        if (imeiFile.isDirectory()) {
-            if (imeiFile.list().length > 0) {
+        File imeiFile = new File(imeiPath);
+        File sdUUIDPathFile = new File(sdUUIDPath);
+
+        //是否已经创建过imei
+        String uuid = "";
+
+        try {
+            imeiFile.mkdirs();
+            sdUUIDPathFile.mkdirs();
+
+            //优先从内部存储获取imei
+            if (getFolderFileCount(imeiPath) > 0) {
                 uuid = imeiFile.listFiles()[0].getName();
-            } else {
-                try {
-                    new File(imeiPath + File.separator + uuid).createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } else if (getFolderFileCount(sdUUIDPath) > 0) {
+                uuid = sdUUIDPathFile.listFiles()[0].getName();
             }
+
+            //没有创建过imei
+            if (TextUtils.isEmpty(uuid)) {
+                //创建一个新的imei
+                uuid = UUID.randomUUID().toString();
+            }
+
+            new File(imeiPath + File.separator + uuid).createNewFile();
+            new File(sdUUIDPathFile + File.separator + uuid).createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        if (TextUtils.isEmpty(uuid)) {
+            //创建一个新的imei
+            uuid = UUID.randomUUID().toString();
+        }
+
         return uuid;
+    }
+
+    /**
+     * 返回文件夹中, 文件的数量
+     */
+    public static int getFolderFileCount(@Nullable String folder) {
+        if (TextUtils.isEmpty(folder)) {
+            return 0;
+        }
+        File folderFile = new File(folder);
+        if (!folderFile.isDirectory()) {
+            return 0;
+        }
+        String[] strings = folderFile.list();
+        if (strings == null) {
+            return 0;
+        }
+        return strings.length;
     }
 }

@@ -153,6 +153,7 @@ public class RDialog {
             calendar.setTimeInMillis(dateFormat.parse(time).getTime());
         } catch (ParseException e) {
             e.printStackTrace();
+            return getCalendar();
         }
         return calendar;
     }
@@ -707,8 +708,8 @@ public class RDialog {
         public TimeBuilder(Context context) {
             super(context);
             //setHMS();
-            setRangDate(getCalendar("1970-01-01", DEFAULT_PATTERN), getCalendar());
             setDate(getCalendar());
+            setRangDate(getCalendar("1970-01-01", DEFAULT_PATTERN), getCalendar());
         }
 
         private WheelTime wheelTime; //自定义控件
@@ -860,7 +861,10 @@ public class RDialog {
             return setType(new boolean[]{false, false, false, true, true, true});
         }
 
-        public TimeBuilder setDate(@NonNull String time, @NonNull String pattern) {
+        public TimeBuilder setDate(@Nullable String time, @NonNull String pattern) {
+            if (TextUtils.isEmpty(time)) {
+                return this;
+            }
             return setDate(getCalendar(time, pattern));
         }
 

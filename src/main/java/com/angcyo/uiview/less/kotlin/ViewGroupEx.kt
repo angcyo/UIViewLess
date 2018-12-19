@@ -9,6 +9,7 @@ import android.view.animation.Animation
 import android.view.animation.AnticipateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.EditText
+import android.widget.TextView
 import com.angcyo.uiview.less.resources.AnimUtil
 import com.angcyo.uiview.less.widget.group.RSoftInputLayout
 
@@ -80,7 +81,12 @@ public fun ViewGroup.findView(touchRawX: Float, touchRawY: Float): View? {
     return findView(this, touchRawX, touchRawY, getLayoutOffsetTopWidthSoftInput())
 }
 
-public fun ViewGroup.findView(targetView: View /*判断需要结果的View*/, touchRawX: Float, touchRawY: Float, offsetTop: Int = 0): View? {
+public fun ViewGroup.findView(
+    targetView: View /*判断需要结果的View*/,
+    touchRawX: Float,
+    touchRawY: Float,
+    offsetTop: Int = 0
+): View? {
     /**键盘的高度*/
     var touchView: View? = targetView
     val rect = Rect()
@@ -101,11 +107,12 @@ public fun ViewGroup.findView(targetView: View /*判断需要结果的View*/, to
 
         fun check(view: View): View? {
             if (view.visibility == View.VISIBLE &&
-                    view.measuredHeight != 0 &&
-                    view.measuredWidth != 0 &&
-                    (view.left != view.right) &&
-                    (view.top != view.bottom) &&
-                    rect.contains(touchRawX.toInt(), touchRawY.toInt())) {
+                view.measuredHeight != 0 &&
+                view.measuredWidth != 0 &&
+                (view.left != view.right) &&
+                (view.top != view.bottom) &&
+                rect.contains(touchRawX.toInt(), touchRawY.toInt())
+            ) {
                 return view
             }
             return null
@@ -134,7 +141,12 @@ public fun ViewGroup.findView(targetView: View /*判断需要结果的View*/, to
     return touchView
 }
 
-public fun ViewGroup.findRecyclerView(targetView: View /*判断需要结果的View*/, touchRawX: Float, touchRawY: Float, offsetTop: Int = 0): RecyclerView? {
+public fun ViewGroup.findRecyclerView(
+    targetView: View /*判断需要结果的View*/,
+    touchRawX: Float,
+    touchRawY: Float,
+    offsetTop: Int = 0
+): RecyclerView? {
     /**键盘的高度*/
     var touchView: RecyclerView? = null
     val rect = Rect()
@@ -150,11 +162,12 @@ public fun ViewGroup.findRecyclerView(targetView: View /*判断需要结果的Vi
 
         fun check(view: View): View? {
             if (view.visibility == View.VISIBLE &&
-                    view.measuredHeight != 0 &&
-                    view.measuredWidth != 0 &&
-                    (view.left != view.right) &&
-                    (view.top != view.bottom) &&
-                    rect.contains(touchRawX.toInt(), touchRawY.toInt())) {
+                view.measuredHeight != 0 &&
+                view.measuredWidth != 0 &&
+                (view.left != view.right) &&
+                (view.top != view.bottom) &&
+                rect.contains(touchRawX.toInt(), touchRawY.toInt())
+            ) {
                 return view
             }
             return null
@@ -254,15 +267,16 @@ public fun ViewGroup.show(@LayoutRes layoutId: Int, animType: IViewAnimationType
         IViewAnimationType.SCALE_TO_MAX_AND_TO_MAX_END_OVERSHOOT -> {
             val animation = AnimUtil.scaleMaxAlphaStartAnimation(0.7f)
             if (animType == IViewAnimationType.SCALE_TO_MAX_OVERSHOOT ||
-                    animType == IViewAnimationType.SCALE_TO_MAX_AND_END_OVERSHOOT ||
-                    animType == IViewAnimationType.SCALE_TO_MAX_AND_TO_MAX_END_OVERSHOOT) {
+                animType == IViewAnimationType.SCALE_TO_MAX_AND_END_OVERSHOOT ||
+                animType == IViewAnimationType.SCALE_TO_MAX_AND_TO_MAX_END_OVERSHOOT
+            ) {
                 animation.interpolator = OvershootInterpolator()
             }
             enterAnimation = animation
 
             otherExitAnimation = AnimUtil.createOtherExitNoAnim()
         }
-    //默认 IViewAnimationType.TRANSLATE_HORIZONTAL
+        //默认 IViewAnimationType.TRANSLATE_HORIZONTAL
         else -> {
             enterAnimation = AnimUtil.translateXStartAnimation()
             otherExitAnimation = AnimUtil.translateXOtherFinishAnimation()
@@ -342,9 +356,9 @@ public fun ViewGroup.hide(@LayoutRes layoutId: Int, animType: IViewAnimationType
 
             otherEnterAnimation = AnimUtil.createOtherEnterNoAnim()
         }
-    //IViewAnimationType.SCALE_TO_MAX,
-    //IViewAnimationType.SCALE_TO_MAX_OVERSHOOT,
-    //IViewAnimationType.TRANSLATE_HORIZONTAL ->
+        //IViewAnimationType.SCALE_TO_MAX,
+        //IViewAnimationType.SCALE_TO_MAX_OVERSHOOT,
+        //IViewAnimationType.TRANSLATE_HORIZONTAL ->
         else -> {
             exitAnimation = AnimUtil.translateXFinishAnimation()
             otherEnterAnimation = AnimUtil.translateXOtherStartAnimation()
@@ -401,6 +415,26 @@ public fun ViewGroup.hide(@LayoutRes layoutId: Int, exitAnimation: Animation?, o
         }
     }
     return viewWithTag
+}
+
+/**获取ViewGroup中, 所有child的文本信息*/
+public fun ViewGroup.getChildTexts(getViewTextCallback: OnGetViewTextCallback = OnGetViewTextCallback()): List<String> {
+    val list = mutableListOf<String>()
+    for (i in 0 until childCount) {
+        getViewTextCallback.getViewText(getChildAt(i))?.let {
+            list.add(it)
+        }
+    }
+    return list
+}
+
+open class OnGetViewTextCallback {
+    open fun getViewText(view: View): String? {
+        if (view is TextView) {
+            return "${view.text}"
+        }
+        return null
+    }
 }
 
 abstract class OnAddViewCallback<T> {
