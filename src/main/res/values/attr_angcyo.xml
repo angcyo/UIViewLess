@@ -253,6 +253,7 @@
         <attr name="r_tip_text"/>
         <attr name="r_tip_text_size"/>
         <attr name="r_tip_text_color"/>
+        <attr name="r_highlight_word_color" format="color"/>
         <attr name="r_tip_text_bg"/>
         <attr name="r_tip_text_left_offset"/>
         <attr name="r_tip_text_top_offset"/>

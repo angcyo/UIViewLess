@@ -290,6 +290,14 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
         rightControl().addView(itemView);
     }
 
+    public ViewGroupHelper rootControl() {
+        return new ViewGroupHelper(getView());
+    }
+
+    public ViewGroupHelper contentControl() {
+        return new ViewGroupHelper(baseViewHolder.vg(R.id.base_content_wrapper_layout));
+    }
+
     public ViewGroupHelper leftControl() {
         return new ViewGroupHelper(baseViewHolder.vg(R.id.base_title_left_layout));
     }

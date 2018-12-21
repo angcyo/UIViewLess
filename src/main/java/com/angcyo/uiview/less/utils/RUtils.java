@@ -910,19 +910,42 @@ public class RUtils {
     }
 
     public static ArrayList<String> split(String string, String regex, boolean allowEmpty) {
+        return split(string, regex, allowEmpty, true);
+    }
+
+    public static ArrayList<String> split(String string, String regex, boolean allowEmpty, boolean checkExist) {
+        return split(string, regex, allowEmpty, checkExist, Integer.MAX_VALUE);
+    }
+
+    public static ArrayList<String> split(String string, String regex, boolean allowEmpty, boolean checkExist, int maxSize) {
         final ArrayList<String> list = new ArrayList<>();
         if (!"null".equalsIgnoreCase(string) && !TextUtils.isEmpty(string)) {
             final String[] split = string.split(regex, Integer.MAX_VALUE);
             for (String s : split) {
+                String add = s;
+
+                //允许出现控制
                 if (allowEmpty) {
                     if (s == null) {
-                        list.add("");
-                    } else {
-                        list.add(s);
+                        add = "";
                     }
                 } else {
-                    if (!TextUtils.isEmpty(s)) {
-                        list.add(s);
+                    if (TextUtils.isEmpty(s)) {
+                        add = null;
+                    }
+                }
+
+                if (add != null) {
+                    if (checkExist) {
+                        if (list.contains(add)) {
+                            add = null;
+                        }
+                    }
+                }
+
+                if (add != null) {
+                    if (list.size() <= maxSize - 1) {
+                        list.add(add);
                     }
                 }
             }

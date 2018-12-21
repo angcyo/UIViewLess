@@ -874,6 +874,17 @@ public class RRecyclerView extends RecyclerView implements CanScrollUpCallBack {
     }
 
     /**
+     * 获取第一个可见item的 adapter position
+     */
+    public int getFirstVisibleItemIndex() {
+        LayoutManager layoutManager = getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager) {
+            return ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+        }
+        return -1;
+    }
+
+    /**
      * 第一个Item是否可见
      */
     public boolean isFirstItemVisible() {

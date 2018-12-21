@@ -51,8 +51,12 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
 
     private ArrayMap<Integer, RBaseViewHolder> mBaseViewHolderMap = new ArrayMap<>();
 
+    public RModelAdapter() {
+        this(null);
+    }
+
     public RModelAdapter(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public RModelAdapter(Context context, List<T> datas) {
@@ -502,14 +506,22 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     /**
      * 互斥的操作, 选择item, 并且自动设置CompoundButton的状态
      */
-    public void setSelectorPosition(int position, Object view) {
+    public void setSelectorPosition(int position, Object view, boolean notify) {
         if (mModel == MODEL_NORMAL || !isPositionValid(position)) {
             return;
         }
-        setSelectorData(getAllDatas().get(position), view);
+        setSelectorData(getAllDatas().get(position), view, notify);
+    }
+
+    public void setSelectorPosition(int position, Object view) {
+        setSelectorPosition(position, view, true);
     }
 
     public void setSelectorData(T data, Object view) {
+        setSelectorData(data, view, true);
+    }
+
+    public void setSelectorData(T data, Object view, boolean notify) {
         if (mModel == MODEL_NORMAL) {
             return;
         }
@@ -549,7 +561,9 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             ((RCheckGroup.ICheckView) view).setChecked(!selector);
         }
 
-        notifySelectorChange();
+        if (notify) {
+            notifySelectorChange();
+        }
     }
 
     protected void removeSelectorInner(int position) {
@@ -704,7 +718,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     public interface OnModelChangeListener {
         void onModelChange(@Model int fromModel, @Model int toModel);
 
-        void onSelectorChange(List<Integer> selectorList);
+        void onSelectorChange(@NonNull List<Integer> selectorList);
     }
 
     public static abstract class SingleChangeListener implements OnModelChangeListener {
@@ -715,7 +729,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         }
 
         @Override
-        public void onSelectorChange(List<Integer> selectorList) {
+        public void onSelectorChange(@NonNull List<Integer> selectorList) {
 
         }
     }

@@ -107,6 +107,7 @@ public class RTextView extends AppCompatTextView {
     private boolean isShowTipText = false;
     private String tipText = "";
     private int tipTextColor = Color.WHITE;
+    private int highlightWordColor = Color.RED;
     private int tipTextBgColor = Color.parseColor("#FF3333");
     private int tipTextSize = (int) (9 * density());
     //会根据Gravity, Left会有Right的作用
@@ -214,6 +215,12 @@ public class RTextView extends AppCompatTextView {
         useSkinStyle = typedArray.getBoolean(R.styleable.RTextView_r_use_skin_style, useSkinStyle);
 
         useCharLengthFilter = typedArray.getBoolean(R.styleable.RTextView_r_use_chat_length_filter, useCharLengthFilter);
+
+        if (isInEditMode()) {
+            highlightWordColor = typedArray.getColor(R.styleable.RTextView_r_highlight_word_color, highlightWordColor);
+        } else {
+            highlightWordColor = typedArray.getColor(R.styleable.RTextView_r_highlight_word_color, SkinHelper.getSkin().getThemeSubColor());
+        }
 
         int maxLength = -1;
 //        int maxLength = typedArray.getInt(com.android.internal.R.styleable.TextView_maxLength, -1);
@@ -924,7 +931,7 @@ public class RTextView extends AppCompatTextView {
             int end = matcher.end();
             //CharSequence text = matcher.group();//input.subSequence(start, end);
 
-            builder.setSpan(new ForegroundColorSpan(SkinHelper.getSkin().getThemeSubColor()),
+            builder.setSpan(new ForegroundColorSpan(highlightWordColor),
                     start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             if (first) {

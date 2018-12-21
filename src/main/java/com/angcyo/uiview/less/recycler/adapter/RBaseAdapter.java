@@ -79,6 +79,10 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
 
     protected Handler handler;
 
+    public RBaseAdapter() {
+        this(null);
+    }
+
     public RBaseAdapter(Context context) {
         this(context, null);
     }
