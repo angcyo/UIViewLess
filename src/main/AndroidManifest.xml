@@ -118,6 +118,16 @@
                 <action android:name="android.intent.action.BATTERY_LOW"/>
 
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+
+                <action android:name="android.intent.action.USER_PRESENT"/>
+
+
+                <action android:name="android.intent.action.MEDIA_MOUNTED"/>
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED"/>
+                <action android:name="android.net.wifi.RSSI_CHANGED"/>
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+
                 <action android:name="com.angcyo.alarm"/>
             </intent-filter>
         </receiver>

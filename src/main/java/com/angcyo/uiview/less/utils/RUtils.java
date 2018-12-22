@@ -281,10 +281,17 @@ public class RUtils {
      * 检查APK是否安装
      */
     public static boolean checkApkExist(Context context, String packageName) {
-        if (packageName == null || "".equals(packageName))
+        if (TextUtils.isEmpty(packageName) || context == null)
             return false;
         try {
-            ApplicationInfo info = context.getPackageManager().getApplicationInfo(
+
+            PackageManager packageManager = context.getPackageManager();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return packageManager.isInstantApp(packageName);
+            }
+
+            ApplicationInfo info = packageManager.getApplicationInfo(
                     packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
             return true;
         } catch (Exception e) {

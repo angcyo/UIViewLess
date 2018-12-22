@@ -19,8 +19,11 @@ import com.bumptech.glide.Glide;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static com.angcyo.uiview.less.RCrashHandler.getMemoryInfo;
 
@@ -442,5 +445,63 @@ public class RApplication extends Application {
 
     public static boolean isLollipop() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+
+    /**
+     * 关闭所有界面
+     */
+    public static void closeAllActivity() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityManager activityManager = (ActivityManager) RApplication.getApp().getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.AppTask> appTasks = activityManager.getAppTasks();
+            //返回的是任务栈, 任务栈内有多个Activity
+            for (ActivityManager.AppTask task : appTasks) {
+                //ComponentName baseActivity = task.getTaskInfo().origActivity;
+                task.finishAndRemoveTask();
+            }
+        } else {
+            List<Activity> list = getActivitiesByApplication(RApplication.getApp());
+            for (Activity activity : list) {
+                activity.finish();
+            }
+        }
+    }
+
+    /**
+     * 获取所有Activity
+     */
+    public static List<Activity> getActivitiesByApplication(Application application) {
+        List<Activity> list = new ArrayList<>();
+        try {
+            Class<Application> applicationClass = Application.class;
+            Field mLoadedApkField = applicationClass.getDeclaredField("mLoadedApk");
+            mLoadedApkField.setAccessible(true);
+            Object mLoadedApk = mLoadedApkField.get(application);
+            Class<?> mLoadedApkClass = mLoadedApk.getClass();
+            Field mActivityThreadField = mLoadedApkClass.getDeclaredField("mActivityThread");
+            mActivityThreadField.setAccessible(true);
+            Object mActivityThread = mActivityThreadField.get(mLoadedApk);
+            Class<?> mActivityThreadClass = mActivityThread.getClass();
+            Field mActivitiesField = mActivityThreadClass.getDeclaredField("mActivities");
+            mActivitiesField.setAccessible(true);
+            Object mActivities = mActivitiesField.get(mActivityThread);
+            // 注意这里一定写成Map，低版本这里用的是HashMap，高版本用的是ArrayMap
+            if (mActivities instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<Object, Object> arrayMap = (Map<Object, Object>) mActivities;
+                for (Map.Entry<Object, Object> entry : arrayMap.entrySet()) {
+                    Object value = entry.getValue();
+                    Class<?> activityClientRecordClass = value.getClass();
+                    Field activityField = activityClientRecordClass.getDeclaredField("activity");
+                    activityField.setAccessible(true);
+                    Object o = activityField.get(value);
+                    list.add((Activity) o);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }
