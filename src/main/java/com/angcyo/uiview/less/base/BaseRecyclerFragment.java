@@ -238,7 +238,7 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
     @Override
     public void onFragmentFirstShow(@Nullable Bundle bundle) {
         super.onFragmentFirstShow(bundle);
-        baseViewHolder.post(new Runnable() {
+        baseViewHolder.postDelay(160, new Runnable() {
             @Override
             public void run() {
                 onBaseRefresh(null);
