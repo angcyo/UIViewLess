@@ -230,6 +230,15 @@ public class RDialog {
             return this;
         }
 
+        /**
+         * 宽度全屏
+         */
+        public Builder setWidthFullScreen() {
+            setDialogBgColor(Color.TRANSPARENT);
+            setDialogWidth(-1);
+            return this;
+        }
+
         public Builder setCancelable(boolean cancelable) {
             this.cancelable = cancelable;
             if (!cancelable) {
