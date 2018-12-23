@@ -1030,10 +1030,19 @@ public abstract class RBaseAdapter<T> extends RecyclerView.Adapter<RBaseViewHold
      */
     public void onFirstPageSetData(List<T> datas) {
         resetData(datas);
+        if (RUtils.isListEmpty(datas)) {
+            if (isEnableShowState()) {
+                setShowState(IShowState.EMPTY);
+            }
+        }
     }
 
     public void onOtherPageSetData(List<T> datas) {
         appendData(datas);
+    }
+
+    public boolean isEnableShowState() {
+        return mEnableShowState;
     }
 
     public interface OnAdapterLoadMoreListener<T> {

@@ -247,6 +247,13 @@ public class AffectUI {
         this.extraObj = extraObj;
     }
 
+    /**
+     * 当前显示的情感图
+     */
+    public int getAffectStatus() {
+        return affectStatus;
+    }
+
     public static class Builder {
         /**
          * 容器

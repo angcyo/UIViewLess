@@ -222,14 +222,28 @@ public abstract class BaseRecyclerFragment<T> extends BaseTitleFragment
                 }
             });
         } else if (toAffect == AffectUI.AFFECT_LOADING) {
-            //切换到加载情感图, 调用刷新数据接口
-            baseViewHolder.post(new Runnable() {
-                @Override
-                public void run() {
-                    onBaseRefresh(null);
-                }
-            });
+
+            if (!isFragmentHide()) {
+                //切换到加载情感图, 调用刷新数据接口
+                baseViewHolder.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onBaseRefresh(null);
+                    }
+                });
+            }
         }
+    }
+
+    @Override
+    public void onFragmentFirstShow(@Nullable Bundle bundle) {
+        super.onFragmentFirstShow(bundle);
+        baseViewHolder.post(new Runnable() {
+            @Override
+            public void run() {
+                onBaseRefresh(null);
+            }
+        });
     }
 
     /**
