@@ -61,6 +61,9 @@
         <attr name="r_first_notify_listener" format="boolean"/>
         <attr name="r_item_equ_width"/>
         <attr name="r_current_item" format="integer"/>
+        <!--指定item的宽度-->
+        <attr name="r_item_width" format="dimension"/>
+
 
         <attr name="r_use_child_view_index"/>
         <attr name="r_use_indicator_drawable_size"/>

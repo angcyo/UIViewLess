@@ -121,7 +121,6 @@
 
                 <action android:name="android.intent.action.USER_PRESENT"/>
 
-
                 <action android:name="android.intent.action.MEDIA_MOUNTED"/>
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED"/>
                 <action android:name="android.net.wifi.RSSI_CHANGED"/>

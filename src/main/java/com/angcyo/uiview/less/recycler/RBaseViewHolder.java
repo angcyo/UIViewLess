@@ -9,7 +9,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -20,9 +19,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.RApplication;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 import com.angcyo.uiview.less.widget.*;
 import com.angcyo.uiview.view.RClickListener;
+import com.bumptech.glide.Glide;
 import com.orhanobut.hawk.Hawk;
 
 import java.lang.ref.WeakReference;
@@ -564,16 +565,14 @@ public class RBaseViewHolder extends RecyclerView.ViewHolder {
                     } else if (view instanceof GlideImageView) {
                         ((GlideImageView) view).reset();
                         ((GlideImageView) view).setUrl(value);
-                    } else if (view instanceof AppCompatImageView) {
-
                     } else if (view instanceof ImageView) {
-//                        Glide.with(RApplication.getApp())
-//                                .load(value)
-//                                .placeholder(R.drawable.default_image)
-//                                .error(R.drawable.default_image)
-//                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                                .centerCrop()
-//                                .into(((ImageView) view));
+                        Glide.with(RApplication.getApp())
+                                .load(value)
+                                //.placeholder(R.drawable.default_image)
+                                //.error(R.drawable.default_image)
+                                //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                                //.centerCrop()
+                                .into(((ImageView) view));
                     }
                 }
             } catch (Exception e) {

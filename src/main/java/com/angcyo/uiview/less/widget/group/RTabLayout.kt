@@ -47,12 +47,14 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
         }
     private var currentItem = 0
     var itemEquWidth = false
+    var itemWidth = -3
 
     init {
         val typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.RTabLayout)
         itemEquWidth = typedArray.getBoolean(R.styleable.RTabLayout_r_item_equ_width, itemEquWidth)
         firstNotifyListener = typedArray.getBoolean(R.styleable.RTabLayout_r_first_notify_listener, firstNotifyListener)
         currentItem = typedArray.getInt(R.styleable.RTabLayout_r_current_item, currentItem)
+        itemWidth = typedArray.getDimensionPixelOffset(R.styleable.RTabLayout_r_item_width, itemWidth)
         typedArray.recycle()
 
         setWillNotDraw(false)
@@ -272,7 +274,7 @@ class RTabLayout(context: Context, attributeSet: AttributeSet? = null) : ViewGro
 
             if (itemEquWidth) {
                 childView.measure(
-                    exactlyMeasure((widthSize - paddingLeft - paddingRight) / childCount),
+                    exactlyMeasure(if (itemWidth > 0) itemWidth else (widthSize - paddingLeft - paddingRight) / childCount),
                     childHeightSpec
                 )
             } else {
