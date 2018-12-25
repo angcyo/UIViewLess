@@ -373,6 +373,7 @@
         <attr name="r_button_left_drawable" format="reference"/>
         <!--用来覆盖主题颜色-->
         <attr name="r_button_theme_color" format="color"/>
+        <attr name="r_button_ripple_color" format="color"/>
         <attr name="r_button_theme_dark_color" format="color"/>
         <attr name="r_button_disable_color" format="color"/>
         <!--边框模式下, 边框的宽度-->

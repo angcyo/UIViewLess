@@ -132,8 +132,8 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:paddingStart">10dp</item>
-        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
         <item name="android:clickable">true</item>
         <item name="android:textColor">@color/base_text_color_selector_color</item>
         <item name="android:background">@drawable/base_bg_selector</item>
@@ -143,8 +143,8 @@
     <style name="BaseSkinButtonStyle" parent="BaseSkinButtonNoPaddingStyle">
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
     </style>
 
     <style name="BaseSkinButtonStyle2" parent="BaseSkinButtonStyle">
@@ -155,8 +155,8 @@
 
     <style name="BaseSkinButtonStyleDefault" parent="BaseSkinButtonStyle2">
         <item name="android:layout_height">40dp</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
     </style>
 
     <style name="BaseGradientButtonStyle" parent="BaseSkinButtonStyle2">
@@ -166,8 +166,8 @@
     <style name="BaseSkinButtonLittleStyle" parent="BaseSkinButtonNoPaddingStyle">
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingStart">6dp</item>
-        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
     </style>
 
     <style name="BaseSkinButtonNoPaddingStyle">
@@ -177,8 +177,8 @@
         <item name="android:clickable">true</item>
         <item name="android:paddingTop">1dp</item>
         <item name="android:paddingBottom">1dp</item>
-        <item name="android:paddingStart">2dp</item>
-        <item name="android:paddingEnd">2dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
         <item name="android:textColor">@color/base_white</item>
         <item name="android:textSize">@dimen/default_text_size</item>
     </style>
@@ -290,8 +290,8 @@
     </style>
 
     <style name="BaseWhiteButtonStyle" parent="BaseWhiteColorTextStyle">
-        <item name="android:paddingStart">@dimen/base_hdpi</item>
-        <item name="android:paddingEnd">@dimen/base_hdpi</item>
+        <item name="android:paddingLeft">@dimen/base_hdpi</item>
+        <item name="android:paddingRight">@dimen/base_hdpi</item>
         <item name="android:paddingTop">@dimen/base_ldpi</item>
         <item name="android:paddingBottom">@dimen/base_ldpi</item>
     </style>
@@ -441,8 +441,8 @@
 
     <style name="BaseItemPadding">
         <item name="android:paddingBottom">@dimen/base_hdpi</item>
-        <item name="android:paddingEnd">@dimen/base_xhdpi</item>
-        <item name="android:paddingStart">@dimen/base_xhdpi</item>
+        <item name="android:paddingRight">@dimen/base_xhdpi</item>
+        <item name="android:paddingLeft">@dimen/base_xhdpi</item>
         <item name="android:paddingTop">@dimen/base_hdpi</item>
     </style>
 

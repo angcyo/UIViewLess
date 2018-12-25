@@ -650,6 +650,14 @@ public abstract class RExBaseAdapter<H, T, F> extends RModelAdapter<T> {
         return getAllFooterDatas().size() > index ? mAllFooterDatas.get(index) : null;
     }
 
+    /**
+     * 兼容选择模式
+     */
+    @Override
+    public RBaseViewHolder getViewHolderFromPosition(int position) {
+        return super.getViewHolderFromPosition(position + getHeaderCount());
+    }
+
     public interface ObjectEmpty {
         /**
          * 如果想要添加一个空数据的item, 实现此接口返回true

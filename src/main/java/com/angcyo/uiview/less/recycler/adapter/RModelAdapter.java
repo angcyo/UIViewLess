@@ -14,6 +14,7 @@ import com.angcyo.uiview.less.widget.group.RCheckGroup;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
 
     private HashSet<OnModelChangeListener> mChangeListeners = new HashSet<>();
 
-    private ArrayMap<Integer, RBaseViewHolder> mBaseViewHolderMap = new ArrayMap<>();
+    private ArrayMap<Integer, WeakReference<RBaseViewHolder>> mBaseViewHolderMap = new ArrayMap<>();
 
     public RModelAdapter() {
         this(null);
@@ -91,7 +92,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     @Override
     final protected void onBindView(@NonNull RBaseViewHolder holder, int position, T bean) {
 //        L.e("call: onBindView([holder, position, bean])-> put:" + position);
-        mBaseViewHolderMap.put(position, holder);
+        mBaseViewHolderMap.put(position, new WeakReference<>(holder));
         onBindCommonView(holder, position, bean);
         if (mModel == MODEL_NORMAL) {
             onBindNormalView(holder, position, bean);
@@ -166,7 +167,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
 
         for (Integer pos : list) {
             removeSelectorPosition(pos);
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
                 if (view != null) {
@@ -190,7 +191,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     public void unSelector(int position, @NonNull RRecyclerView recyclerView, @NonNull String viewTag) {
         boolean notify = false;
         removeSelectorPosition(position);
-        RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
+        RBaseViewHolder vh = getViewHolderFromPosition(position);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
         if (vh != null) {
             final View view = vh.tag(viewTag);
             if (view != null) {
@@ -219,7 +220,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
 
         for (Integer pos : list) {
             removeSelectorPosition(pos);
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
                 if (view != null) {
@@ -242,7 +243,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     }
 
     public void unSelector(int position, @NonNull RRecyclerView recyclerView, @IdRes int viewId) {
-        RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
+        RBaseViewHolder vh = getViewHolderFromPosition(position);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
 
         boolean notify = false;
         removeSelectorPosition(position);
@@ -272,7 +273,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
      */
     public void unSelectorAll(@NonNull RRecyclerView recyclerView, @IdRes int viewId) {
         for (Integer pos : getAllSelectorList()) {
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
                 if (view != null) {
@@ -314,7 +315,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
      */
     public void unSelectorAll(@NonNull RRecyclerView recyclerView, @NonNull String viewTag) {
         for (Integer pos : getAllSelectorList()) {
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
                 if (view != null) {
@@ -366,7 +367,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         boolean notify = false;
 
         for (Integer pos : getAllSelectorList()) {
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
                 if (view != null) {
@@ -416,7 +417,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         boolean notify = false;
 
         for (Integer pos : getAllSelectorList()) {
-            RBaseViewHolder vh = (RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
+            RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
                 if (view != null) {
@@ -690,7 +691,11 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
     }
 
     public RBaseViewHolder getViewHolderFromPosition(int position) {
-        return mBaseViewHolderMap.get(position);
+        WeakReference<RBaseViewHolder> reference = mBaseViewHolderMap.get(position);
+        if (reference == null) {
+            return null;
+        }
+        return reference.get();
     }
 
     @Override

@@ -79,6 +79,9 @@ public class TitleItemHelper {
         int leftMargin;
         int rightMargin;
 
+        int leftPadding;
+        int rightPadding;
+
         /**
          * 视图id, 可以用来findViewById
          */
@@ -157,6 +160,16 @@ public class TitleItemHelper {
 
         public Builder setRightMargin(int rightMargin) {
             this.rightMargin = rightMargin;
+            return this;
+        }
+
+        public Builder setLeftPadding(int leftPadding) {
+            this.leftPadding = leftPadding;
+            return this;
+        }
+
+        public Builder setRightPadding(int rightPadding) {
+            this.rightPadding = rightPadding;
             return this;
         }
 
@@ -242,6 +255,8 @@ public class TitleItemHelper {
                 ((ViewGroup.MarginLayoutParams) layoutParams).leftMargin = leftMargin;
                 ((ViewGroup.MarginLayoutParams) layoutParams).rightMargin = rightMargin;
             }
+            view.setPadding(view.getPaddingLeft() + leftPadding, view.getPaddingTop(),
+                    view.getPaddingRight() + rightPadding, view.getPaddingBottom());
             view.setLayoutParams(layoutParams);
             return view;
         }

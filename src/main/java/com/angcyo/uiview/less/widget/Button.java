@@ -51,6 +51,7 @@ public class Button extends RTextView {
     int mButtonStyle = DEFAULT;
 
     int themeColor;
+    int rippleColor;
     int themeDarkColor;
     int disableColor;
 
@@ -66,11 +67,15 @@ public class Button extends RTextView {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Button);
         mButtonStyle = typedArray.getInt(R.styleable.Button_r_button_style, DEFAULT);
 
+
+        //typedArray.getDimensionPixelOffset(com.android.in)
+
         int defaultValue = (int) (3 * density());
         if (mButtonStyle == ROUND) {
             defaultValue = RADII;
         }
 
+        rippleColor = typedArray.getInt(R.styleable.Button_r_button_ripple_color, Color.WHITE);
         if (isInEditMode()) {
             themeColor = typedArray.getInt(R.styleable.Button_r_button_theme_color, ViewExKt.getColor(this, R.color.theme_color_accent));
             themeDarkColor = typedArray.getInt(R.styleable.Button_r_button_theme_dark_color, ViewExKt.getColor(this, R.color.theme_color_primary_dark));
@@ -98,7 +103,7 @@ public class Button extends RTextView {
         if (refreshBg) {
             switch (mButtonStyle) {
                 case ROUND:
-                    setBackground(ResUtil.ripple(themeColor,
+                    setBackground(ResUtil.ripple(rippleColor,
                             ResUtil.selector(
                                     ResUtil.createDrawable(themeColor, roundRadii),
                                     ResUtil.createDrawable(themeDarkColor, roundRadii),
@@ -106,7 +111,7 @@ public class Button extends RTextView {
                             )));
                     break;
                 case ROUND_BORDER:
-                    setBackground(ResUtil.ripple(themeColor,
+                    setBackground(ResUtil.ripple(rippleColor,
                             ResUtil.selector(
                                     ResUtil.createDrawable(themeColor, Color.TRANSPARENT, borderWidth, roundRadii),
                                     ResUtil.createDrawable(themeDarkColor, Color.TRANSPARENT, borderWidth, roundRadii),
@@ -128,7 +133,7 @@ public class Button extends RTextView {
                         setTextColor(ResUtil.generateTextColor(getCurrentTextColor(), ViewExKt.getColor(this, R.color.base_text_color)));
                     }
 
-                    setBackground(ResUtil.ripple(themeColor,
+                    setBackground(ResUtil.ripple(rippleColor,
                             ResUtil.selector(
                                     ResUtil.createDrawable(lineColor,
                                             Color.TRANSPARENT, borderWidth,
@@ -141,7 +146,7 @@ public class Button extends RTextView {
 
                     break;
                 case ROUND_GRADIENT_RECT:
-                    setBackground(ResUtil.ripple(Color.WHITE,
+                    setBackground(ResUtil.ripple(rippleColor,
                             ResUtil.selector(
                                     ResUtil.createGradientDrawable(getContext(), roundRadii),
                                     ResUtil.createGradientDrawable(getContext(), roundRadii),
@@ -151,7 +156,7 @@ public class Button extends RTextView {
                 default:
                     setBackground(
                             ResUtil.generateRippleRoundMaskDrawable(roundRadii,
-                                    Color.WHITE, themeDarkColor,
+                                    rippleColor, themeDarkColor,
                                     disableColor,
                                     themeColor
                             ));
