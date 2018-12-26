@@ -972,16 +972,25 @@ public class RUtils {
     }
 
     public static <T> String connect(List<T> list, String divide) {
+        return connect(list, divide, null);
+    }
+
+    public static <T> String connect(List<T> list, String divide, IGetItemString<T> getItemString) {
         if (isListEmpty(list)) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
         for (T bean : list) {
-            builder.append(bean.toString());
+            if (getItemString == null) {
+                builder.append(bean.toString());
+            } else {
+                builder.append(getItemString.getStringFrom(bean));
+            }
             builder.append(divide);
         }
         return safe(builder);
     }
+
 
     /**
      * 组装参数
