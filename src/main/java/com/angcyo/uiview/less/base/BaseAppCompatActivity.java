@@ -3,6 +3,7 @@ package com.angcyo.uiview.less.base;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -42,12 +43,13 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);//TBS X5
         if (enableLayoutFull()) {
-            ActivityHelper.enableLayoutFullScreen(this, true);
             ActivityHelper.setNoTitleNoActionBar(this);
+            ActivityHelper.enableLayoutFullScreen(this, true);
         }
 
-        super.onCreate(savedInstanceState);
         viewHolder = new RBaseViewHolder(getWindow().getDecorView());
 
         //系统Fragment操作日志输出
