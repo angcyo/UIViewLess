@@ -1,7 +1,12 @@
 if (!getRootProject().hasProperty("allModule")) {
     apply from: '../lib/find_module.gradle'
 }
-apply from: '../lib/lib_base.gradle'
+if (getRootProject().hasProperty("allGradle")) {
+    apply from: allGradle.lib_base
+} else {
+    apply from: '../lib/lib_base.gradle'
+}
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
