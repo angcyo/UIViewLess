@@ -30,10 +30,10 @@ android {
     }
 }
 
-println getRootDir().getAbsolutePath()
-println file("..").getAbsolutePath()
+//println getRootDir().getAbsolutePath()
+//println file("..").getAbsolutePath()
 def lib_module = ext.allModule.lib
-def http_module = ext.allModule.lib
+def http_module = ext.allModule.http
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
@@ -42,8 +42,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    api project("${lib_module}")
-    api project("${http_module}")
+    api project(lib_module)
+    api project(http_module)
 
     api 'com.android.support:support-v4:' + _S_VER
     api 'com.android.support:appcompat-v7:' + _S_VER
