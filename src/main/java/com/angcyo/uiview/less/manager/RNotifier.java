@@ -11,18 +11,30 @@
  */
 package com.angcyo.uiview.less.manager;
 
-import android.app.NotificationManager;
+import android.app.*;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
+import android.provider.Settings;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.text.TextUtils;
+import android.widget.Toast;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.utils.T_;
+import com.angcyo.uiview.less.utils.ThreadExecutor;
 
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * new message notifier class
@@ -31,14 +43,9 @@ import java.util.Locale;
  */
 public class RNotifier {
     private final static String TAG = "RNotifier";
-    protected static int notifyID = 0525; // start notification id
-    protected static int foregroundNotifyID = 0555;
     protected NotificationManager notificationManager = null;
-    protected HashSet<String> fromUsers = new HashSet<String>();
-    protected int notificationNum = 0;
     protected Context appContext;
     protected String packageName;
-    protected String[] msgs;
     protected long lastNotifiyTime;
     protected AudioManager audioManager;
     protected Vibrator vibrator;
@@ -63,8 +70,7 @@ public class RNotifier {
      * @return
      */
     public RNotifier init(Context context) {
-        appContext = context;
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        appContext = context.getApplicationContext();
 
         packageName = appContext.getApplicationInfo().packageName;
         if (Locale.getDefault().getLanguage().equals("zh")) {
@@ -77,129 +83,6 @@ public class RNotifier {
         vibrator = (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);
 
         return this;
-    }
-
-    /**
-     * this function can be override
-     */
-    public void reset() {
-        resetNotificationCount();
-        cancelNotificaton();
-    }
-
-    void resetNotificationCount() {
-        notificationNum = 0;
-        fromUsers.clear();
-    }
-
-    void cancelNotificaton() {
-        if (notificationManager != null)
-            notificationManager.cancel(notifyID);
-    }
-
-
-    /**
-     * send it to notification bar
-     * This can be override by subclass to provide customer implementation
-     */
-    protected void sendNotification(String content, boolean isForeground, boolean numIncrease) {
-//        String username = message.getFrom();
-//        try {
-//            String notifyText = username + " ";
-//            switch (message.getType()) {
-//                case TXT:
-//                    notifyText += msgs[0];
-//                    break;
-//                case IMAGE:
-//                    notifyText += msgs[1];
-//                    break;
-//                case VOICE:
-//
-//                    notifyText += msgs[2];
-//                    break;
-//                case LOCATION:
-//                    notifyText += msgs[3];
-//                    break;
-//                case VIDEO:
-//                    notifyText += msgs[4];
-//                    break;
-//                case FILE:
-//                    notifyText += msgs[5];
-//                    break;
-//            }
-//
-//            PackageManager packageManager = appContext.getPackageManager();
-//            String appname = (String) packageManager.getApplicationLabel(appContext.getApplicationInfo());
-//
-//            // notification title
-//            String contentTitle = appname;
-//            if (notificationInfoProvider != null) {
-//                String customNotifyText = notificationInfoProvider.getDisplayedText(message);
-//                String customCotentTitle = notificationInfoProvider.getTitle(message);
-//                if (customNotifyText != null) {
-//                    notifyText = customNotifyText;
-//                }
-//
-//                if (customCotentTitle != null) {
-//                    contentTitle = customCotentTitle;
-//                }
-//            }
-//
-//            // create and send notificaiton
-//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(appContext)
-//                    .setSmallIcon(appContext.getApplicationInfo().icon)
-//                    .setWhen(System.currentTimeMillis())
-//                    .setAutoCancel(true);
-//
-//            Intent msgIntent = appContext.getPackageManager().getLaunchIntentForPackage(packageName);
-//            if (notificationInfoProvider != null) {
-//                msgIntent = notificationInfoProvider.getLaunchIntent(message);
-//            }
-//
-//            PendingIntent pendingIntent = PendingIntent.getActivity(appContext, notifyID, msgIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//            if (numIncrease) {
-//                // prepare latest event info section
-//                if (!isForeground) {
-//                    notificationNum++;
-//                    fromUsers.add(message.getFrom());
-//                }
-//            }
-//
-//            int fromUsersNum = fromUsers.size();
-//            String summaryBody = msgs[6].replaceFirst("%1", Integer.toString(fromUsersNum)).replaceFirst("%2", Integer.toString(notificationNum));
-//
-//            if (notificationInfoProvider != null) {
-//                // lastest text
-//                String customSummaryBody = notificationInfoProvider.getLatestText(message, fromUsersNum, notificationNum);
-//                if (customSummaryBody != null) {
-//                    summaryBody = customSummaryBody;
-//                }
-//
-//                // small icon
-//                int smallIcon = notificationInfoProvider.getSmallIcon(message);
-//                if (smallIcon != 0) {
-//                    mBuilder.setSmallIcon(smallIcon);
-//                }
-//            }
-//
-//            mBuilder.setContentTitle(contentTitle);
-//            mBuilder.setTicker(notifyText);
-//            mBuilder.setContentText(summaryBody);
-//            mBuilder.setContentIntent(pendingIntent);
-//            // mBuilder.setNumber(notificationNum);
-//            Notification notification = mBuilder.build();
-//
-//            if (isForeground) {
-//                notificationManager.notify(foregroundNotifyID, notification);
-//                notificationManager.cancel(foregroundNotifyID);
-//            } else {
-//                notificationManager.notify(notifyID, notification);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**
@@ -246,7 +129,8 @@ public class RNotifier {
                 // so add below special handler to stop it after 3s if
                 // needed
                 if (vendor != null && vendor.toLowerCase().contains("samsung")) {
-                    Thread ctlThread = new Thread() {
+                    ThreadExecutor.instance().onThread(new Runnable() {
+                        @Override
                         public void run() {
                             try {
                                 Thread.sleep(3000);
@@ -256,13 +140,16 @@ public class RNotifier {
                             } catch (Exception e) {
                             }
                         }
-                    };
-                    ctlThread.run();
+                    });
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static Builder build(@NonNull Context context) {
+        return new Builder(context);
     }
 
     public RNotifier setNeedVibrator(boolean needVibrator) {
@@ -279,4 +166,302 @@ public class RNotifier {
         static RNotifier instance = new RNotifier();
     }
 
+    int notificationId = 0;
+    String lowChannelId = "NotificationChannel_NOTIFIER_LOW";
+    String highChannelId = "NotificationChannel_NOTIFIER_HIGH";
+
+    /**
+     * 创建通知通道
+     */
+    private void initChannel() {
+        this.notificationId = new Random(System.currentTimeMillis()).nextInt(10_000);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            lowChannelId = String.valueOf(notificationId);
+            NotificationChannel channelProgress = new NotificationChannel(lowChannelId,
+                    "NotificationChannel_NOTIFIER_LOW",
+                    NotificationManager.IMPORTANCE_LOW);
+
+            channelProgress.enableLights(false);
+            channelProgress.enableVibration(false);
+            channelProgress.setSound(null, null);
+
+            highChannelId = String.valueOf(notificationId + 200);
+            NotificationChannel channelFinish = new NotificationChannel(highChannelId,
+                    "NotificationChannel_NOTIFIER_HIGH",
+                    NotificationManager.IMPORTANCE_HIGH);
+
+            channelFinish.enableLights(true);
+            channelFinish.enableVibration(true);
+            channelFinish.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, Notification.AUDIO_ATTRIBUTES_DEFAULT);
+
+            List<NotificationChannel> channelList = new ArrayList<>();
+            channelList.add(channelProgress);
+            channelList.add(channelFinish);
+            notificationManager.createNotificationChannels(channelList);
+        }
+    }
+
+    /**
+     * 取消通知
+     */
+    public static void cancel(@NonNull Context context, int notifyID) {
+        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+        nm.cancel(notifyID);
+    }
+
+    public static PendingIntent getActivityPendingIntent(Context context, int requestCode,
+                                                         @NonNull Intent intent) {
+        return PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT, null);
+    }
+
+    public static PendingIntent getMainPendingIntent(Context context, int requestCode) {
+        return getActivityPendingIntent(context, requestCode,
+                context.getPackageManager().getLaunchIntentForPackage(context.getPackageName())
+        );
+    }
+
+    /**
+     * 2018-12-29
+     * 通知构造类
+     */
+    public static class Builder {
+        static String CHANNEL_ID = null;
+        Context context;
+
+        String channelId = "NotificationChannel_Notify";
+        String channelName = channelId;
+        NotificationManager nm;
+
+        int notifyId;
+
+        public Builder(@NonNull Context context) {
+            this.context = context;
+            notifyId = (int) (System.currentTimeMillis() % 1_000_000_000);
+            nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+
+        /**
+         * 可选
+         */
+        public Builder setChannelId(String channelId) {
+            this.channelId = channelId;
+            return this;
+        }
+
+        /**
+         * 可选
+         */
+        public Builder setChannelName(String channelName) {
+            this.channelName = channelName;
+            return this;
+        }
+
+        /**
+         * 创建通知通道
+         */
+        private void initChannel() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (CHANNEL_ID == null || !TextUtils.equals(CHANNEL_ID, channelId)) {
+                    NotificationChannel channel = new NotificationChannel(channelId,
+                            channelName,
+                            NotificationManager.IMPORTANCE_HIGH);
+
+                    //允许这个渠道下的通知显示角标
+                    channel.setShowBadge(true);
+                    channel.enableLights(true);
+                    channel.enableVibration(true);
+                    channel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, Notification.AUDIO_ATTRIBUTES_DEFAULT);
+                    nm.createNotificationChannel(channel);
+
+                    if (CHANNEL_ID == null) {
+                        CHANNEL_ID = channelId;
+                    }
+                }
+            }
+        }
+
+        /**
+         * https://www.jianshu.com/p/6aec3656e274
+         */
+        public NotificationCompat.Builder build() {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
+            builder//设置通知标题
+                    .setContentTitle(contentTitle)
+                    //设置通知内容
+                    .setContentText(contentText)
+                    .setTicker(contentText)
+                    //设置通知左侧的小图标
+                    .setSmallIcon(smallIcon)
+                    //设置通知右侧的大图标
+                    .setLargeIcon(largeIcon)
+                    .setOngoing(ongoing)
+                    //未读消息的数量。https://mp.weixin.qq.com/s/Ez-G_9hzUCOjU8rRnsW8SA
+                    .setNumber(0)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setShowWhen(true)
+                    .setDefaults(NotificationCompat.DEFAULT_ALL)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentInfo("Info")
+                    //设置点击通知时的响应事件
+                    .setContentIntent(clickIntent)
+                    //设置点击通知后自动删除通知
+                    .setAutoCancel(autoCancel)
+                    //设置删除通知时的响应事件
+                    .setDeleteIntent(deleteIntent)
+            //.setStyle()
+            //.setCustomContentView()
+            //.setCustomBigContentView()
+            //.setCustomBigContentView()
+
+            ;
+            builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, AudioManager.STREAM_NOTIFICATION);
+
+            if (progress >= 0) {
+                builder.setProgress(progressMax, progress, progressIndeterminate);
+            }
+
+            if (!actions.isEmpty()) {
+                for (NotificationCompat.Action action : actions) {
+                    builder.addAction(action);
+                }
+            }
+            return builder;
+        }
+
+        CharSequence contentTitle;
+        CharSequence contentText;
+
+        /**
+         * 必须要的的参数
+         */
+        @DrawableRes
+        int smallIcon = R.drawable.base_info;
+        Bitmap largeIcon;
+
+        boolean ongoing = false;
+        boolean autoCancel = true;
+
+        ArrayList<NotificationCompat.Action> actions = new ArrayList<>();
+
+        public Builder setNotifyId(int notifyId) {
+            this.notifyId = notifyId;
+            return this;
+        }
+
+        public Builder setContentTitle(CharSequence contentTitle) {
+            this.contentTitle = contentTitle;
+            return this;
+        }
+
+        public Builder setContentText(CharSequence contentText) {
+            this.contentText = contentText;
+            return this;
+        }
+
+        public Builder setSmallIcon(@DrawableRes int smallIcon) {
+            this.smallIcon = smallIcon;
+            return this;
+        }
+
+        public Builder setLargeIcon(@DrawableRes int largeIcon) {
+            setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                    largeIcon));
+            return this;
+        }
+
+        public Builder setLargeIcon(Bitmap largeIcon) {
+            this.largeIcon = largeIcon;
+            return this;
+        }
+
+        public Builder setOngoing(boolean ongoing) {
+            this.ongoing = ongoing;
+            return this;
+        }
+
+        public Builder setAutoCancel(boolean autoCancel) {
+            this.autoCancel = autoCancel;
+            return this;
+        }
+
+        int progressMax = 100;
+        /**
+         * 大于-1, 激活进度显示
+         */
+        int progress = -1;
+        boolean progressIndeterminate = false;
+
+        public Builder setProgressMax(int progressMax) {
+            this.progressMax = progressMax;
+            return this;
+        }
+
+        public Builder setProgress(int progress) {
+            this.progress = progress;
+            return this;
+        }
+
+        public Builder setProgressIndeterminate(boolean progressIndeterminate) {
+            this.progressIndeterminate = progressIndeterminate;
+            return this;
+        }
+
+        public Builder addAction(int icon, CharSequence title, PendingIntent intent) {
+            this.actions.add(new NotificationCompat.Action(icon, title, intent));
+            return this;
+        }
+
+        public Builder addAction(NotificationCompat.Action action) {
+            this.actions.add(action);
+            return this;
+        }
+
+        PendingIntent clickIntent;
+        PendingIntent deleteIntent;
+
+        public Builder setClickDoMain() {
+            clickIntent = getMainPendingIntent(context, notifyId);
+            return this;
+        }
+
+        public Builder setClickIntent(PendingIntent clickIntent) {
+            this.clickIntent = clickIntent;
+            return this;
+        }
+
+        public Builder setDeleteIntent(PendingIntent deleteIntent) {
+            this.deleteIntent = deleteIntent;
+            return this;
+        }
+
+        public int doIt() {
+            if (context == null) {
+                return -1;
+            }
+
+            initChannel();
+
+            Notification notify = build()
+                    .build();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = nm.getNotificationChannel(channelId);
+                if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+                    Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                    intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+                    intent.putExtra(Settings.EXTRA_CHANNEL_ID, channel.getId());
+                    context.startActivity(intent);
+                    T_.error("请手动将通知打开");
+                    return notifyId;
+                }
+            }
+
+            nm.notify(channelName, notifyId, notify);
+
+            L.w("显示通知:" + notifyId);
+            return notifyId;
+        }
+    }
 }

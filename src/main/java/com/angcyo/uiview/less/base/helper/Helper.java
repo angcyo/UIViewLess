@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import com.angcyo.uiview.less.manager.RNotifier;
 
 /**
  * Email:angcyo@126.com
@@ -30,5 +31,9 @@ public class Helper {
 
     public static ViewGroupHelper view(View parentView) {
         return ViewGroupHelper.build(parentView);
+    }
+
+    public static RNotifier.Builder notify(Context context) {
+        return  RNotifier.build(context);
     }
 }

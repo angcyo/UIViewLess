@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.widget.ImageTextView;
 import com.angcyo.uiview.view.RClickListener;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * 标题栏 item 创建/控制
@@ -193,11 +193,19 @@ public class TitleItemHelper {
             return this;
         }
 
+        public ImageTextView doIt() {
+            return build();
+        }
+
+        public ImageTextView doIt(@Nullable ViewGroup viewGroup) {
+            return build(viewGroup);
+        }
+
         public ImageTextView build() {
             return build(null);
         }
 
-        public ImageTextView build(ViewGroup viewGroup) {
+        public ImageTextView build(@Nullable ViewGroup viewGroup) {
             ImageTextView view;
             if (viewGroup == null) {
                 view = (ImageTextView) LayoutInflater.from(context)
