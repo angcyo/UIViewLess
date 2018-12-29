@@ -3,9 +3,7 @@ package com.angcyo.uiview.less.utils;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * 主线程调度器
@@ -33,7 +31,9 @@ public class ThreadExecutor {
             }
         };
 
-        mExecutorService = Executors.newCachedThreadPool();
+        mExecutorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>());
     }
 
     public static ThreadExecutor instance() {

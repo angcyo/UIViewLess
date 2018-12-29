@@ -287,10 +287,6 @@ public class RUtils {
 
             PackageManager packageManager = context.getPackageManager();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return packageManager.isInstantApp(packageName);
-            }
-
             ApplicationInfo info = packageManager.getApplicationInfo(
                     packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
             return true;

@@ -117,14 +117,14 @@ public class RApplication extends Application {
     protected void onBaseInit() {
         onInit();
 
-        new Thread(new Runnable() {
+        ThreadExecutor.instance().onThread(new Runnable() {
             @Override
             public void run() {
                 Debug.logTimeStart("RApplication 异步初始化:onAsyncInit()");
                 onAsyncInit();
                 Debug.logTimeEnd("RApplication 异步初始化结束:onAsyncInit()");
             }
-        }).start();
+        });
     }
 
     /**
