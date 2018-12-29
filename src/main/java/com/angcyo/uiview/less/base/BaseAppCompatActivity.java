@@ -134,6 +134,19 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     //<editor-fold desc="权限相关方法">
 
+    protected String[] needPermissions() {
+        return new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                Manifest.permission.READ_PHONE_STATE,
+//                Manifest.permission.ACCESS_WIFI_STATE
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.RECORD_AUDIO,
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.READ_CONTACTS
+        };
+    }
+
     protected void checkPermissions() {
         checkPermissionsResult(needPermissions(), new Action1<String>() {
             @Override
@@ -228,19 +241,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 ////        finishSelf();
 //        //notifyAppDetailView();
 ////        T_.show("必要的权限被拒绝!");
-    }
-
-    protected String[] needPermissions() {
-        return new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//                Manifest.permission.READ_PHONE_STATE,
-//                Manifest.permission.ACCESS_WIFI_STATE
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.RECORD_AUDIO,
-//                Manifest.permission.CAMERA,
-//                Manifest.permission.READ_CONTACTS
-        };
     }
 
     //</editor-fold>
