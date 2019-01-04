@@ -66,3 +66,6 @@
 -keep enum **
 
 -keep class * extends FileProvider {*;}
+
+-keep class * extends Activity {*;}
+-keep class com.luck.picture.lib.rxbus2.**{*;}
