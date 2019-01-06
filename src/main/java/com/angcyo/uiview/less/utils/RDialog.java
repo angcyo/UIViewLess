@@ -129,7 +129,27 @@ public class RDialog {
     private static void cancel(List<Dialog> dialogs) {
         if (!RUtils.isListEmpty(dialogs)) {
             for (Dialog dialog : dialogs) {
+                cancel(dialog);
+            }
+        }
+    }
+
+    private static void cancel(final Dialog dialog) {
+        if (dialog != null) {
+            if (dialog.isShowing()) {
                 dialog.cancel();
+            } else {
+                Window window = dialog.getWindow();
+                if (window != null) {
+                    window.getDecorView()
+                            .post(new Runnable() {
+                                      @Override
+                                      public void run() {
+                                          cancel(dialog);
+                                      }
+                                  }
+                            );
+                }
             }
         }
     }
@@ -326,16 +346,19 @@ public class RDialog {
         DialogInterface.OnDismissListener onDismissListener;
         DialogInterface.OnCancelListener onCancelListener;
 
+        //积极的按钮
         public Builder setPositiveButtonText(CharSequence positiveButtonText) {
             this.positiveButtonText = positiveButtonText;
             return this;
         }
 
+        //消极的按钮
         public Builder setNegativeButtonText(CharSequence negativeButtonText) {
             this.negativeButtonText = negativeButtonText;
             return this;
         }
 
+        //中立的按钮
         public Builder setNeutralButtonText(CharSequence neutralButtonText) {
             this.neutralButtonText = neutralButtonText;
             return this;

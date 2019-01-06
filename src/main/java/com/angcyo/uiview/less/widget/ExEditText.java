@@ -934,8 +934,9 @@ public class ExEditText extends AppCompatEditText {
     }
 
     public void hideSoftInput() {
-        InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        manager.hideSoftInputFromWindow(getWindowToken(), 0);
+//        InputMethodManager manager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        manager.hideSoftInputFromWindow(getWindowToken(), 0);
+        RSoftInputLayout.hideSoftInput(this);
     }
 
     public void setAutoHideSoftInput(boolean autoHideSoftInput) {

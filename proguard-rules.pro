@@ -69,3 +69,7 @@
 
 -keep class * extends Activity {*;}
 -keep class com.luck.picture.lib.rxbus2.**{*;}
+
+-keep class com.bigkoo.pickerview.**{*;}
+-keep class com.bigkoo.pickerview.bean.**{*;}
+-keep class com.contrarywind.view.**{*;}

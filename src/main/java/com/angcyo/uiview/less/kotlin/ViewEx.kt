@@ -32,6 +32,7 @@ import com.angcyo.uiview.less.widget.RExTextView
 import com.angcyo.uiview.less.widget.RImageView
 import com.angcyo.uiview.less.widget.RTextView
 import com.angcyo.uiview.less.widget.SingleTextWatcher
+import com.angcyo.uiview.less.widget.group.RSoftInputLayout
 import com.angcyo.uiview.less.widget.rsen.RGestureDetector
 import com.angcyo.uiview.view.RClickListener
 import java.util.*
@@ -397,6 +398,10 @@ public fun EditText.onBackPress(listener: (EditText) -> Unit) {
 /**发送删除键*/
 public fun EditText.sendDelKey() {
     this.del()
+}
+
+public fun EditText.hideSoftInput() {
+    RSoftInputLayout.hideSoftInput(this)
 }
 
 public fun RRecyclerView.onSizeChanged(listener: (w: Int, h: Int, oldw: Int, oldh: Int) -> Unit) {
