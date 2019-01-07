@@ -24,7 +24,14 @@ import java.util.UUID;
  */
 
 public class Root {
-    public static String APP_FOLDER = RApplication.getApp().getPackageName();
+    public static String APP_FOLDER = "_app_log_folder";
+
+    static {
+        RApplication app = RApplication.getApp();
+        if (app != null) {
+            APP_FOLDER = app.getPackageName();
+        }
+    }
 
     public static String device_info(Context activity) {
         StringBuilder builder = new StringBuilder();

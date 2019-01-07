@@ -103,6 +103,7 @@ public class RApplication extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        L.init(BuildConfig.DEBUG, "angcyo_" + hashCode());
 
         if (Util.isInitOnce(this)) {
 
@@ -180,7 +181,6 @@ public class RApplication extends Application {
 
         FDown.init(this);
 
-        L.init(BuildConfig.DEBUG, "angcyo_" + hashCode());
     }
 
     @Override

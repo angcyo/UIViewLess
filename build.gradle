@@ -1,8 +1,13 @@
-if (!getRootProject().hasProperty("allModule")) {
+if (!rootProject.hasProperty("allModule")) {
     apply from: '../lib/find_module.gradle'
 }
-if (getRootProject().hasProperty("allGradle")) {
+if (rootProject.hasProperty("allGradle")) {
     apply from: allGradle.lib_base
+
+    //创建一个 `uiview_before_load.gradle` 文件, 可以在`UIViewLess`工程加载之前加载
+    if (allGradle.uiview_before_load != null) {
+        apply from: allGradle.uiview_before_load
+    }
 } else {
     apply from: '../lib/lib_base.gradle'
 }
@@ -15,14 +20,16 @@ def glide_version = "4.8.0" //4.7.1 4.6.1 4.3.1
 
 def refresh_version = '1.1.0-alpha-16'
 
+def manifestFile = hasProperty("uiview_manifest_file") ? ext.uiview_manifest_file : 'src/main/AndroidManifest.xml'
+
 android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
     sourceSets {
         main {
-            //manifest.srcFile 'src/main/AndroidManifest.xml'
-            //manifest.(['src/main/AndroidManifest.xml'])
+            manifest.srcFile manifestFile
+
             assets.srcDirs = ['src/main/assets',
                               'src/github/assets']
             java.srcDirs = ['src/main/java',
@@ -39,12 +46,12 @@ android {
 
 //println getRootDir().getAbsolutePath()
 //println file("..").getAbsolutePath()
-def lib_module = getRootProject().ext.allModule.lib
-def http_module = getRootProject().ext.allModule.http
+def lib_module = rootProject.ext.allModule.lib
+def http_module = rootProject.ext.allModule.http
 
 //println allModule
-//println getRootProject().hasProperty("allModule")
-//println getRootProject().hasProperty("allModule2")
+//println rootProject.hasProperty("allModule")
+//println rootProject.hasProperty("allModule2")
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
