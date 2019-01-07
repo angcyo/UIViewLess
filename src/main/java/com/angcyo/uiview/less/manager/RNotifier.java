@@ -264,7 +264,16 @@ public class RNotifier {
         private void initChannel() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (CHANNEL_ID == null || !TextUtils.equals(CHANNEL_ID, channelId)) {
-                    NotificationChannel channel = new NotificationChannel(channelId,
+                    if (CHANNEL_ID == null) {
+                        CHANNEL_ID = channelId;
+                    }
+
+                    NotificationChannel channel = nm.getNotificationChannel(channelId);
+                    if (channel != null) {
+                        return;
+                    }
+
+                    channel = new NotificationChannel(channelId,
                             channelName,
                             NotificationManager.IMPORTANCE_HIGH);
 
@@ -274,10 +283,6 @@ public class RNotifier {
                     channel.enableVibration(true);
                     channel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, Notification.AUDIO_ATTRIBUTES_DEFAULT);
                     nm.createNotificationChannel(channel);
-
-                    if (CHANNEL_ID == null) {
-                        CHANNEL_ID = channelId;
-                    }
                 }
             }
         }
@@ -286,12 +291,11 @@ public class RNotifier {
          * https://www.jianshu.com/p/6aec3656e274
          */
         public NotificationCompat.Builder build() {
+            //如果未初始化通道, 会崩溃
+            initChannel();
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
-            builder//设置通知标题
-                    .setContentTitle(contentTitle)
-                    //设置通知内容
-                    .setContentText(contentText)
-                    .setTicker(contentText)
+            builder
                     //设置通知左侧的小图标
                     .setSmallIcon(smallIcon)
                     //设置通知右侧的大图标
@@ -316,6 +320,19 @@ public class RNotifier {
             //.setCustomBigContentView()
 
             ;
+            if (contentTitle != null) {
+                //设置通知标题
+                builder.setContentTitle(contentTitle);
+            }
+            if (contentText != null) {
+                //设置通知内容
+                builder.setContentText(contentText);
+            }
+            if (contentText != null) {
+                //设置通知内容
+                builder.setTicker(contentText);
+            }
+
             builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, AudioManager.STREAM_NOTIFICATION);
 
             if (progress >= 0) {
@@ -440,8 +457,6 @@ public class RNotifier {
             if (context == null) {
                 return -1;
             }
-
-            initChannel();
 
             Notification notify = build()
                     .build();
