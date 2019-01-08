@@ -113,10 +113,17 @@ public class ActivityHelper {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             //window.setStatusBarColor(Color.TRANSPARENT);
 
-            //https://blog.csdn.net/xiaonaihe/article/details/54929504
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE /*沉浸式, 用户显示状态, 不会清楚原来的状态*/
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            View decorView = window.getDecorView();
+            int systemUiVisibility = decorView.getSystemUiVisibility();
+            if (enable) {
+                //https://blog.csdn.net/xiaonaihe/article/details/54929504
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE /*沉浸式, 用户显示状态, 不会清楚原来的状态*/
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            } else {
+                systemUiVisibility = ExKt.remove(systemUiVisibility, View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                decorView.setSystemUiVisibility(systemUiVisibility);
+            }
         }
     }
 

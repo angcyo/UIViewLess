@@ -1,12 +1,9 @@
 package com.angcyo.uiview.less.kotlin
 
 import android.app.Activity
-import android.graphics.Color
-import android.os.Build
-import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
+import com.angcyo.uiview.less.base.helper.ActivityHelper
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -22,35 +19,15 @@ import android.view.WindowManager
 /**
  * @see com.angcyo.uiview.view.UIIViewImpl.lightStatusBar
  */
-public fun Activity.lightStatusBar(light: Boolean) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val systemUiVisibility = this.window.decorView.systemUiVisibility
-        if (light) {
-            if (systemUiVisibility.have(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)) {
-                return
-            }
-            this.window
-                .decorView.systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        } else {
-            if (!systemUiVisibility.have(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)) {
-                return
-            }
-            this.window
-                .decorView.systemUiVisibility = systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-        }
-    }
+public fun Activity.lightStatusBar(light: Boolean = true) {
+    ActivityHelper.lightStatusBar(this, light)
 }
 
 /**
  * 激活布局全屏, View 可以布局在 StatusBar 下面
  */
 public fun Activity.enableLayoutFullScreen() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.TRANSPARENT
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    }
+    ActivityHelper.enableLayoutFullScreen(this, true)
 }
 
 public fun Activity.contentView(): ViewGroup {
