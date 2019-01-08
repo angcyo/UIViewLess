@@ -77,6 +77,10 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
     public void onBackPressed() {
         int fragmentParentLayoutId = getFragmentParentLayoutId();
 
+        if (fragmentParentLayoutId == -1) {
+            fragmentParentLayoutId = FragmentHelper.getFragmentContainerId(getSupportFragmentManager());
+        }
+
         if (fragmentParentLayoutId != -1) {
             if (FragmentHelper.build(getSupportFragmentManager())
                     .parentLayoutId(fragmentParentLayoutId)

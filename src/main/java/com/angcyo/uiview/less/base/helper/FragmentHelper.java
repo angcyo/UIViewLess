@@ -54,12 +54,56 @@ public class FragmentHelper {
     }
 
     /**
-     * 查找或创建新的Fragment
+     * 从fragmentManager中, 恢复Fragment. 如果没有, 则创建新对象, 请在super.onCreate()之后调用
      */
     public static List<Fragment> restore(@NonNull Context context,
                                          @NonNull FragmentManager fragmentManager,
                                          Class<? extends Fragment>... cls) {
-        return ActivityHelper.restore(context, fragmentManager, cls);
+        List<Fragment> fragments = new ArrayList<>();
+        StringBuilder builder = new StringBuilder("恢复Fragment:");
+        for (Class f : cls) {
+            builder.append("\n");
+            String tag = f.getSimpleName();
+            Fragment fragmentByTag = fragmentManager.findFragmentByTag(tag);
+            if (fragmentByTag == null) {
+                fragmentByTag = Fragment.instantiate(context, f.getName());
+                builder.append("创建:");
+            } else {
+                builder.append("恢复:");
+            }
+            fragments.add(fragmentByTag);
+
+            builder.append(tag);
+            builder.append("->");
+            FragmentHelper.logFragment(fragmentByTag, builder);
+        }
+        L.w(builder.toString());
+        return fragments;
+    }
+
+    /**
+     * 从fragmentManager中, 恢复Fragment. 如果没有, 则创建新对象, 请在super.onCreate()之后调用
+     * <p>
+     * 如果Fragment,没有add,则add
+     */
+    public static List<Fragment> restoreShow(@NonNull Context context,
+                                             @NonNull FragmentManager fragmentManager,
+                                             @IdRes int layoutId,
+                                             Class<? extends Fragment>... cls) {
+        List<Fragment> fragmentList = restore(context, fragmentManager, cls);
+        FragmentTransaction fragmentTransaction = null;
+        for (Fragment fragment : fragmentList) {
+            if (fragment != null && !fragment.isAdded()) {
+                if (fragmentTransaction == null) {
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                }
+                fragmentTransaction.add(layoutId, fragment, fragment.getClass().getSimpleName());
+            }
+        }
+        if (fragmentTransaction != null) {
+            fragmentTransaction.commitNow();
+        }
+        return fragmentList;
     }
 
     public static Builder build(@NonNull FragmentManager fragmentManager) {
@@ -136,6 +180,24 @@ public class FragmentHelper {
                 builder.append(!((IFragment) fragment).isFragmentHide());
             }
         }
+    }
+
+    public static int getFragmentContainerId(@NonNull FragmentManager fragmentManager) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragments.isEmpty()) {
+            return -1;
+        }
+        int viewId = -1;
+        for (Fragment fragment : fragments) {
+            if (fragment.isAdded()) {
+                viewId = getFragmentContainerId(fragment);
+                if (viewId == -1) {
+                    continue;
+                }
+                break;
+            }
+        }
+        return viewId;
     }
 
     /**
@@ -411,6 +473,13 @@ public class FragmentHelper {
             return this;
         }
 
+        /**
+         * 隐藏之前所有的已经add的Fragment
+         */
+        public Builder hideBefore() {
+            return hideBeforeIndex(1);
+        }
+
         public Builder hideBeforeIndex(@IntRange(from = 1, to = Integer.MAX_VALUE) int index) {
             this.hideBeforeIndex = index;
             return this;
@@ -493,6 +562,12 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder anim(@AnimRes int enterAnim, @AnimRes int exitAnim) {
+            enterAnim(enterAnim);
+            exitAnim(exitAnim);
+            return this;
+        }
+
         public Builder defaultExitAnim() {
             this.enterAnim = R.anim.base_alpha_exit;
             this.exitAnim = R.anim.base_tran_to_bottom;
@@ -548,6 +623,8 @@ public class FragmentHelper {
          * @return true 可以关闭Activity, false 不可以关闭Activity
          */
         public boolean back(@Nullable Activity activity) {
+            ensureParentLayoutId();
+
             if (fragmentManager == null ||
                     parentLayoutId == -1 ||
                     activity == null) {
@@ -639,9 +716,10 @@ public class FragmentHelper {
          */
         @Nullable
         public Fragment doIt() {
-            if (fragmentManager == null ||
-                    (showFragment == null && hideFragment == null && removeFragmentList.isEmpty())
-                    || parentLayoutId == -1) {
+            ensureParentLayoutId();
+
+            boolean noFragment = showFragment == null && hideFragment == null && removeFragmentList.isEmpty();
+            if (fragmentManager == null || noFragment || parentLayoutId == -1) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("必要的参数不合法,请检查参数:");
                 builder.append("\n1->fragmentManager:");
@@ -862,6 +940,12 @@ public class FragmentHelper {
                 } else {
                     transaction.commit();
                 }
+            }
+        }
+
+        private void ensureParentLayoutId() {
+            if (parentLayoutId == -1 && fragmentManager != null) {
+                parentLayoutId = getFragmentContainerId(fragmentManager);
             }
         }
 

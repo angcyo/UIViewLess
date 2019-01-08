@@ -1,6 +1,7 @@
 package com.angcyo.uiview.less.base;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.Gravity;
@@ -17,7 +18,7 @@ import com.angcyo.uiview.less.utils.ScreenUtil;
  */
 public class Debug {
     public static void addDebugTextView(Activity activity) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && activity != null) {
             //添加一个TextView,用来提示当前的Activity类
             View decorView = activity.getWindow().getDecorView();
             View rootView = activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT);
@@ -40,7 +41,8 @@ public class Debug {
 
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(-2, -2);
                 layoutParams.gravity = Gravity.BOTTOM;
-                if (decorView.getBottom() > rootView.getBottom()) {
+                if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
+                        && decorView.getBottom() > rootView.getBottom()) {
                     //显示了导航栏
                     Resources resources = activity.getResources();
                     int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
