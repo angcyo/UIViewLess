@@ -1051,7 +1051,10 @@ public class RDialog {
 
         private void reSetCurrentItems() {
             if (wheelOptions != null) {
-                wheelOptions.setCurrentItems(mPickerOptions.option1, mPickerOptions.option2, mPickerOptions.option3);
+                wheelOptions.setCurrentItems(
+                        Math.max(mPickerOptions.option1, 0),
+                        Math.max(mPickerOptions.option2, 0),
+                        Math.max(mPickerOptions.option3, 0));
             }
         }
 
