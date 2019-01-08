@@ -247,6 +247,7 @@ public class ActivityHelper {
         return fragments;
     }
 
+
     /**
      * 获取启动的时, 设置的参数
      */
