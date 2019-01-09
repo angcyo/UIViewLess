@@ -20,6 +20,8 @@ import com.angcyo.uiview.less.resources.ResUtil;
  * Created by angcyo on 2018/12/03 23:17
  * <p>
  * 一些生命周期日志的输出,和创建跟视图
+ *
+ * @author angcyo
  */
 public abstract class AbsFragment extends Fragment {
 

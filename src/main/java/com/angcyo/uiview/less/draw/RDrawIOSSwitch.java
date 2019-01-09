@@ -8,12 +8,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
-import android.support.v4.math.MathUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import com.angcyo.uiview.less.R;
+import com.angcyo.uiview.less.utils.RUtils;
 
 /**
  * Email:angcyo@126.com
@@ -231,7 +231,7 @@ public class RDrawIOSSwitch extends BaseDraw {
      * @param progress 0-1f
      */
     public void animationTo(float progress) {
-        progress = MathUtils.clamp(progress, 0f, 1f);
+        progress = RUtils.clamp(progress, 0f, 1f);
         cancelAnim();
 
         thumbAnimation = ValueAnimator.ofFloat(0f, 1f);

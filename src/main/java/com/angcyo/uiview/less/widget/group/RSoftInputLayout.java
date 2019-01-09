@@ -440,7 +440,7 @@ public class RSoftInputLayout extends FrameLayout implements ILifecycle {
     public boolean isSoftKeyboardShow() {
         int screenHeight = getScreenHeightPixels();
         int keyboardHeight = getSoftKeyboardHeight();
-        return screenHeight != keyboardHeight && keyboardHeight > 50 * ScreenUtil.density;
+        return screenHeight != keyboardHeight && keyboardHeight > 50 * ScreenUtil.density();
     }
 
     /**

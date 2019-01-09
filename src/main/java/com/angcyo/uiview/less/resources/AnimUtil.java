@@ -100,7 +100,7 @@ public class AnimUtil {
 
     public static Rect ensureRect(Rect rect) {
         if (rect == null || rect.isEmpty()) {
-            int dp = (int) (100 * ScreenUtil.density);
+            int dp = (int) (100 * ScreenUtil.density());
             return new Rect(ScreenUtil.screenWidth / 2 - dp / 2, ScreenUtil.screenHeight / 2 - dp / 2,
                     ScreenUtil.screenWidth / 2 + dp / 2, ScreenUtil.screenHeight / 2 + dp / 2);
         }

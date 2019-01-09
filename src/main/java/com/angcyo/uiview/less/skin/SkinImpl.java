@@ -127,14 +127,14 @@ public class SkinImpl implements ISkin {
     @Override
     public float getTextSize(float sizePx) {
         float size;
-        if (ScreenUtil.densityDpi >= 320) {
+        if (ScreenUtil.getDensityDpi() >= 320) {
             //xxhdpi
-            size = ScreenUtil.density * (sizePx + DEFAULT_TEXT_SIZE_OFFSET);
-        } else if (ScreenUtil.densityDpi >= 240) {
+            size = ScreenUtil.density() * (sizePx + DEFAULT_TEXT_SIZE_OFFSET);
+        } else if (ScreenUtil.getDensityDpi() >= 240) {
             //xhdpi
-            size = ScreenUtil.density * sizePx;
+            size = ScreenUtil.density() * sizePx;
         } else {
-            size = ScreenUtil.density * (sizePx - DEFAULT_TEXT_SIZE_OFFSET);
+            size = ScreenUtil.density() * (sizePx - DEFAULT_TEXT_SIZE_OFFSET);
         }
         return size;
     }

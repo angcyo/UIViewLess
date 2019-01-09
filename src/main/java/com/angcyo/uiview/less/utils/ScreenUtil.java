@@ -23,14 +23,14 @@ public class ScreenUtil {
     public static int screenHeight = 1920;
     public static int screenMin;// 宽高中，小的一边
     public static int screenMax;// 宽高中，较大的值
-    public static float density;
+    private static float density;
     public static float scaleDensity;
     public static float xdpi;
     public static float ydpi;
-    public static int densityDpi;
-    public static int dialogWidth;
-    public static int statusbarheight;
-    public static int navbarheight;
+    private static int densityDpi;
+    private static int dialogWidth;
+    private static int statusbarheight;
+    private static int navbarheight;
     private static double RATIO = 0.85;
 
     static {
@@ -266,5 +266,9 @@ public class ScreenUtil {
         KeyguardManager km = (KeyguardManager) Utils.getContext()
                 .getSystemService(Context.KEYGUARD_SERVICE);
         return km.inKeyguardRestrictedInputMode();
+    }
+
+    public static int getDensityDpi() {
+        return densityDpi;
     }
 }

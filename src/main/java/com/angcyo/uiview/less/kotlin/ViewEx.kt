@@ -82,7 +82,7 @@ public val View.debugPaint: Paint by lazy {
     Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.RED
         style = Paint.Style.STROKE
-        strokeWidth = 1 * density
+        strokeWidth = 1 * density()
     }
 }
 

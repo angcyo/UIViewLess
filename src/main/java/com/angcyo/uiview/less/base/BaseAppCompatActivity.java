@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +20,9 @@ import com.angcyo.uiview.less.base.helper.ActivityHelper;
 import com.angcyo.uiview.less.base.helper.FragmentHelper;
 import com.angcyo.uiview.less.picture.RPicture;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.utils.RUtils;
+import com.angcyo.uiview.less.utils.Tip;
+import com.angcyo.uiview.less.widget.group.FragmentSwipeBackLayout;
 import com.tbruyelle.rxpermissions.Permission;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import rx.functions.Action1;
@@ -38,6 +40,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
     protected RBaseViewHolder viewHolder;
 
     protected RxPermissions mRxPermissions;
+
+    protected FragmentSwipeBackLayout fragmentSwipeBackLayout;
 
     //<editor-fold desc="生命周期, 系统的方法">
 
@@ -75,6 +79,17 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (fragmentSwipeBackLayout != null) {
+            if (fragmentSwipeBackLayout.isSwipeDrag()) {
+                return;
+            }
+
+            if (fragmentSwipeBackLayout.isInDebugLayout()) {
+                fragmentSwipeBackLayout.closeDebugLayout();
+                return;
+            }
+        }
+
         int fragmentParentLayoutId = getFragmentParentLayoutId();
 
         if (fragmentParentLayoutId == -1) {
@@ -242,27 +257,15 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 //        startIView(new PermissionDeniedUIView(
 //                        permission.replaceAll("1", "").replaceAll("0", "")),
 //                false);
-////        finishSelf();
-//        //notifyAppDetailView();
-////        T_.show("必要的权限被拒绝!");
+        RUtils.openAppDetailView(this);
+        finish();
+        Tip.tip("权限被拒绝!");
     }
 
     //</editor-fold>
 
     public Drawable getDrawableCompat(@DrawableRes int res) {
         return ContextCompat.getDrawable(this, res);
-    }
-
-    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout) {
-        return showFragment(fragment, parentLayout, false);
-    }
-
-    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout, boolean stateLoss) {
-        return showFragment(fragment, null, parentLayout, stateLoss);
-    }
-
-    public Fragment showFragment(@NonNull Fragment fragment, @Nullable Fragment hideFragment, int parentLayout, boolean stateLoss) {
-        return FragmentHelper.showFragment(getSupportFragmentManager(), fragment, hideFragment, parentLayout, stateLoss);
     }
 
     @Override
@@ -273,5 +276,9 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
             lastFragment.onActivityResult(requestCode, resultCode, data);
         }
         RPicture.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void setFragmentSwipeBackLayout(FragmentSwipeBackLayout fragmentSwipeBackLayout) {
+        this.fragmentSwipeBackLayout = fragmentSwipeBackLayout;
     }
 }

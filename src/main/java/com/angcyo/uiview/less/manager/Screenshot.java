@@ -16,10 +16,11 @@ import android.net.Uri;
 import android.os.*;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.math.MathUtils;
+
 import android.util.Log;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.accessibility.ExKt;
+import com.angcyo.uiview.less.utils.RUtils;
 import com.angcyo.uiview.less.utils.Reflect;
 
 import java.io.File;
@@ -113,7 +114,7 @@ public class Screenshot {
     }
 
     public Screenshot setCompressQuality(int compressQuality) {
-        this.compressQuality = MathUtils.clamp(compressQuality, 0, 100);
+        this.compressQuality = RUtils.clamp(compressQuality, 0, 100);
         return this;
     }
 

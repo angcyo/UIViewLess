@@ -12,12 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.angcyo.lib.L;
 import com.angcyo.uiview.less.base.helper.ActivityHelper;
-import com.angcyo.uiview.less.base.helper.FragmentHelper;
 
 /**
  * Created by angcyo on 2018/12/03 23:17
  * <p>
  * 生命周期的封装, 只需要关注 {@link #onFragmentShow(Bundle)} 和 {@link #onFragmentHide()}
+ *
+ * @author angcyo
  */
 public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragment {
 
@@ -248,6 +249,9 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * 可以关闭当前界面.
+     */
     @Override
     public boolean onBackPressed(@NonNull Activity activity) {
         return true;
@@ -263,23 +267,19 @@ public abstract class AbsLifeCycleFragment extends AbsFragment implements IFragm
         }
     }
 
-    /**
-     * 可以关闭当前界面.
-     */
+    @Override
+    public boolean canSwipeBack() {
+        return getView() != null;
+    }
+
+    @Override
+    public boolean hideSoftInputOnTouchDown(@Nullable View touchDownView) {
+        return false;
+    }
 
     //</editor-fold>
 
     //<editor-fold desc="界面操作">
-    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout) {
-        return showFragment(fragment, parentLayout, false);
-    }
 
-    public Fragment showFragment(@NonNull Fragment fragment, int parentLayout, boolean stateLoss) {
-        return showFragment(fragment, null, parentLayout, stateLoss);
-    }
-
-    public Fragment showFragment(@NonNull Fragment fragment, @Nullable Fragment hideFragment, int parentLayout, boolean stateLoss) {
-        return FragmentHelper.showFragment(getChildFragmentManager(), fragment, hideFragment, parentLayout, stateLoss);
-    }
     //</editor-fold>
 }

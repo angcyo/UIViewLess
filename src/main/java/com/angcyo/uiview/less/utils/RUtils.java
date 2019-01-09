@@ -281,8 +281,9 @@ public class RUtils {
      * 检查APK是否安装
      */
     public static boolean checkApkExist(Context context, String packageName) {
-        if (TextUtils.isEmpty(packageName) || context == null)
+        if (TextUtils.isEmpty(packageName) || context == null) {
             return false;
+        }
         try {
 
             PackageManager packageManager = context.getPackageManager();
@@ -871,15 +872,18 @@ public class RUtils {
         }
         /* 获取文件的后缀名*/
         String end = fName.substring(dotIndex, fName.length()).toLowerCase();
-        if (end == "") return type;
+        if ("".equals(end)) {
+            return type;
+        }
 
         //系统的方法
         //String extension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(end);
 
         //在MIME和文件类型的匹配表中找到对应的MIME类型。
         for (int i = 0; i < MIME_MapTable.length; i++) { //MIME_MapTable??在这里你一定有疑问，这个MIME_MapTable是什么？
-            if (end.equals(MIME_MapTable[i][0]))
+            if (end.equals(MIME_MapTable[i][0])) {
                 type = MIME_MapTable[i][1];
+            }
         }
         return type;
     }
@@ -2832,7 +2836,7 @@ public class RUtils {
 
     public static int size(int size, float designDpi /*设计图纸时的dpi*/) {
         float v = size * 1f / designDpi;
-        return (int) (v * ScreenUtil.density);
+        return (int) (v * ScreenUtil.density());
     }
 
     /**
@@ -3019,4 +3023,27 @@ public class RUtils {
         return MD5.getStringMD5(string);
     }
 
+    public static float clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else {
+            return value > max ? max : value;
+        }
+    }
+
+    public static double clamp(double value, double min, double max) {
+        if (value < min) {
+            return min;
+        } else {
+            return value > max ? max : value;
+        }
+    }
+
+    public static int clamp(int value, int min, int max) {
+        if (value < min) {
+            return min;
+        } else {
+            return value > max ? max : value;
+        }
+    }
 }

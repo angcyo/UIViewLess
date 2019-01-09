@@ -113,14 +113,18 @@ public abstract class SwipeBackLayout extends TouchLayout {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             float percent = 1f - ((float) left / (float) mScreenWidth);
             onSlideChange(percent);
-            if (mListener != null) mListener.onSlideChange(percent);
+            if (mListener != null) {
+                mListener.onSlideChange(percent);
+            }
             postInvalidateOnAnimation();
         }
 
         @Override
         public void onViewDragStateChanged(int state) {
             super.onViewDragStateChanged(state);
-            if (mListener != null) mListener.onStateChanged(state);
+            if (mListener != null) {
+                mListener.onStateChanged(state);
+            }
             SwipeBackLayout.this.onViewDragStateChanged(state);
             switch (state) {
                 case ViewDragHelper.STATE_IDLE:
@@ -134,11 +138,15 @@ public abstract class SwipeBackLayout extends TouchLayout {
                         if (mTargetView.getLeft() < getMinCloseWidth()) {
                             // State Open
                             onRequestOpened();
-                            if (mListener != null) mListener.onRequestOpened();
+                            if (mListener != null) {
+                                mListener.onRequestOpened();
+                            }
                         } else {
                             // State Closed
                             onRequestClose();
-                            if (mListener != null) mListener.onRequestClose();
+                            if (mListener != null) {
+                                mListener.onRequestClose();
+                            }
                         }
                         mTargetView = null;
                     }
@@ -150,6 +158,8 @@ public abstract class SwipeBackLayout extends TouchLayout {
                     break;
                 case ViewDragHelper.STATE_SETTLING:
                     //滑行中...
+                    break;
+                default:
                     break;
             }
         }

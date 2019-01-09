@@ -149,7 +149,7 @@ public class RefreshLayout extends ViewGroup {
     private FrameLayout menuLayout;
 
     /*当滚动Y值>=topView高度+menuOpenThreshold时, 开始出现menuLayout*/
-    private int menuOpenThreshold = (int) (20 * ScreenUtil.density);
+    private int menuOpenThreshold = (int) (20 * ScreenUtil.density());
     private int lastTranslationTo = 0;
     private int startScrollMenuY = 0;//需要从这个值,开始滚动
     private int startScrollToMenuY = 0;//滚动到目标值, 用来计算比率

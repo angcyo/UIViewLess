@@ -1,7 +1,6 @@
 package com.angcyo.uiview.less.accessibility
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -37,7 +36,7 @@ object ASTip {
         tip(
             SpannableStringUtils.getBuilder("请找到")
                 .append(tip)
-                .setTextSize((18 * ScreenUtil.density).toInt())
+                .setTextSize((18 * ScreenUtil.density()).toInt())
                 .setForegroundColor(SkinHelper.getSkin().themeColor)
                 .append("并开启")
                 .create() /*"${RApplication.getApp().resources.getString(R.string.base_accessibility_summary)}并开启"*/

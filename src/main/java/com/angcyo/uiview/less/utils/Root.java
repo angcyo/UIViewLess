@@ -45,8 +45,8 @@ public class Root {
             builder.append(((Activity) activity).getWindow().getDecorView().getMeasuredHeight());
             builder.append(" ");
         }
-        builder.append(ScreenUtil.densityDpi).append(" ");
-        builder.append(ScreenUtil.density).append(" ");
+        builder.append(ScreenUtil.getDensityDpi()).append(" ");
+        builder.append(ScreenUtil.density()).append(" ");
 
         builder.append(Build.VERSION.RELEASE).append("/");
         builder.append(Build.VERSION.SDK_INT).append(" ");

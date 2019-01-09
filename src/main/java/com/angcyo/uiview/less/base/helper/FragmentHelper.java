@@ -110,7 +110,11 @@ public class FragmentHelper {
         return new Builder(fragmentManager);
     }
 
-    public static void logFragments(@NonNull FragmentManager fragmentManager) {
+    public static void logFragments(FragmentManager fragmentManager) {
+        if (fragmentManager == null) {
+            return;
+        }
+
         StringBuilder builder = new StringBuilder();
         List<Fragment> fragments = fragmentManager.getFragments();
         Fragment primaryNavigationFragment = fragmentManager.getPrimaryNavigationFragment();
@@ -139,8 +143,8 @@ public class FragmentHelper {
         L.w(TAG, builder.toString());
     }
 
-    public static void logFragment(@Nullable Fragment fragment, StringBuilder builder) {
-        if (fragment != null) {
+    public static void logFragment(@Nullable Fragment fragment, @Nullable StringBuilder builder) {
+        if (fragment != null && builder != null) {
             builder.append(Integer.toHexString(getFragmentContainerId(fragment)).toUpperCase());
             builder.append(" ");
             builder.append(fragment);
@@ -149,13 +153,11 @@ public class FragmentHelper {
             builder.append(fragment.isAdded() ? "√" : "×");
             builder.append(" isHidden:");
             builder.append(fragment.isHidden() ? "√" : "×");
-            builder.append(" userVisible:");
+            builder.append(" userVisibleHint:");
             builder.append(fragment.getUserVisibleHint() ? "√" : "×");
 
             View view = fragment.getView();
             if (view != null) {
-                builder.append(" view:");
-                builder.append(view);
                 builder.append(" visible:");
                 int visibility = view.getVisibility();
                 String string;
@@ -176,7 +178,49 @@ public class FragmentHelper {
             }
 
             if (fragment instanceof IFragment) {
-                builder.append(" 可见:");
+                builder.append(" 可视:");
+                builder.append(!((IFragment) fragment).isFragmentHide() ? "√" : "×");
+            }
+
+            if (view != null) {
+                builder.append(" view:");
+                builder.append(view);
+            }
+        }
+    }
+
+    public static void logFragmentStatus(@Nullable Fragment fragment, @Nullable StringBuilder builder) {
+        if (fragment != null && builder != null) {
+            builder.append(" A:");
+            builder.append(fragment.isAdded() ? "√" : "×");
+            builder.append(" H:");
+            builder.append(fragment.isHidden() ? "√" : "×");
+            builder.append(" V:");
+            builder.append(fragment.getUserVisibleHint() ? "√" : "×");
+
+            View view = fragment.getView();
+            if (view != null) {
+                builder.append(" VV:");
+                int visibility = view.getVisibility();
+                String string;
+                switch (visibility) {
+                    case View.INVISIBLE:
+                        string = "INVISIBLE";
+                        break;
+                    case View.GONE:
+                        string = "GONE";
+                        break;
+                    default:
+                        string = "VISIBLE";
+                        break;
+                }
+                builder.append(string);
+            } else {
+                builder.append(" view:×");
+            }
+
+            if (fragment instanceof IFragment) {
+                builder.append(" 可视:");
                 builder.append(!((IFragment) fragment).isFragmentHide());
             }
         }
@@ -568,6 +612,13 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder noAnim() {
+            enterAnim(-1);
+            exitAnim(-1);
+            return this;
+        }
+
+
         public Builder defaultExitAnim() {
             this.enterAnim = R.anim.base_alpha_exit;
             this.exitAnim = R.anim.base_tran_to_bottom;
@@ -789,8 +840,10 @@ public class FragmentHelper {
                         fragmentViewVisibility = fragmentView.getVisibility();
                     }
 
+                    boolean needShowFragment = fragmentViewVisibility == View.GONE || resultFragment.isHidden();
+
                     //已经存在
-                    if (isFragmentHide && fragmentViewVisibility == View.GONE) {
+                    if (isFragmentHide && needShowFragment) {
                         configTransaction();
                         needCommit = true;
                         fragmentTransaction.show(resultFragment);
@@ -852,6 +905,7 @@ public class FragmentHelper {
             }
 
             for (Fragment removeFragment : removeFragmentList) {
+                configTransaction();
                 needCommit = true;
                 fragmentTransaction.remove(removeFragment);
             }
