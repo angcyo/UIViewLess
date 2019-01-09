@@ -591,13 +591,17 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
     @Override
     protected void onRequestClose() {
         super.onRequestClose();
+        isSwipeDrag = false;
         translation(0);
         if (enableRootSwipe && getFragmentsCount() == 1) {
             finishActivity();
         } else {
             Fragment lastFragment = findLastFragment(null);
             if (lastFragment != null) {
-                //lastFragment.mView.setAlpha(0f);
+                if (lastFragment.getView() != null) {
+                    lastFragment.getView().setAlpha(0f);
+                    lastFragment.getView().setVisibility(View.GONE);
+                }
                 swipeBackFragment(lastFragment);
             }
         }
