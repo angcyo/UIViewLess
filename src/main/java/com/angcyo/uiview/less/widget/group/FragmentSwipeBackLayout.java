@@ -24,6 +24,7 @@ import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import com.angcyo.lib.L;
+import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.base.BaseAppCompatActivity;
 import com.angcyo.uiview.less.base.IFragment;
 import com.angcyo.uiview.less.base.helper.FragmentHelper;
@@ -365,7 +366,11 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
 
             for (int i = 0; i < count; i++) {
                 View childAt = getChildAt(i);
-                childAt.setVisibility(VISIBLE);
+                int visibility = childAt.getVisibility();
+                if (visibility != View.VISIBLE) {
+                    childAt.setTag(R.id.base_tag_old_view_visible, visibility);
+                    childAt.setVisibility(VISIBLE);
+                }
                 childAt.measure(ViewExKt.exactlyMeasure(this, wSize), ViewExKt.exactlyMeasure(this, hSize));
             }
 
@@ -605,7 +610,8 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
     protected void onRequestOpened() {
         super.onRequestOpened();
         isSwipeDrag = false;
-        translation(0);
+        translation(-100, 0);
+        resetViewVisible(findLastFragment(findLastFragment(null)));
         printLog();
     }
 
@@ -651,7 +657,9 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
                 } else {
                     tx = -mTranslationOffsetX * percent;
                 }
-                if (preFragmentView.getVisibility() == View.GONE) {
+                int visibility = preFragmentView.getVisibility();
+                if (visibility == View.GONE) {
+                    preFragmentView.setTag(R.id.base_tag_old_view_visible, visibility);
                     preFragmentView.setVisibility(VISIBLE);
                 }
                 if (preFragmentView.getTranslationX() != tx) {
@@ -768,11 +776,35 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
             isInDebugLayout = false;
             getOverScroller().abortAnimation();
             scrollTo(0, 0);//恢复滚动坐标
+            resetViewVisible();
             requestLayout();
             for (int i = 0; i < getChildCount(); i++) {
                 View childAt = getChildAt(i);
                 //childAt.startAnimation(AnimationUtils.loadAnimation(mLayoutActivity, R.anim.base_scale_to_max));
                 AnimUtil.scaleBounceView(childAt);
+            }
+
+            printLog();
+        }
+    }
+
+    public void resetViewVisible() {
+        if (fragmentManager != null) {
+            List<Fragment> fragments = fragmentManager.getFragments();
+            for (Fragment fragment : fragments) {
+                resetViewVisible(fragment);
+            }
+        }
+    }
+
+    public void resetViewVisible(Fragment fragment) {
+        if (fragment != null) {
+            View view = fragment.getView();
+            if (view != null) {
+                Object tag = view.getTag(R.id.base_tag_old_view_visible);
+                if (tag != null) {
+                    view.setVisibility((Integer) tag);
+                }
             }
         }
     }

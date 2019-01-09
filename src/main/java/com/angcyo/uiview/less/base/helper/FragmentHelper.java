@@ -200,21 +200,14 @@ public class FragmentHelper {
 
             View view = fragment.getView();
             if (view != null) {
-                builder.append(" VV:");
-                int visibility = view.getVisibility();
-                String string;
-                switch (visibility) {
-                    case View.INVISIBLE:
-                        string = "INVISIBLE";
-                        break;
-                    case View.GONE:
-                        string = "GONE";
-                        break;
-                    default:
-                        string = "VISIBLE";
-                        break;
+                Object tag = view.getTag(R.id.base_tag_old_view_visible);
+                if (tag != null) {
+                    builder.append(" OV:");
+                    builder.append(visibilityToString((Integer) tag));
                 }
-                builder.append(string);
+
+                builder.append(" VV:");
+                builder.append(visibilityToString(view.getVisibility()));
             } else {
                 builder.append(" view:×");
             }
@@ -224,6 +217,22 @@ public class FragmentHelper {
                 builder.append(!((IFragment) fragment).isFragmentHide());
             }
         }
+    }
+
+    public static String visibilityToString(int visibility) {
+        String string;
+        switch (visibility) {
+            case View.INVISIBLE:
+                string = "INVISIBLE";
+                break;
+            case View.GONE:
+                string = "GONE";
+                break;
+            default:
+                string = "VISIBLE";
+                break;
+        }
+        return string;
     }
 
     public static int getFragmentContainerId(@NonNull FragmentManager fragmentManager) {

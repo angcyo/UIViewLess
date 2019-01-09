@@ -31,4 +31,5 @@
 
     <item name="base_title_back_view" type="id"/>
 
+    <item name="base_tag_old_view_visible" type="id"/>
 </resources>
