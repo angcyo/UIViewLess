@@ -81,6 +81,29 @@
                     android:resource="@xml/uiview_provider_paths"/>
         </provider>
 
+        <!--MainActivity配置-->
+        <!--<activity-->
+        <!--android:name=".MainActivity"-->
+        <!--android:allowTaskReparenting="true"-->
+        <!--android:clearTaskOnLaunch="true"-->
+        <!--android:configChanges="orientation|keyboardHidden|screenSize|fontScale|smallestScreenSize|density|screenLayout"-->
+        <!--android:launchMode="singleTop"-->
+        <!--android:screenOrientation="portrait"-->
+        <!--android:stateNotNeeded="false"-->
+        <!--android:theme="@style/SplashTheme"-->
+        <!--android:windowSoftInputMode="adjustResize">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN"/>-->
+
+        <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+        <!--</intent-filter>-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.angcyo.crash"/>-->
+
+        <!--<category android:name="android.intent.category.DEFAULT"/>-->
+        <!--</intent-filter>-->
+        <!--</activity>-->
+
         <!--无障碍服务-->
         <!--        <service android:name=".accessibility.BaseAccessibilityService"
                          android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
