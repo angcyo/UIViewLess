@@ -412,7 +412,22 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
             return;
         }
 
+        //在滑动返回的过程中, 保持手势不释放. 顶层的View布局控制
+        int swipeViewLeft = -1;
+        if (isSwipeDrag()) {
+            if (mTargetView != null) {
+                swipeViewLeft = mTargetView.getLeft();
+            }
+        }
         super.onLayout(changed, left, top, right, bottom);
+        if (isSwipeDrag()) {
+            if (mTargetView != null) {
+                mTargetView.layout(swipeViewLeft,
+                        mTargetView.getTop(),
+                        swipeViewLeft + mTargetView.getMeasuredWidth(),
+                        mTargetView.getMeasuredHeight());
+            }
+        }
     }
 
     public void setLockHeight(boolean lockHeight) {
@@ -690,53 +705,7 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
      * 打印堆栈信息
      */
     public String logLayoutInfo() {
-//        StringBuilder stringBuilder = new StringBuilder(name(this) + " IViews:\n");
-//        for (int i = 0; i < getAttachViewSize(); i++) {
-//            Fragment Fragment = mAttachViews.get(i);
-//            stringBuilder.append(i);
-//            stringBuilder.append("-->");
-//            stringBuilder.append(name(Fragment.mIView));
-//            stringBuilder.append("");
-//            int visibility = Fragment.mView.getVisibility();
-//            String vis;
-//            if (visibility == View.GONE) {
-//                vis = "GONE";
-//            } else if (visibility == View.VISIBLE) {
-//                vis = "VISIBLE";
-//            } else if (visibility == View.INVISIBLE) {
-//                vis = "INVISIBLE";
-//            } else {
-//                vis = "NONE";
-//            }
-//            stringBuilder.append(" visibility-->");
-//            stringBuilder.append(vis);
-//            stringBuilder.append(" alpha-->");
-//            stringBuilder.append(Fragment.mView.getAlpha());
-//            stringBuilder.append(" isIViewHide-->");
-//            stringBuilder.append(Fragment.isIViewHide);
-//            stringBuilder.append(" W:");
-//            stringBuilder.append(this.getMeasuredWidth());
-//            stringBuilder.append("-");
-//            stringBuilder.append(Fragment.mView.getMeasuredWidth());
-//            stringBuilder.append(" H:");
-//            stringBuilder.append(this.getMeasuredHeight());
-//            stringBuilder.append("-");
-//            stringBuilder.append(Fragment.mView.getMeasuredHeight());
-//            stringBuilder.append(" R:");
-//            stringBuilder.append(Fragment.mView.getRight());
-//            stringBuilder.append(" B:");
-//            stringBuilder.append(Fragment.mView.getBottom());
-//            stringBuilder.append(" needLayout:");
-//            stringBuilder.append(Fragment.mView.getTag(R.id.tag_need_layout));
-//            stringBuilder.append("\n");
-//        }
-//        LAYOUT_INFO = stringBuilder.toString();
-//        L.e(LAYOUT_INFO);
-//        saveToSDCard(LAYOUT_INFO);
-//        return LAYOUT_INFO;
-
-        FragmentHelper.logFragments(fragmentManager);
-        return "";
+        return FragmentHelper.logFragments(fragmentManager);
     }
 
     /**

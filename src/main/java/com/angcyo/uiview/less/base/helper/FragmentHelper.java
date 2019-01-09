@@ -110,9 +110,9 @@ public class FragmentHelper {
         return new Builder(fragmentManager);
     }
 
-    public static void logFragments(FragmentManager fragmentManager) {
+    public static String logFragments(FragmentManager fragmentManager) {
         if (fragmentManager == null) {
-            return;
+            return "";
         }
 
         StringBuilder builder = new StringBuilder();
@@ -141,6 +141,7 @@ public class FragmentHelper {
         }
 
         L.w(TAG, builder.toString());
+        return builder.toString();
     }
 
     public static void logFragment(@Nullable Fragment fragment, @Nullable StringBuilder builder) {
