@@ -21,6 +21,7 @@ import com.angcyo.uiview.less.base.helper.FragmentHelper;
 import com.angcyo.uiview.less.picture.RPicture;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.utils.RUtils;
+import com.angcyo.uiview.less.utils.Root;
 import com.angcyo.uiview.less.utils.Tip;
 import com.angcyo.uiview.less.widget.group.FragmentSwipeBackLayout;
 import com.tbruyelle.rxpermissions.Permission;
@@ -247,7 +248,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
      * 权限通过后回调
      */
     protected void onLoadViewAfterPermission(Intent intent) {
-
+        L.i("设备自定义IMEI:" + Root.initImei());
     }
 
     /**

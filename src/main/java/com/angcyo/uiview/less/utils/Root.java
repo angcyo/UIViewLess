@@ -297,49 +297,88 @@ public class Root {
      * 伪造一个自己的Imei,
      * 在内部和外部都创建一个相同id的文件, 防止重装后重新分配.
      * <p>
-     * 重装后, 没有sd卡权限, 所有只能用来简单统计应用重装次数
+     * 重装后, 没有sd卡权限, 所以请在权限申请后调用此方法.
+     * 无SD卡权限时, UUID 将使用内存缓存
      * <p>
      * 038d4833-5fa1-47a0-8c43-3ef3b8a9d103
      */
     public static String initImei() {
+        //需要返回的uuid
+        String uuid = null;
+        //sd卡中存在的uuid
+        String sdUuid = null;
+        //内部存在的uuid
+        String innerUuid = null;
+
         String imeiPath = getAppInternalDir("card");
         String sdUUIDPath = getAppExternalFolder(".card");
 
         File imeiFile = new File(imeiPath);
         File sdUUIDPathFile = new File(sdUUIDPath);
 
-        //是否已经创建过imei
-        String uuid = "";
-
         try {
             imeiFile.mkdirs();
             sdUUIDPathFile.mkdirs();
 
-            //优先从内部存储获取imei
+            if (getFolderFileCount(sdUUIDPath) > 0) {
+                sdUuid = sdUUIDPathFile.listFiles()[0].getName();
+            }
+
             if (getFolderFileCount(imeiPath) > 0) {
-                uuid = imeiFile.listFiles()[0].getName();
-            } else if (getFolderFileCount(sdUUIDPath) > 0) {
-                uuid = sdUUIDPathFile.listFiles()[0].getName();
+                innerUuid = imeiFile.listFiles()[0].getName();
             }
 
-            //没有创建过imei
-            if (TextUtils.isEmpty(uuid)) {
-                //创建一个新的imei
-                uuid = UUID.randomUUID().toString();
+            if (TextUtils.isEmpty(sdUuid)) {
+                //外部存在中没有uuid, 有可能是没有权限, 或者手动删了
+                if (TextUtils.isEmpty(innerUuid)) {
+                    //干净的首次安装
+                } else {
+                    //内部存储有
+                    uuid = innerUuid;
+                    createFile(sdUUIDPath + File.separator + uuid);
+                }
+            } else {
+                //外部存储有uuid
+                uuid = sdUuid;
+                clearFolder(imeiFile);
+                createFile(imeiPath + File.separator + uuid);
             }
-
-            new File(imeiPath + File.separator + uuid).createNewFile();
-            new File(sdUUIDPathFile + File.separator + uuid).createNewFile();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            L.e("IMEI 初始化失败:" + e.getMessage());
         }
 
         if (TextUtils.isEmpty(uuid)) {
             //创建一个新的imei
             uuid = UUID.randomUUID().toString();
+            createFile(imeiPath + File.separator + uuid);
+            createFile(sdUUIDPath + File.separator + uuid);
         }
 
         return uuid;
+    }
+
+    private static void clearFolder(File folder) {
+        try {
+            if (folder != null && folder.isDirectory()) {
+                for (File f : folder.listFiles()) {
+                    f.delete();
+                }
+            }
+        } catch (Exception e) {
+            //L.e("IMEI 初始化失败:" + e.getMessage());
+        }
+    }
+
+    private static void createFile(String path) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (Exception e) {
+            //L.e("IMEI 初始化失败:" + e.getMessage());
+        }
     }
 
     /**
