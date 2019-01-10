@@ -81,7 +81,7 @@ public abstract class AbsFragment extends Fragment {
     }
 
     /**
-     * OnAttach -> OnCreate -> OnCreateView -> OnActivityCreated -> OnViewStateRestored -> OnStart -> OnResume
+     * OnAttach -> OnCreate -> OnCreateView (initBaseView) -> OnActivityCreated -> OnViewStateRestored -> OnStart -> OnResume
      */
     @Override
     public void onAttach(Context context) {
