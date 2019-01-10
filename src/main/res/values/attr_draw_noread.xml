@@ -16,7 +16,7 @@
         <flag name="CENTER" value="0x30"/>
     </attr>
 
-    <declare-styleable name="RDrawNoread">
+    <declare-styleable name="RDrawNoRead">
         <attr name="r_show_noread"/>
         <attr name="r_noread_radius"/>
         <attr name="r_noread_gravity"/>

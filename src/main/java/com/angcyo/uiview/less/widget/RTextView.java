@@ -178,6 +178,7 @@ public class RTextView extends AppCompatTextView {
         leftDrawableOffsetY = typedArray.getDimensionPixelOffset(R.styleable.RTextView_r_left_drawable_offset_y, leftDrawableOffsetY);
 
         mDrawNoRead = new RDrawNoRead(this, attrs);
+        mDrawNoRead.initAttribute(attrs);
 
         autoFixTextSize = typedArray.getBoolean(R.styleable.RTextView_r_auto_fix_text_size, autoFixTextSize);
 

@@ -9,6 +9,7 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.util.AttributeSet
 import com.angcyo.uiview.less.R
+import com.angcyo.uiview.less.draw.RDrawNoRead
 import com.angcyo.uiview.less.kotlin.density
 import com.angcyo.uiview.less.kotlin.getDrawCenterCx
 import com.angcyo.uiview.less.kotlin.textWidth
@@ -54,6 +55,8 @@ class ImageTextView(context: Context, attributeSet: AttributeSet? = null) : AppC
 
     var imageSize: Int = 0
 
+    var drawNoRead: RDrawNoRead
+
     val textPaint: Paint by lazy {
         TextPaint(Paint.ANTI_ALIAS_FLAG)
     }
@@ -67,6 +70,9 @@ class ImageTextView(context: Context, attributeSet: AttributeSet? = null) : AppC
         textOffset = typedArray.getDimensionPixelOffset(R.styleable.ImageTextView_r_text_offset, 0)
         textShowColor = typedArray.getColor(R.styleable.ImageTextView_r_show_text_color, textShowColor)
         typedArray.recycle()
+
+        drawNoRead = RDrawNoRead(this)
+        drawNoRead.initAttribute(attributeSet)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -136,6 +142,8 @@ class ImageTextView(context: Context, attributeSet: AttributeSet? = null) : AppC
         } else {
             super.onDraw(canvas)
         }
+
+        drawNoRead.onDraw(canvas)
     }
 
     val textHeight: Float

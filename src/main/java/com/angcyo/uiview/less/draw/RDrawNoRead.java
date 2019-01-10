@@ -4,6 +4,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import com.angcyo.uiview.less.R;
@@ -48,6 +49,10 @@ public class RDrawNoRead extends BaseDraw {
 
     private int noreadGravity = TOP | RIGHT;
 
+    public RDrawNoRead(@NonNull View view) {
+        super(view);
+    }
+
     public RDrawNoRead(View view, AttributeSet attr) {
         super(view, attr);
         initAttribute(attr);
@@ -55,13 +60,13 @@ public class RDrawNoRead extends BaseDraw {
 
     @Override
     public void initAttribute(AttributeSet attr) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attr, R.styleable.RDrawNoread);
-        showNoRead = typedArray.getBoolean(R.styleable.RDrawNoread_r_show_noread, showNoRead);
-        noReadRadius = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoread_r_noread_radius, (int) noReadRadius);
-        noreadGravity = typedArray.getInt(R.styleable.RDrawNoread_r_noread_gravity, noreadGravity);
-        noReadPaddingRight = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoread_r_noread_padding_right, (int) noReadPaddingRight);
-        noReadPaddingTop = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoread_r_noread_padding_top, (int) noReadPaddingTop);
-        noReadColor = typedArray.getColor(R.styleable.RDrawNoread_r_noread_color, noReadColor);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attr, R.styleable.RDrawNoRead);
+        showNoRead = typedArray.getBoolean(R.styleable.RDrawNoRead_r_show_noread, showNoRead);
+        noReadRadius = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoRead_r_noread_radius, (int) noReadRadius);
+        noreadGravity = typedArray.getInt(R.styleable.RDrawNoRead_r_noread_gravity, noreadGravity);
+        noReadPaddingRight = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoRead_r_noread_padding_right, (int) noReadPaddingRight);
+        noReadPaddingTop = typedArray.getDimensionPixelOffset(R.styleable.RDrawNoRead_r_noread_padding_top, (int) noReadPaddingTop);
+        noReadColor = typedArray.getColor(R.styleable.RDrawNoRead_r_noread_color, noReadColor);
 
         typedArray.recycle();
     }
@@ -95,13 +100,13 @@ public class RDrawNoRead extends BaseDraw {
                     cx = noReadRadius + noReadPaddingRight;
                 }
                 if (ExKt.have(noreadGravity, RIGHT)) {
-                    cx = getViewWidth() - noReadRadius + noReadPaddingRight;
+                    cx = getViewWidth() - noReadRadius - noReadPaddingRight;
                 }
                 if (ExKt.have(noreadGravity, TOP)) {
                     cy = noReadRadius + noReadPaddingTop;
                 }
                 if (ExKt.have(noreadGravity, BOTTOM)) {
-                    cy = getViewHeight() - noReadRadius + noReadPaddingTop;
+                    cy = getViewHeight() - noReadRadius - noReadPaddingTop;
                 }
             }
 

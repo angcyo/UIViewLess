@@ -140,7 +140,7 @@ public class RDialog {
 
     public static void hide() {
         final HashMap<Integer, List<Dialog>> hashMap = new HashMap(RDialog.dialogMap);
-        RDialog.dialogMap.clear();
+        //RDialog.dialogMap.clear();
         for (WeakHashMap.Entry<Integer, List<Dialog>> entry : hashMap.entrySet()) {
             cancel(entry.getValue());
         }
