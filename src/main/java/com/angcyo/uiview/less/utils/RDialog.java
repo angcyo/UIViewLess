@@ -95,7 +95,7 @@ public class RDialog {
     }
 
     public static void flow(final Context context, final DialogInterface.OnDismissListener dismissListener) {
-        AlertDialog alertDialog = build(context)
+        final AlertDialog alertDialog = build(context)
                 .setCancelable(false)
                 .setDialogWidth((int) ResUtil.dpToPx(56))
                 .setDimAmount(0f)
@@ -104,6 +104,28 @@ public class RDialog {
                 .setContentLayoutId(R.layout.base_dialog_flow_loading_layout)
                 .setOnDismissListener(dismissListener)
                 .showAlertDialog();
+        final Runnable canCancelableRunnable = new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.setCancelable(true);
+            }
+        };
+        //5秒后, 允许关闭对话框
+        Window window = alertDialog.getWindow();
+        if (window != null) {
+            final View decorView = window.getDecorView();
+            decorView.postDelayed(canCancelableRunnable, 5_000);
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    decorView.removeCallbacks(canCancelableRunnable);
+                    if (dismissListener != null) {
+                        dismissListener.onDismiss(alertDialog);
+                    }
+                }
+            });
+        }
+
         List<Dialog> dialogs = dialogMap.get(context.hashCode());
         if (dialogs == null) {
             dialogs = new ArrayList<>();

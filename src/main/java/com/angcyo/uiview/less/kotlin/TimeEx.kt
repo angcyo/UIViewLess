@@ -25,7 +25,7 @@ fun Int.toDay(): Int {
 }
 
 /**
- * 00:00的格式输出, 如果有小时: 01:00:00
+ * 将一段时间按照 00:00的格式输出, 如果有小时: 01:00:00
  */
 fun Long.toHHmmss(showMill: Boolean = false /*显示毫秒*/): String {
     val formatTime = RUtils.formatTime(this)
