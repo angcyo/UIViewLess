@@ -98,15 +98,22 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         }
 
         if (fragmentParentLayoutId != -1) {
-            if (FragmentHelper.build(getSupportFragmentManager())
-                    .parentLayoutId(fragmentParentLayoutId)
-                    .defaultExitAnim()
-                    .back(this)) {
+            if (onFragmentBackPressed(fragmentParentLayoutId)) {
                 super.onBackPressed();
             }
         } else {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * 返回键, 退出Fragment的默认处理
+     */
+    protected boolean onFragmentBackPressed(int layoutId) {
+        return FragmentHelper.build(getSupportFragmentManager())
+                .parentLayoutId(layoutId)
+                .defaultExitAnim()
+                .back(this);
     }
 
     /**

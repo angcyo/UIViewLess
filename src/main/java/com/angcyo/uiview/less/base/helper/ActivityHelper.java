@@ -130,7 +130,8 @@ public class ActivityHelper {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final View decorView = activity.getWindow().getDecorView();
+                Window window = activity.getWindow();
+                final View decorView = window.getDecorView();
                 int uiOptions = decorView.getSystemUiVisibility();
                 int enableUiOptions = uiOptions;
                 int noenableUiOptions = uiOptions;
@@ -151,8 +152,10 @@ public class ActivityHelper {
                 }
 
                 if (enable) {
+                    window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     decorView.setSystemUiVisibility(enableUiOptions);
                 } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     decorView.setSystemUiVisibility(noenableUiOptions);
                 }
             }

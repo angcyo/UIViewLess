@@ -33,3 +33,7 @@ public fun Activity.enableLayoutFullScreen() {
 public fun Activity.contentView(): ViewGroup {
     return this.window.findViewById(Window.ID_ANDROID_CONTENT)
 }
+
+public fun Activity.fullscreen(enable: Boolean = true, checkSdk: Boolean = true) {
+    ActivityHelper.fullscreen(this, enable, checkSdk)
+}
