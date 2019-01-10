@@ -275,6 +275,8 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
             View focus = fragmentRootView.findFocus();
             if (focus instanceof EditText) {
                 RSoftInputLayout.hideSoftInput(focus);
+            } else if (focus != null) {
+                RSoftInputLayout.hideSoftInput(focus);
             }
         }
     }
