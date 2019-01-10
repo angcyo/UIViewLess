@@ -94,7 +94,7 @@ public class RDialog {
         flow(context, null);
     }
 
-    public static void flow(final Context context, final DialogInterface.OnDismissListener dismissListener) {
+    public static synchronized void flow(final Context context, final DialogInterface.OnDismissListener dismissListener) {
         final AlertDialog alertDialog = build(context)
                 .setCancelable(false)
                 .setDialogWidth((int) ResUtil.dpToPx(56))

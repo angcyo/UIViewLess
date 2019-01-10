@@ -114,7 +114,10 @@ public class RLinearLayout extends LinearLayout {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+        int statusBarHeight = 0;
+        if (!isInEditMode()) {
+            statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+        }
 
         if (maxHeight > 0) {
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST));

@@ -10,6 +10,8 @@ import android.view.View
 import com.angcyo.uiview.less.kotlin.debugPaint
 import com.angcyo.uiview.less.kotlin.density
 import com.angcyo.uiview.less.kotlin.valueAnimator
+import com.angcyo.uiview.less.kotlin.viewDrawWith
+import com.angcyo.uiview.less.utils.RUtils
 
 /**
  * 模仿QQ安全验证, 进度条
@@ -18,9 +20,14 @@ import com.angcyo.uiview.less.kotlin.valueAnimator
 class QQFlowProgressView(context: Context, attributeSet: AttributeSet? = null) : View(context, attributeSet) {
     private val drawRect = RectF()
     var roundRadius = 0f
+    private var minDrawWidth = 0f
 
     init {
         roundRadius = 2f * density
+        minDrawWidth = 2f * roundRadius
+
+        debugPaint.color = Color.WHITE
+        debugPaint.style = Paint.Style.FILL
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -32,35 +39,32 @@ class QQFlowProgressView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    var drawStep = 1.2f * density
+    var drawStep = 0.6f * density
     private var isDrawEnd = false
     private var drawWidth = 0f
         set(value) {
-            field = value
-            if (field > (measuredWidth - roundRadius - paddingLeft - paddingRight)) {
+            if (field > viewDrawWith) {
                 isDrawEnd = true
             }
-            if (field < roundRadius + paddingLeft) {
+            if (field <= 0 + minDrawWidth) {
                 isDrawEnd = false
             }
+            field = RUtils.clamp(value, 0f + minDrawWidth, viewDrawWith + minDrawWidth)
         }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        debugPaint.color = Color.WHITE
-        debugPaint.style = Paint.Style.FILL_AND_STROKE
-
         canvas.save()
         if (isDrawEnd) {
             drawRect.set(
-                measuredWidth - drawWidth + roundRadius + paddingLeft, paddingTop.toFloat(),
-                measuredWidth.toFloat() - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom
+                measuredWidth - drawWidth + paddingLeft, paddingTop.toFloat(),
+                measuredWidth.toFloat() - paddingRight, measuredHeight.toFloat() - paddingBottom
             )
         } else {
             drawRect.set(
-                roundRadius + paddingLeft, paddingTop.toFloat(),
-                drawWidth - roundRadius - paddingRight, measuredHeight.toFloat() - paddingBottom
+                0f + paddingLeft, paddingTop.toFloat(),
+                drawWidth - paddingRight, measuredHeight.toFloat() - paddingBottom
             )
         }
         canvas.drawRoundRect(drawRect, roundRadius, roundRadius, debugPaint)

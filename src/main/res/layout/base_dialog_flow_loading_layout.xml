@@ -35,7 +35,8 @@
 
     <com.angcyo.uiview.less.widget.QQFlowProgressView
             android:layout_width="40dp"
-            android:layout_height="4dp"
+            android:layout_height="6dp"
+            android:padding="1dp"
             android:tag="60"/>
 
 </com.angcyo.uiview.less.widget.group.RLinearLayout>
