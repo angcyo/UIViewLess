@@ -139,9 +139,8 @@ public class RDialog {
     }
 
     public static void hide() {
-        final WeakHashMap<Integer, List<Dialog>> hashMap = new WeakHashMap<>(RDialog.dialogMap);
+        final HashMap<Integer, List<Dialog>> hashMap = new HashMap(RDialog.dialogMap);
         RDialog.dialogMap.clear();
-
         for (WeakHashMap.Entry<Integer, List<Dialog>> entry : hashMap.entrySet()) {
             cancel(entry.getValue());
         }
