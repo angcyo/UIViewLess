@@ -18,6 +18,7 @@ import com.angcyo.uiview.less.base.IFragment;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -467,7 +468,7 @@ public class FragmentHelper {
          */
         boolean checkBackPress = true;
 
-        public Builder(@NonNull FragmentManager fragmentManager) {
+        public Builder(FragmentManager fragmentManager) {
             this.fragmentManager = fragmentManager;
         }
 
@@ -502,13 +503,70 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder keepFragment(String... tags) {
+            if (fragmentManager != null && tags != null) {
+                List<Fragment> list = new ArrayList<>();
+                for (String tag : tags) {
+                    Fragment fragmentByTag = fragmentManager.findFragmentByTag(tag);
+                    if (fragmentByTag != null) {
+                        list.add(fragmentByTag);
+                    }
+                }
+                keepFragment(list);
+            }
+            return this;
+        }
+
+        /**
+         * 保持某些Fragment 不被remove, 其他的统统remove
+         */
+        public Builder keepFragment(Fragment... keepFragments) {
+            if (fragmentManager != null && keepFragments != null && keepFragments.length > 0) {
+                List<Fragment> keepList = Arrays.asList(keepFragments);
+                keepFragment(keepList);
+            }
+            return this;
+        }
+
+        /**
+         * 此方法, 允许 keepList 为 empty(非 null), 一个不留的那种
+         */
+        public Builder keepFragment(List<Fragment> keepList) {
+            if (fragmentManager != null && keepList != null) {
+                List<Fragment> fragments = fragmentManager.getFragments();
+                for (Fragment f : fragments) {
+                    if (f != null && f.isAdded()) {
+                        if (keepList.contains(f)) {
+
+                        } else {
+                            remove(f);
+                        }
+                    }
+                }
+                //如果有需要移除的Fragment
+                if (removeFragmentList != null && removeFragmentList.size() > 0) {
+                    if (showFragment == null) {
+                        //如果此时 没有需要的showFragment
+                        //则默认使用keep的最后一个当做界面展示
+                        //这种情况出现在, 只调用了一个 keepFragment 方法.
+                        if (keepList.size() > 0) {
+                            showFragment(keepList.get(keepList.size() - 1));
+                        }
+                    }
+                }
+            }
+            return this;
+        }
+
         public Builder remove(@NonNull Class cls) {
             remove(cls.getSimpleName());
             return this;
         }
 
         public Builder remove(String tag) {
-            remove(fragmentManager.findFragmentByTag(tag));
+            if (fragmentManager != null) {
+                remove(fragmentManager.findFragmentByTag(tag));
+            }
             return this;
         }
 
@@ -522,6 +580,9 @@ public class FragmentHelper {
             return this;
         }
 
+        /**
+         * 如果需要显示的Fragment, 在其他的Fragment内, 请调用此方法
+         */
         public Builder parentFragment(Fragment parentFragment) {
             this.parentFragment = parentFragment;
             return this;
@@ -671,7 +732,7 @@ public class FragmentHelper {
         private FragmentTransaction fragmentTransaction;
 
         private void configTransaction() {
-            if (fragmentTransaction == null) {
+            if (fragmentTransaction == null && fragmentManager != null) {
                 fragmentTransaction = fragmentManager.beginTransaction();
                 //动画设置
                 animation(fragmentTransaction);
@@ -943,7 +1004,7 @@ public class FragmentHelper {
                 fragmentTag = tag;
             }
 
-            if (showFragment != null) {
+            if (showFragment != null && fragmentManager != null) {
                 if (checkExist) {
                     Fragment fragmentByTag = fragmentManager.findFragmentByTag(fragmentTag);
                     if (fragmentByTag != null) {
@@ -962,7 +1023,7 @@ public class FragmentHelper {
         private Fragment restoreFragment() {
             String fragmentTag = getShowFragmentTag(false);
 
-            if (fragmentTag == null) {
+            if (fragmentTag == null || fragmentManager == null) {
                 return null;
             }
 
