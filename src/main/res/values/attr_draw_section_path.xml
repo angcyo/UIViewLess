@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="r_draw_paint_width" format="dimension"/>
+    <attr name="r_draw_paint_color" format="color"/>
+    <attr name="r_draw_sub_path_padding_vertical" format="dimension"/>
+    <attr name="r_draw_sub_path_padding_horizontal" format="dimension"/>
+
+    <declare-styleable name="RSectionPathDraw">
+        <attr name="r_draw_paint_width"/>
+        <attr name="r_draw_paint_color"/>
+        <attr name="r_draw_sub_path_padding_vertical"/>
+        <attr name="r_draw_sub_path_padding_horizontal"/>
+    </declare-styleable>
+
+    <declare-styleable name="SectionPathView">
+        <attr name="r_draw_paint_width"/>
+        <attr name="r_draw_paint_color"/>
+        <attr name="r_draw_sub_path_padding_vertical"/>
+        <attr name="r_draw_sub_path_padding_horizontal"/>
+    </declare-styleable>
+</resources>

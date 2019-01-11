@@ -8,6 +8,10 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Interpolator;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 分段绘制
@@ -28,9 +32,19 @@ public class RSectionDraw extends BaseDraw {
     protected float[] sections = new float[]{1};
 
     /**
+     * 每一段的差值器, 可以和sections数量不一致, 有的就取, 没有就默认
+     */
+    protected List<Interpolator> interpolatorList;
+
+    /**
      * 总进度, 100表示需要绘制path的全部, 这个值用来触发动画
      */
     protected int progress = 100;
+
+    /**
+     * 所有sections加起来的总和
+     */
+    private float sumSectionProgress = 1f;
 
     public RSectionDraw(@NonNull View view) {
         super(view);
@@ -44,7 +58,6 @@ public class RSectionDraw extends BaseDraw {
     @Override
     public void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(Color.GRAY);
 
         if (sections != null && sections.length > 0) {
             ensureProgress();
@@ -59,10 +72,24 @@ public class RSectionDraw extends BaseDraw {
 
             float sum = 0f;
             for (int i = 0; i < maxSection; i++) {
-                float section = sections[i];
-                //绘制中
-                onDrawSection(canvas, maxSection, i, totalProgress, (totalProgress - sum) / section);
-                sum += section;
+                if (totalProgress >= sum) {
+                    float p;
+                    float section = sections[i];
+                    if (totalProgress <= sum + section) {
+                        //绘制中
+                        p = (totalProgress - sum) / section;
+                    } else {
+                        p = 1f;
+                    }
+
+                    //差值器
+                    if (interpolatorList != null && interpolatorList.size() > i) {
+                        p = interpolatorList.get(i).getInterpolation(p);
+                    }
+
+                    onDrawSection(canvas, maxSection, i, totalProgress, p);
+                    sum += section;
+                }
             }
 
             //绘制后
@@ -72,11 +99,11 @@ public class RSectionDraw extends BaseDraw {
 
     protected void ensureSection() {
         if (sections != null && sections.length > 0) {
-            float sum = 0;
+            sumSectionProgress = 0;
             for (float section : sections) {
-                sum += section;
+                sumSectionProgress += section;
             }
-            if (sum > 1f) {
+            if (sumSectionProgress > 1f) {
                 throw new IllegalStateException("Section 总和不能超过1f");
             }
             return;
@@ -128,5 +155,13 @@ public class RSectionDraw extends BaseDraw {
         this.sections = sections;
         ensureSection();
         postInvalidateOnAnimation();
+    }
+
+    public void setInterpolatorList(Interpolator... interpolators) {
+        setInterpolatorList(Arrays.asList(interpolators));
+    }
+
+    public void setInterpolatorList(List<Interpolator> interpolatorList) {
+        this.interpolatorList = interpolatorList;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.*;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -300,5 +301,27 @@ public abstract class BaseDraw {
         if (invalidate) {
             postInvalidate();
         }
+    }
+
+    /**
+     * View最小边的大小
+     */
+    public int minViewSize() {
+        return Math.min(getViewDrawWidth(), getViewDrawHeight());
+    }
+
+    /**
+     * 获取画笔的宽度
+     */
+    public float getPaintWidth() {
+        if (mBasePaint == null) {
+            return 0f;
+        }
+        return mBasePaint.getStrokeWidth();
+    }
+
+    public void setPaintColor(@ColorInt int color) {
+        mBasePaint.setColor(color);
+        postInvalidate();
     }
 }
