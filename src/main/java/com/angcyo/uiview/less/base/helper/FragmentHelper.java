@@ -388,6 +388,76 @@ public class FragmentHelper {
         return result;
     }
 
+    /**
+     * 查找锚点处, 最近一个有效的 Fragment
+     * <p>
+     * 如果锚点为null, 那么查找最后一个有效的Fragment
+     */
+    public static Fragment findLastFragment(@Nullable FragmentManager fragmentManager, @Nullable Fragment anchor) {
+        if (fragmentManager == null) {
+            return null;
+        }
+        boolean isFindAnchor = anchor == null;
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        Fragment fragment = null;
+        for (int i = fragments.size() - 1; i >= 0; i--) {
+            Fragment f = fragments.get(i);
+            if (isFindAnchor) {
+                if (f.isAdded() && f.getView() != null) {
+                    fragment = f;
+                    break;
+                }
+            } else {
+                isFindAnchor = anchor == f;
+            }
+        }
+        return fragment;
+    }
+
+    /**
+     * 根据给定的View, 拿到对应的Fragment
+     */
+    public static Fragment findFragment(@Nullable FragmentManager fragmentManager, @Nullable View view) {
+        if (fragmentManager == null || view == null) {
+            return null;
+        }
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        Fragment fragment = null;
+        for (int i = fragments.size() - 1; i >= 0; i--) {
+            Fragment f = fragments.get(i);
+            if (f.isAdded() && f.getView() != null && f.getView() == view) {
+                fragment = f;
+                break;
+            }
+        }
+        return fragment;
+    }
+
+    /**
+     * 获取有效Fragment的数量
+     */
+    public static int getFragmentsCount(@Nullable FragmentManager fragmentManager) {
+        if (fragmentManager == null) {
+            return 0;
+        }
+        int count = 0;
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        for (int i = fragments.size() - 1; i >= 0; i--) {
+            Fragment f = fragments.get(i);
+            if (f.isAdded() && f.getView() != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+
     public static class Builder {
         FragmentManager fragmentManager;
         /**
@@ -460,8 +530,8 @@ public class FragmentHelper {
          */
         Bundle args;
 
-        int enterAnim = -1;
-        int exitAnim = -1;
+        int enterAnim = 0;
+        int exitAnim = 0;
 
         /**
          * 是否要确认允许返回, 如果false, 则不会回调 onBackPressed 方法
@@ -501,6 +571,14 @@ public class FragmentHelper {
             //关闭从恢复模式获取Fragment
             isFromCreate = false;
             return this;
+        }
+
+        /**
+         * 移除最顶上的Fragment, 显示最新的Fragment
+         */
+        public Builder replaceFragment(Class<? extends Fragment> showFragment) {
+            remove(findLastFragment(fragmentManager, null));
+            return showFragment(RApplication.getApp(), showFragment);
         }
 
         public Builder keepFragment(String... tags) {
@@ -684,8 +762,8 @@ public class FragmentHelper {
         }
 
         public Builder noAnim() {
-            enterAnim(-1);
-            exitAnim(-1);
+            enterAnim(0);
+            exitAnim(0);
             return this;
         }
 

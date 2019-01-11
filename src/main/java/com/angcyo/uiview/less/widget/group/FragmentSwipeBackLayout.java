@@ -160,64 +160,18 @@ public class FragmentSwipeBackLayout extends SwipeBackLayout {
      * 如果锚点为null, 那么查找最后一个有效的Fragment
      */
     public Fragment findLastFragment(@Nullable Fragment anchor) {
-        if (fragmentManager == null) {
-            return null;
-        }
-        boolean isFindAnchor = anchor == null;
-
-        List<Fragment> fragments = fragmentManager.getFragments();
-
-        Fragment fragment = null;
-        for (int i = fragments.size() - 1; i >= 0; i--) {
-            Fragment f = fragments.get(i);
-            if (isFindAnchor) {
-                if (f.isAdded() && f.getView() != null) {
-                    fragment = f;
-                    break;
-                }
-            } else {
-                isFindAnchor = anchor == f;
-            }
-        }
-        return fragment;
+        return FragmentHelper.findLastFragment(fragmentManager, anchor);
     }
 
     public Fragment findFragment(@Nullable View view) {
-        if (fragmentManager == null || view == null) {
-            return null;
-        }
-
-        List<Fragment> fragments = fragmentManager.getFragments();
-
-        Fragment fragment = null;
-        for (int i = fragments.size() - 1; i >= 0; i--) {
-            Fragment f = fragments.get(i);
-            if (f.isAdded() && f.getView() != null && f.getView() == view) {
-                fragment = f;
-                break;
-            }
-        }
-        return fragment;
+        return FragmentHelper.findFragment(fragmentManager, view);
     }
 
     /**
      * 获取有效Fragment的数量
      */
     public int getFragmentsCount() {
-        if (fragmentManager == null) {
-            return 0;
-        }
-        int count = 0;
-
-        List<Fragment> fragments = fragmentManager.getFragments();
-
-        for (int i = fragments.size() - 1; i >= 0; i--) {
-            Fragment f = fragments.get(i);
-            if (f.isAdded() && f.getView() != null) {
-                count++;
-            }
-        }
-        return count;
+        return FragmentHelper.getFragmentsCount(fragmentManager);
     }
 
     /**
