@@ -1,6 +1,8 @@
 package com.angcyo.uiview.less.kotlin
 
 import android.app.Activity
+import android.graphics.drawable.Drawable
+import android.support.annotation.ColorInt
 import android.view.ViewGroup
 import android.view.Window
 import com.angcyo.uiview.less.base.helper.ActivityHelper
@@ -21,6 +23,14 @@ import com.angcyo.uiview.less.base.helper.ActivityHelper
  */
 public fun Activity.lightStatusBar(light: Boolean = true) {
     ActivityHelper.lightStatusBar(this, light)
+}
+
+public fun Activity.setStatusBarColor(@ColorInt color: Int) {
+    ActivityHelper.setStatusBarColor(this, color)
+}
+
+public fun Activity.setStatusBarDrawable(drawable: Drawable) {
+    ActivityHelper.setStatusBarDrawable(this, drawable)
 }
 
 /**

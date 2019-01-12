@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
 import com.angcyo.uiview.less.base.helper.ActivityHelper;
+import com.angcyo.uiview.less.utils.RUtils;
 import com.angcyo.uiview.less.utils.ScreenUtil;
 
 /**
@@ -51,7 +52,7 @@ public class TitleBarLayout extends FrameLayout {
             resetMaxHeight();
             typedArray.recycle();
 
-            statusBarHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_height);
+            statusBarHeight = RUtils.getStatusBarHeight(getContext());//getResources().getDimensionPixelSize(R.dimen.status_bar_height);
             actionBarHeight = getResources().getDimensionPixelSize(R.dimen.action_bar_height);
         }
         initLayout();

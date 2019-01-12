@@ -209,6 +209,13 @@ public class ViewGroupHelper {
         return this;
     }
 
+    public ViewGroupHelper setVisibility(int visibility) {
+        if (selectorView != null) {
+            selectorView.setVisibility(visibility);
+        }
+        return this;
+    }
+
     public <T> T cast() {
         if (selectorView == null) {
             return null;

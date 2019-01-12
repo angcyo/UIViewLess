@@ -37,7 +37,10 @@ public class ActivityHelper {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().setStatusBarColor(color);
+            Window window = activity.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
         }
     }
 
@@ -49,15 +52,19 @@ public class ActivityHelper {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final Window window = activity.getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
             int identifier = activity.getResources().getIdentifier("statusBarBackground", "id", "android");
-            View statusBarView = activity.getWindow().findViewById(identifier);
+            View statusBarView = window.findViewById(identifier);
             if (statusBarView != null) {
                 ViewCompat.setBackground(statusBarView, drawable);
             } else {
-                activity.getWindow().getDecorView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                window.getDecorView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                     @Override
                     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        activity.getWindow().getDecorView().removeOnLayoutChangeListener(this);
+                        window.getDecorView().removeOnLayoutChangeListener(this);
                         setStatusBarDrawable(activity, drawable);
                     }
                 });
@@ -72,6 +79,7 @@ public class ActivityHelper {
         if (activity == null) {
             return;
         }
+        //android 6
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int systemUiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
             if (light) {

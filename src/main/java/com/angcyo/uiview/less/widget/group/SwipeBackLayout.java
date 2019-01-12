@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import com.angcyo.uiview.less.R;
-import com.angcyo.uiview.less.utils.ScreenUtil;
+import com.angcyo.uiview.less.utils.RUtils;
 
 /**
  * 支持滑动退出的父布局
@@ -245,11 +245,10 @@ public abstract class SwipeBackLayout extends TouchLayout {
      * 绘制状态栏遮罩
      */
     protected void drawDimStatusBar(Canvas canvas) {
-        if (mDimStatusBar &&
-                getMeasuredHeight() == ScreenUtil.screenHeight) {
+        if (mDimStatusBar) {
             canvas.drawRect(0, 0,
                     getMeasuredWidth(),
-                    getResources().getDimensionPixelOffset(R.dimen.status_bar_height),
+                    RUtils.getStatusBarHeight(getContext()),
                     mStatusPaint
             );
         }
@@ -394,10 +393,16 @@ public abstract class SwipeBackLayout extends TouchLayout {
      * 状态栏是否变暗, 5.0以上有效
      */
     public void setDimStatusBar(boolean dim) {
+        setDimStatusBar(dim, ContextCompat.getColor(getContext(), R.color.base_status_bar_dim));
+    }
+
+    public void setDimStatusBar(boolean dim, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mDimStatusBar = dim;
-            mStatusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mStatusPaint.setColor(ContextCompat.getColor(getContext(), R.color.base_status_bar_dim));
+            if (mStatusPaint == null) {
+                mStatusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            }
+            mStatusPaint.setColor(color);
         }
     }
 

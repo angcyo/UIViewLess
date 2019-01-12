@@ -1,6 +1,5 @@
 package com.angcyo.uiview.less.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
@@ -39,20 +38,25 @@ public class Root {
         builder.append(ResUtil.getThemeString(RApplication.getApp(), "build_time")).append(" on ");
         builder.append(ResUtil.getThemeString(RApplication.getApp(), "os_name")).append("\n");
 
-        builder.append(ScreenUtil.screenWidth).append("×").append(ScreenUtil.screenHeight);
+        builder.append(RUtils.getScreenWidth(activity)).append("×").append(RUtils.getScreenHeight(activity));
         builder.append(" ");
-        if (activity instanceof Activity) {
-            builder.append(((Activity) activity).getWindow().getDecorView().getMeasuredHeight());
-            builder.append(" ");
-        }
+        builder.append(" ch:");
+        builder.append(RUtils.getContentViewHeight(activity));
+        builder.append(" ");
+        builder.append(" dh:");
+        builder.append(RUtils.getDecorViewHeight(activity));
+        builder.append(" ");
+
         builder.append(ScreenUtil.getDensityDpi()).append(" ");
         builder.append(ScreenUtil.density()).append(" ");
 
         builder.append(Build.VERSION.RELEASE).append("/");
         builder.append(Build.VERSION.SDK_INT).append(" ");
 
-        builder.append(RUtils.getStatusBarHeight(activity)).append("/");
-        builder.append(RUtils.getNavBarHeight(activity)).append("");
+        if (activity != null) {
+            builder.append(RUtils.getStatusBarHeight(activity)).append("/");
+            builder.append(RUtils.getNavBarHeight(activity)).append("");
+        }
 
         builder.append("\n");
         builder.append("v:").append(Build.MANUFACTURER).append(" ");

@@ -39,6 +39,7 @@ import kotlin.jvm.functions.Function1;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
 
@@ -50,7 +51,7 @@ import static com.angcyo.uiview.less.base.helper.TitleItemHelper.NO_NUM;
  */
 public class RDialog {
 
-    static WeakHashMap<Integer, List<Dialog>> dialogMap = new WeakHashMap<>();
+    static ConcurrentLinkedQueue<Dialog> dialogQueue = new ConcurrentLinkedQueue<>();
 
     public static void tip(Context context,
                            String message) {
@@ -126,25 +127,20 @@ public class RDialog {
             });
         }
 
-        List<Dialog> dialogs = dialogMap.get(context.hashCode());
-        if (dialogs == null) {
-            dialogs = new ArrayList<>();
-            dialogMap.put(context.hashCode(), dialogs);
-        }
-        dialogs.add(alertDialog);
+        dialogQueue.add(alertDialog);
     }
 
+    @Deprecated
     public static void hide(final Context context) {
-        cancel(dialogMap.remove(context.hashCode()));
+        hide();
     }
 
     public static void hide() {
-        final HashMap<Integer, List<Dialog>> hashMap = new HashMap(RDialog.dialogMap);
-        //RDialog.dialogMap.clear();
-        for (WeakHashMap.Entry<Integer, List<Dialog>> entry : hashMap.entrySet()) {
-            cancel(entry.getValue());
+        while (!dialogQueue.isEmpty()) {
+            cancel(dialogQueue.remove());
         }
-        hashMap.clear();
+        //cancel(dialogQueue.remove());
+        dialogQueue.clear();
     }
 
     private static void cancel(List<Dialog> dialogs) {

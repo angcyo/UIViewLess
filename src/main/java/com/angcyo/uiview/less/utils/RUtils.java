@@ -34,6 +34,7 @@ import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -3045,5 +3046,48 @@ public class RUtils {
         } else {
             return value > max ? max : value;
         }
+    }
+
+    /**
+     * DecorView 的高度, 包含 状态栏+Window内容+导航栏
+     */
+    public static int getDecorViewHeight(Context activity) {
+        if (activity instanceof Activity) {
+            Window window = ((Activity) activity).getWindow();
+            return window.getDecorView().getMeasuredHeight();
+        }
+        return 0;
+    }
+
+    /**
+     * ContentView 的高度, 包含 DecorView的高度-状态栏-导航栏
+     * <p>
+     * 当状态栏是透明时, 那么状态栏的高度会是0
+     */
+    public static int getContentViewHeight(Context activity) {
+        if (activity instanceof Activity) {
+            Window window = ((Activity) activity).getWindow();
+            return window.findViewById(Window.ID_ANDROID_CONTENT).getMeasuredHeight();
+        }
+        return 0;
+    }
+
+    /**
+     * 屏幕 的高度, 包含 DecorView的高度-状态栏-导航栏
+     * <p>
+     * 当状态栏是透明时, 那么状态栏的高度依然还在.
+     */
+    public static int getScreenHeight(Context activity) {
+        if (activity != null) {
+            return activity.getResources().getDisplayMetrics().heightPixels;
+        }
+        return 0;
+    }
+
+    public static int getScreenWidth(Context activity) {
+        if (activity != null) {
+            return activity.getResources().getDisplayMetrics().widthPixels;
+        }
+        return 0;
     }
 }
