@@ -23,6 +23,8 @@ import static android.graphics.BlurMaskFilter.Blur;
  *     time  : 16/12/13
  *     desc  : SpannableString相关工具类
  * </pre>
+ *
+ * https://github.com/Blankj/AndroidUtilCode
  */
 public class SpannableStringUtils {
 

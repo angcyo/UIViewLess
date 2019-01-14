@@ -3,6 +3,7 @@ package com.angcyo.uiview.less.utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.app.DownloadManager;
 import android.content.*;
 import android.content.pm.*;
@@ -3089,5 +3090,9 @@ public class RUtils {
             return activity.getResources().getDisplayMetrics().widthPixels;
         }
         return 0;
+    }
+
+    public static Application getApp() {
+        return RApplication.getApp();
     }
 }
