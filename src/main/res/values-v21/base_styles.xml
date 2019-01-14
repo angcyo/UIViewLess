@@ -7,6 +7,10 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <style name="BasePrimaryAppTheme" parent="BaseWhiteAppTheme">
+        <item name="android:windowBackground">@color/theme_color_primary</item>
+    </style>
+
     <!--透明Activity 主题-->
     <style name="BaseTranslucentTheme" parent="BaseNoTitleBarTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>

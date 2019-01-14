@@ -110,6 +110,14 @@ public class RSectionPathDraw extends RSectionDraw {
     }
 
     @Override
+    protected void onDrawProgressSection(@NonNull Canvas canvas, int index, float startProgress, float endProgress, float totalProgress, float sectionProgress) {
+        super.onDrawProgressSection(canvas, index, startProgress, endProgress, totalProgress, sectionProgress);
+        float cx = minViewSize() / 4;
+        float cy = minViewSize() / 4;
+        canvas.drawCircle(cx * (index + 1), cy, 10 * sectionProgress, mBasePaint);
+    }
+
+    @Override
     protected void onDrawSectionBefore(@NonNull Canvas canvas, int maxSection, float totalProgress) {
         super.onDrawSectionBefore(canvas, maxSection, totalProgress);
         for (Path p : dstList) {

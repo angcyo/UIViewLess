@@ -72,24 +72,36 @@ public class RSectionDraw extends BaseDraw {
 
             float sum = 0f;
             for (int i = 0; i < maxSection; i++) {
-                if (totalProgress >= sum) {
-                    float p;
-                    float section = sections[i];
-                    if (totalProgress <= sum + section) {
-                        //绘制中
-                        p = (totalProgress - sum) / section;
-                    } else {
-                        p = 1f;
-                    }
 
-                    //差值器
-                    if (interpolatorList != null && interpolatorList.size() > i) {
-                        p = interpolatorList.get(i).getInterpolation(p);
-                    }
+                float sectionProgress = -1;
+                float section = sections[i];
 
-                    onDrawSection(canvas, maxSection, i, totalProgress, p);
-                    sum += section;
+                if (totalProgress <= sum + section) {
+                    //绘制中
+                    sectionProgress = (totalProgress - sum) / section;
                 }
+
+                //差值器
+                if (interpolatorList != null && interpolatorList.size() > i) {
+                    sectionProgress = interpolatorList.get(i).getInterpolation(sectionProgress);
+                }
+
+                if (totalProgress >= sum && totalProgress <= sum + section) {
+                    onDrawProgressSection(canvas, i, sum, sum + section, totalProgress, sectionProgress);
+                }
+
+                /*小于总进度的 section 都会执行绘制*/
+                if (totalProgress >= sum) {
+
+                    if (totalProgress > sum + section) {
+                        //当section的总和小于1时, 最后一个是section会多执行剩余的进度
+                        sectionProgress = 1f;
+                    }
+
+                    onDrawSection(canvas, maxSection, i, totalProgress, sectionProgress);
+                }
+
+                sum += section;
             }
 
             //绘制后
@@ -109,6 +121,18 @@ public class RSectionDraw extends BaseDraw {
             return;
         }
         throw new IllegalStateException("请设置 Section");
+    }
+
+    /**
+     * 当前进度在对应的section中, 只执行当前section的绘制
+     */
+    protected void onDrawProgressSection(@NonNull Canvas canvas,
+                                         int index /*当前绘制的第几段, 0开始*/,
+                                         float startProgress /*当前section开始的进度值*/,
+                                         float endProgress /*当前section结束的进度值*/,
+                                         float totalProgress /*总进度*/,
+                                         float sectionProgress /*section中的进度*/) {
+
     }
 
     protected void onDrawSectionBefore(@NonNull Canvas canvas, int maxSection, float totalProgress) {

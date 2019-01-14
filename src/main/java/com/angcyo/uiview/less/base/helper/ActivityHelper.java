@@ -135,35 +135,60 @@ public class ActivityHelper {
      * @param checkSdk true 表示只在高版本的SDK上使用.
      */
     public static void fullscreen(@NonNull final Activity activity, final boolean enable, boolean checkSdk) {
+        //View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+        //View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Window window = activity.getWindow();
                 final View decorView = window.getDecorView();
                 int uiOptions = decorView.getSystemUiVisibility();
-                int enableUiOptions = uiOptions;
+                int enableUiOptions = 0;
                 int noenableUiOptions = uiOptions;
 
+                //14
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     enableUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+
                     noenableUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_LOW_PROFILE;
                 }
 
+                //16
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     enableUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                    enableUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
                     noenableUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                    noenableUiOptions &= ~View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
                 }
 
+                //18
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+
+
+                }
+
+                //19
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     enableUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+                    //https://blog.csdn.net/xiaonaihe/article/details/54929504
+                    //SYSTEM_UI_FLAG_IMMERSIVE
+
                     noenableUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
                 }
 
+
                 if (enable) {
-                    window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     decorView.setSystemUiVisibility(enableUiOptions);
                 } else {
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    //window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     decorView.setSystemUiVisibility(noenableUiOptions);
                 }
             }

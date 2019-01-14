@@ -581,6 +581,20 @@ public class FragmentHelper {
             return showFragment(RApplication.getApp(), showFragment);
         }
 
+        public Builder keepFragment(Class<? extends Fragment>... clas) {
+            if (fragmentManager != null && clas != null) {
+                List<Fragment> list = new ArrayList<>();
+                for (Class cls : clas) {
+                    Fragment fragmentByTag = fragmentManager.findFragmentByTag(cls.getSimpleName());
+                    if (fragmentByTag != null) {
+                        list.add(fragmentByTag);
+                    }
+                }
+                keepFragment(list);
+            }
+            return this;
+        }
+
         public Builder keepFragment(String... tags) {
             if (fragmentManager != null && tags != null) {
                 List<Fragment> list = new ArrayList<>();

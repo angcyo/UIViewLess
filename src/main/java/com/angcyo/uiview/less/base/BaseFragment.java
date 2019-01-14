@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import com.angcyo.http.HttpSubscriber;
 import com.angcyo.http.NonetException;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
+import com.angcyo.uiview.less.widget.group.RSoftInputLayout;
 import rx.Subscription;
 import rx.observers.SafeSubscriber;
 import rx.subscriptions.CompositeSubscription;
@@ -73,6 +75,21 @@ public abstract class BaseFragment extends AbsLifeCycleFragment {
             return requireFragmentManager();
         } else {
             return getParentFragment().requireFragmentManager();
+        }
+    }
+
+    /**
+     * 隐藏键盘
+     */
+    public void hideSoftInput() {
+        View fragmentRootView = getView();
+        if (fragmentRootView != null) {
+            View focus = fragmentRootView.findFocus();
+            if (focus instanceof EditText) {
+                RSoftInputLayout.hideSoftInput(focus);
+            } else if (focus != null) {
+                RSoftInputLayout.hideSoftInput(focus);
+            }
         }
     }
 

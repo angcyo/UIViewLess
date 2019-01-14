@@ -267,21 +267,6 @@ public abstract class BaseTitleFragment extends BaseFragment implements AffectUI
     }
 
     /**
-     * 隐藏键盘
-     */
-    public void hideSoftInput() {
-        View fragmentRootView = getView();
-        if (fragmentRootView != null) {
-            View focus = fragmentRootView.findFocus();
-            if (focus instanceof EditText) {
-                RSoftInputLayout.hideSoftInput(focus);
-            } else if (focus != null) {
-                RSoftInputLayout.hideSoftInput(focus);
-            }
-        }
-    }
-
-    /**
      * 添加左边控制按钮
      */
     public void addLeftItem(@NonNull View itemView) {

@@ -27,6 +27,11 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <style name="BasePrimaryAppTheme" parent="BaseWhiteAppTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/theme_color_primary</item>
+    </style>
+
     <!--透明主题, 透明主题 在overridePendingTransition 执行动画的时候, exitAnim 不会执行.-->
     <style name="BaseTranTheme" parent="BaseAppTheme">
         <item name="android:windowContentOverlay">@null</item>
