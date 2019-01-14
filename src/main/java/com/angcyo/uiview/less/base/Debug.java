@@ -11,7 +11,6 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.angcyo.uiview.less.BuildConfig;
-import com.angcyo.uiview.less.utils.ScreenUtil;
 
 /**
  * Created by angcyo on 2018/12/02 15:38
@@ -32,7 +31,7 @@ public class Debug {
                 textView.setTag(tag);
                 textView.setTextSize(9);
                 textView.setTextColor(Color.WHITE);
-                float dp2 = 1 * ScreenUtil.density();
+                float dp2 = 1 * activity.getResources().getDisplayMetrics().density;
                 int padding = (int) dp2 * 4;
                 textView.setPadding(padding, padding, padding, padding);
                 textView.setShadowLayer(dp2 * 2, dp2, dp2, Color.BLACK);
