@@ -3,7 +3,7 @@ package com.angcyo.uiview.less.widget.group;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 import com.angcyo.uiview.less.R;
 
 /**
@@ -11,7 +11,7 @@ import com.angcyo.uiview.less.R;
  * Created by angcyo on 2016-11-05.
  */
 
-public class ToastLayout extends RelativeLayout {
+public class ToastLayout extends FrameLayout {
 
     public ToastLayout(Context context) {
         super(context);
