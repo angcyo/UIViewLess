@@ -92,6 +92,9 @@ public class RPicture {
 
             }
         }
+        if (RUtils.isListEmpty(result)) {
+            return result;
+        }
         StringBuilder builder = new StringBuilder("图片选择结果返回:");
         for (int i = 0; i < result.size(); i++) {
             LocalMedia media = result.get(i);
