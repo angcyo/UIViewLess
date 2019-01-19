@@ -23,14 +23,12 @@ public class TitleBarLayout extends FrameLayout {
     boolean enablePadding = true;
     boolean fitActionBar = false;
     boolean isScreenHeight = false;
-
+    int statusBarHeight;
+    int actionBarHeight;
     /**
      * 允许的最大高度, 如果为-2px,那么就是屏幕高度的一半, 如果是-3px,那么就是屏幕高度的三分之, 以此内推
      */
     private int maxHeight = -1;
-
-    int statusBarHeight;
-    int actionBarHeight;
 
     public TitleBarLayout(Context context) {
         this(context, null);

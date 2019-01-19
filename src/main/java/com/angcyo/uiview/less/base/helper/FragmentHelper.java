@@ -753,6 +753,12 @@ public class FragmentHelper {
             return this;
         }
 
+        public Builder setArgs(@NonNull String key, @Nullable ArrayList<? extends Parcelable> value) {
+            ensureArgs();
+            args.putParcelableArrayList(key, value);
+            return this;
+        }
+
         private void ensureArgs() {
             if (args == null) {
                 args = new Bundle();

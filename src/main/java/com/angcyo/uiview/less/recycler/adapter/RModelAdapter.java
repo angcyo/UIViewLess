@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import com.angcyo.uiview.less.recycler.RBaseViewHolder;
 import com.angcyo.uiview.less.recycler.RRecyclerView;
+import com.angcyo.uiview.less.utils.RUtils;
 import com.angcyo.uiview.less.utils.Reflect;
 import com.angcyo.uiview.less.widget.group.RCheckGroup;
 
@@ -479,6 +480,14 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         return mSelectorList;
     }
 
+    /**
+     * 是否选中了所有
+     */
+    public boolean isSelectorAll() {
+        int size = RUtils.listSize(getAllSelector());
+        return size != 0 && size == RUtils.listSize(getAllDatas());
+    }
+
     private void addSelectorDataToList(T bean) {
         if (!mSelectorList.contains(bean)) {
             mSelectorList.add(bean);
@@ -494,10 +503,6 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
      */
     public List<T> getSelectorData() {
         return getAllSelector();
-    }
-
-    public void addSelectorData(T bean) {
-        addSelectorInner(getAllDatas().indexOf(bean));
     }
 
     public void removeSelectorData(T bean) {
@@ -616,6 +621,12 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void addSelectorData(T bean) {
+        if (bean != null) {
+            addSelectorInner(getAllDatas().indexOf(bean));
         }
     }
 
