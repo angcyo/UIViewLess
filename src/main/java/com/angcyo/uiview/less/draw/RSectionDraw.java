@@ -88,8 +88,6 @@ public class RSectionDraw extends BaseDraw {
 
                 if (totalProgress >= sum && totalProgress <= sum + section) {
                     onDrawProgressSection(canvas, i, sum, sum + section, totalProgress, sectionProgress);
-                } else {
-                    onDrawNoProgressSection(canvas, i, sum, sum + section, totalProgress, sectionProgress);
                 }
 
                 /*小于总进度的 section 都会执行绘制*/
@@ -126,34 +124,6 @@ public class RSectionDraw extends BaseDraw {
     }
 
     /**
-     * 返回当前 总进度, 在指定section 中的进度比例
-     */
-    public float getProgressBySectionIndex(int index) {
-        if (index >= 0 && index < sections.length) {
-            float totalProgress = progress * 1f / 100f;
-            float preSum = 0f;
-
-            float sectionProgress;
-            float section = sections[index];
-
-            for (int i = 0; i < index; i++) {
-                preSum += sections[i];
-            }
-
-            if (totalProgress <= preSum) {
-                sectionProgress = 0;
-            } else if (totalProgress >= preSum + section) {
-                sectionProgress = 1;
-            } else {
-                sectionProgress = (totalProgress - preSum) / section;
-            }
-            return sectionProgress;
-        } else {
-            return 0f;
-        }
-    }
-
-    /**
      * 当前进度在对应的section中, 只执行当前section的绘制
      */
     protected void onDrawProgressSection(@NonNull Canvas canvas,
@@ -162,18 +132,6 @@ public class RSectionDraw extends BaseDraw {
                                          float endProgress /*当前section结束的进度值*/,
                                          float totalProgress /*总进度*/,
                                          float sectionProgress /*section中的进度*/) {
-
-    }
-
-    /**
-     * 当前进度不在对应的section中
-     */
-    protected void onDrawNoProgressSection(@NonNull Canvas canvas,
-                                           int index /*当前绘制的第几段, 0开始*/,
-                                           float startProgress /*当前section开始的进度值*/,
-                                           float endProgress /*当前section结束的进度值*/,
-                                           float totalProgress /*总进度*/,
-                                           float sectionProgress /*section中的进度*/) {
 
     }
 

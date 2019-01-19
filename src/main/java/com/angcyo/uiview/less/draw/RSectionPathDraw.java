@@ -48,7 +48,7 @@ public class RSectionPathDraw extends RSectionDraw {
         super(view);
         pathMeasureList = new ArrayList<>();
         dstList = new ArrayList<>();
-        //setInterpolatorList(new AccelerateInterpolator(), new BounceInterpolator());
+        setInterpolatorList(new AccelerateInterpolator(), new BounceInterpolator());
     }
 
     @Override
@@ -109,22 +109,13 @@ public class RSectionPathDraw extends RSectionDraw {
         setSelectionPath(pathList, new float[]{0.2f, 0.2f});
     }
 
-//    @Override
-//    protected void onDrawProgressSection(@NonNull Canvas canvas, int index, float startProgress, float endProgress, float totalProgress, float sectionProgress) {
-//        super.onDrawProgressSection(canvas, index, startProgress, endProgress, totalProgress, sectionProgress);
-//        float cx = minViewSize() / 4;
-//        float cy = minViewSize() / 4;
-//        canvas.drawCircle(cx * (index + 1), cy, 10 * sectionProgress, mBasePaint);
-//    }
-//
-//    @Override
-//    protected void onDrawNoProgressSection(@NonNull Canvas canvas, int index, float startProgress, float endProgress, float totalProgress, float sectionProgress) {
-//        super.onDrawNoProgressSection(canvas, index, startProgress, endProgress, totalProgress, sectionProgress);
-//
-//        float cx = minViewSize() / 4;
-//        float cy = minViewSize() / 4;
-//        canvas.drawCircle(cx * (index + 1), cy, 10, mBasePaint);
-//    }
+    @Override
+    protected void onDrawProgressSection(@NonNull Canvas canvas, int index, float startProgress, float endProgress, float totalProgress, float sectionProgress) {
+        super.onDrawProgressSection(canvas, index, startProgress, endProgress, totalProgress, sectionProgress);
+        float cx = minViewSize() / 4;
+        float cy = minViewSize() / 4;
+        canvas.drawCircle(cx * (index + 1), cy, 10 * sectionProgress, mBasePaint);
+    }
 
     @Override
     protected void onDrawSectionBefore(@NonNull Canvas canvas, int maxSection, float totalProgress) {
@@ -178,9 +169,9 @@ public class RSectionPathDraw extends RSectionDraw {
             }
         }
 
-//        if (pathList.size() != selections.length) {
-//            throw new IllegalStateException("Path 和 selection 数量不匹配.");
-//        }
+        if (pathList.size() != selections.length) {
+            throw new IllegalStateException("Path 和 selection 数量不匹配.");
+        }
 
         pathMeasureList.clear();
         dstList.clear();
