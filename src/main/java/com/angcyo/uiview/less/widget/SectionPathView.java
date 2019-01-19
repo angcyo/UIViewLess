@@ -44,7 +44,7 @@ public class SectionPathView extends BaseDrawView<RSectionPathDraw> {
             }
         });
         //valueAnimator.setRepeatMode(ValueAnimator.REVERSE);
-//        valueAnimator.setRepeatCount(0);
+        valueAnimator.setRepeatCount(0);
         valueAnimator.setDuration(2000);
         valueAnimator.start();
     }
