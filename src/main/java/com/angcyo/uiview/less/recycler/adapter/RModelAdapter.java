@@ -171,14 +171,8 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, false);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(false);
-                    }
-                    notify = true;
-                }
+                selectorView(view, false);
+                notify = true;
             } else {
                 notifyItemChanged(pos);
             }
@@ -195,14 +189,8 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         RBaseViewHolder vh = getViewHolderFromPosition(position);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
         if (vh != null) {
             final View view = vh.tag(viewTag);
-            if (view != null) {
-                if (view instanceof CompoundButton) {
-                    checkedButton((CompoundButton) view, false);
-                } else if (view instanceof RCheckGroup.ICheckView) {
-                    ((RCheckGroup.ICheckView) view).setChecked(false);
-                }
-                notify = true;
-            }
+            selectorView(view, false);
+            notify = true;
         } else {
             notifyItemChanged(position);
         }
@@ -224,14 +212,8 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, false);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(false);
-                    }
-                    notify = true;
-                }
+                selectorView(view, false);
+                notify = true;
             } else {
                 notifyItemChanged(pos);
             }
@@ -251,14 +233,8 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
 
         if (vh != null) {
             final View view = vh.v(viewId);
-            if (view != null) {
-                if (view instanceof CompoundButton) {
-                    checkedButton((CompoundButton) view, false);
-                } else if (view instanceof RCheckGroup.ICheckView) {
-                    ((RCheckGroup.ICheckView) view).setChecked(false);
-                }
-                notify = true;
-            }
+            selectorView(view, false);
+            notify = true;
         } else {
             notifyItemChanged(position);
         }
@@ -277,13 +253,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, false);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(false);
-                    }
-                }
+                selectorView(view, false);
             } else {
                 notifyItemChanged(pos);
             }
@@ -319,13 +289,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, false);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(false);
-                    }
-                }
+                selectorView(view, false);
             } else {
                 notifyItemChanged(pos);
             }
@@ -371,13 +335,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.tag(viewTag);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, true);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(true);
-                    }
-                }
+                selectorView(view, true);
                 notify = true;
             } else {
                 notifyItemChanged(pos);
@@ -387,6 +345,18 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
         if (notify) {
             //防止在视图还没有加载的时候,通知事件
             notifySelectorChange();
+        }
+    }
+
+    private void selectorView(Object view, boolean selector) {
+        if (view != null) {
+            if (view instanceof CompoundButton) {
+                checkedButton((CompoundButton) view, selector);
+            } else if (view instanceof RCheckGroup.ICheckView) {
+                ((RCheckGroup.ICheckView) view).setChecked(selector);
+            } else if (view instanceof View) {
+                ((View) view).setSelected(selector);
+            }
         }
     }
 
@@ -421,13 +391,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             RBaseViewHolder vh = getViewHolderFromPosition(pos);//(RBaseViewHolder) recyclerView.findViewHolderForAdapterPosition(pos);
             if (vh != null) {
                 final View view = vh.v(viewId);
-                if (view != null) {
-                    if (view instanceof CompoundButton) {
-                        checkedButton((CompoundButton) view, true);
-                    } else if (view instanceof RCheckGroup.ICheckView) {
-                        ((RCheckGroup.ICheckView) view).setChecked(true);
-                    }
-                }
+                selectorView(view, true);
                 notify = true;
             } else {
                 notifyItemChanged(pos);
@@ -561,11 +525,7 @@ public abstract class RModelAdapter<T> extends RBaseAdapter<T> {
             view = viewHolder.v((Integer) view);
         }
 
-        if (view instanceof CompoundButton) {
-            checkedButton((CompoundButton) view, !selector);
-        } else if (view instanceof RCheckGroup.ICheckView) {
-            ((RCheckGroup.ICheckView) view).setChecked(!selector);
-        }
+        selectorView(view, !selector);
 
         if (notify) {
             notifySelectorChange();
