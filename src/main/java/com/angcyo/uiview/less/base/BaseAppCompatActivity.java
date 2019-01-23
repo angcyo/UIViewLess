@@ -98,9 +98,13 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         }
 
         if (fragmentParentLayoutId != -1) {
-            if (onFragmentBackPressed(fragmentParentLayoutId)) {
-                super.onBackPressed();
+            if (!onFragmentBackPressed(fragmentParentLayoutId)) {
+                return;
             }
+        }
+
+        if (needMoreTaskToBack()) {
+            moveTaskToBack();
         } else {
             super.onBackPressed();
         }
@@ -108,6 +112,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
 
     /**
      * 返回键, 退出Fragment的默认处理
+     *
+     * @return true activity can back .
      */
     protected boolean onFragmentBackPressed(int layoutId) {
         return FragmentHelper.build(getSupportFragmentManager())
@@ -125,6 +131,10 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
     }
 
     //</editor-fold>
+
+    protected boolean needMoreTaskToBack() {
+        return false;
+    }
 
     public void moveTaskToBack() {
         moveTaskToBack(true);
